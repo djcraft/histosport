@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Lieu extends Model
+class Palmares extends Model
 {
-    /** @use HasFactory<\Database\Factories\LieuFactory> */
+    /** @use HasFactory<\Database\Factories\PalmaresFactory> */
     use HasFactory;
 
     /**
@@ -15,14 +15,14 @@ class Lieu extends Model
      *
      * @var string
      */
-    protected $table = 'lieu';
+    protected $table = 'palmares';
 
     /**
      * The primary key associated with the table.
      *
      * @var int
      */
-    protected $primaryKey = 'lieu_id';
+    protected $primaryKey = 'palmares_id';
 
     /**
      * Indicates if the model's ID is auto-incrementing.
@@ -38,12 +38,4 @@ class Lieu extends Model
      */
 
     public $timestamps = true;
-
-    /**
-     * Get the clubs for the lieu.
-     */
-    public function clubs()
-    {
-        return $this->hasMany(Club::class, 'siege', 'lieu_id');
-    }
 }
