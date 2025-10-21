@@ -11,9 +11,13 @@ class DisciplineController extends Controller
     /**
      * Display a listing of the resource.
      */
+    /**
+     * Liste toutes les disciplines avec leurs relations principales.
+     */
     public function index()
     {
-        //
+        $disciplines = Discipline::with(['clubs', 'personnes', 'sources'])->get();
+        return response()->json($disciplines);
     }
 
     /**
@@ -27,17 +31,34 @@ class DisciplineController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+    /**
+     * Crée une nouvelle discipline et historise l'action.
+     */
     public function store(StoreDisciplineRequest $request)
     {
-        //
+        $discipline = Discipline::create($request->validated());
+        // Historisation
+        $discipline->historisations()->create([
+            'entity_type' => 'discipline',
+            'entity_id' => $discipline->discipline_id,
+            'utilisateur_id' => auth()->id(),
+            'action' => 'création',
+            'donnees_avant' => null,
+            'donnees_apres' => json_encode($discipline->toArray()),
+        ]);
+        return response()->json($discipline, 201);
     }
 
     /**
      * Display the specified resource.
      */
+    /**
+     * Affiche une discipline avec ses relations.
+     */
     public function show(Discipline $discipline)
     {
-        //
+        $discipline->load(['clubs', 'personnes', 'sources']);
+        return response()->json($discipline);
     }
 
     /**
@@ -51,16 +72,45 @@ class DisciplineController extends Controller
     /**
      * Update the specified resource in storage.
      */
+    /**
+     * Met à jour une discipline et historise l'action.
+     */
     public function update(UpdateDisciplineRequest $request, Discipline $discipline)
     {
-        //
+        $donnees_avant = $discipline->toArray();
+        $discipline->update($request->validated());
+        $donnees_apres = $discipline->toArray();
+        // Historisation
+        $discipline->historisations()->create([
+            'entity_type' => 'discipline',
+            'entity_id' => $discipline->discipline_id,
+            'utilisateur_id' => auth()->id(),
+            'action' => 'modification',
+            'donnees_avant' => json_encode($donnees_avant),
+            'donnees_apres' => json_encode($donnees_apres),
+        ]);
+        return response()->json($discipline);
     }
 
     /**
      * Remove the specified resource from storage.
      */
+    /**
+     * Supprime une discipline et historise l'action.
+     */
     public function destroy(Discipline $discipline)
     {
-        //
+        $donnees_avant = $discipline->toArray();
+        $discipline->delete();
+        // Historisation
+        $discipline->historisations()->create([
+            'entity_type' => 'discipline',
+            'entity_id' => $discipline->discipline_id,
+            'utilisateur_id' => auth()->id(),
+            'action' => 'suppression',
+            'donnees_avant' => json_encode($donnees_avant),
+            'donnees_apres' => null,
+        ]);
+        return response()->json(['message' => 'Discipline supprimée']);
     }
 }

@@ -15,7 +15,7 @@ class Club extends Model
      *
      * @var string
      */
-    protected $table = 'club';
+    protected $table = 'clubs';
 
     /**
      * The primary key associated with the table.
@@ -46,7 +46,7 @@ class Club extends Model
      */
     public function siege()
     {
-        return $this->belongsTo(Lieu::class, 'siege', 'lieu_id');
+        return $this->belongsTo(Lieu::class, 'siege_id', 'lieu_id');
     }
 
     /**
@@ -66,7 +66,8 @@ class Club extends Model
      */
     public function sources()
     {
-        return $this->belongsToMany(Source::class, 'club_source', 'club_id', 'source_id');
+        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
+            ->wherePivot('entity_type', 'club');
     }
 
     /**
@@ -76,7 +77,7 @@ class Club extends Model
      */
     public function competitions()
     {
-        return $this->belongsToMany(Competition::class, 'club_competition', 'club_id', 'competition_id');
+        return $this->belongsToMany(Competition::class, 'competition_club', 'club_id', 'competition_id');
     }
 
     /**
@@ -87,5 +88,20 @@ class Club extends Model
     public function disciplines()
     {
         return $this->belongsToMany(Discipline::class, 'club_discipline', 'club_id', 'discipline_id');
+    }
+
+    public function lieuxUtilises()
+    {
+        return $this->belongsToMany(Lieu::class, 'club_lieu', 'club_id', 'lieu_id');
+    }
+
+    public function sections()
+    {
+        return $this->belongsToMany(Club::class, 'club_section', 'club_id', 'section_id');
+    }
+
+    public function historisations()
+    {
+        return $this->morphMany(Historisation::class, 'entity');
     }
 }

@@ -15,7 +15,7 @@ class Discipline extends Model
      *
      * @var string
      */
-    protected $table = 'discipline';
+    protected $table = 'disciplines';
 
     /**
      * The primary key associated with the table.
@@ -57,5 +57,16 @@ class Discipline extends Model
     public function personnes()
     {
         return $this->belongsToMany(Personne::class, 'discipline_personne', 'discipline_id', 'personne_id');
+    }
+
+    public function sources()
+    {
+        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
+            ->wherePivot('entity_type', 'discipline');
+    }
+
+    public function historisations()
+    {
+        return $this->morphMany(Historisation::class, 'entity');
     }
 }

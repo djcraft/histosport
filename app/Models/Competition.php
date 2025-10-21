@@ -15,7 +15,7 @@ class Competition extends Model
      *
      * @var string
      */
-    protected $table = 'competition';
+    protected $table = 'competitions';
 
     /**
      * The primary key associated with the table.
@@ -43,8 +43,22 @@ class Competition extends Model
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function clubs()
+    /**
+     * Retourne tous les participants (clubs ou personnes) à la compétition.
+     */
+    public function participants()
     {
-        return $this->belongsToMany(Club::class, 'club_competition', 'competition_id', 'club_id');
+        return $this->hasMany(CompetitionParticipant::class, 'competition_id', 'competition_id');
+    }
+
+    public function sources()
+    {
+        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
+            ->wherePivot('entity_type', 'competition');
+    }
+
+    public function historisations()
+    {
+        return $this->morphMany(Historisation::class, 'entity');
     }
 }

@@ -44,6 +44,17 @@ class Lieu extends Model
      */
     public function clubs()
     {
-        return $this->hasMany(Club::class, 'siege', 'lieu_id');
+        return $this->hasMany(Club::class, 'siege_id', 'lieu_id');
+    }
+
+    public function sources()
+    {
+        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
+            ->wherePivot('entity_type', 'lieu');
+    }
+
+    public function historisations()
+    {
+        return $this->morphMany(Historisation::class, 'entity');
     }
 }

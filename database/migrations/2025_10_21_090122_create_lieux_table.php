@@ -12,7 +12,12 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('lieu', function (Blueprint $table) {
-            $table->id();
+            $table->id('lieu_id');
+            $table->string('adresse', 255)->nullable();
+            $table->string('code_postal', 20)->nullable();
+            $table->string('commune', 100)->nullable();
+            $table->string('departement', 100)->nullable();
+            $table->string('pays', 100)->nullable();
             $table->timestamps();
         });
     }

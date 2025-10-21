@@ -11,20 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('club', function (Blueprint $table) {
-            $table->increments('club_id');
-            $table->timestamps();
+        Schema::create('clubs', function (Blueprint $table) {
+            $table->id('club_id');
             $table->string('nom', 255);
-            $table->date('fondation')->nullable();
-            $table->date('disparition')->nullable();
-            $table->date('declaration')->nullable();
+            $table->string('nom_origine', 255)->nullable();
+            $table->string('surnoms', 255)->nullable();
+            $table->date('date_fondation')->nullable();
+            $table->date('date_disparition')->nullable();
+            $table->date('date_declaration')->nullable();
+            $table->string('acronyme', 50)->nullable();
+            $table->string('couleurs', 100)->nullable();
+            $table->unsignedBigInteger('siege_id')->nullable();
             $table->longText('notes')->nullable();
-            $table->unsignedInteger('siege')->nullable();
-            $table->foreign('siege')
-                    ->references('lieu_id')
-                    ->on('lieu')
-                    ->onDelete('set null')
-                    ->onUpdate('restrict');
+            $table->timestamps();
+
+            $table->foreign('siege_id')
+                ->references('lieu_id')
+                ->on('lieu')
+                ->onDelete('set null')
+                ->onUpdate('restrict');
         });
     }
 
