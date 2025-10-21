@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Source extends Model
+class Lieu extends Model
 {
-    /** @use HasFactory<\Database\Factories\SourceFactory> */
+    /** @use HasFactory<\Database\Factories\LieuFactory> */
     use HasFactory;
 
     /**
@@ -15,14 +15,14 @@ class Source extends Model
      *
      * @var string
      */
-    protected $table = 'source';
+    protected $table = 'lieu';
 
     /**
      * The primary key associated with the table.
      *
      * @var int
      */
-    protected $primaryKey = 'source_id';
+    protected $primaryKey = 'lieu_id';
 
     /**
      * Indicates if the model's ID is auto-incrementing.
@@ -37,5 +37,5 @@ class Source extends Model
      * @var bool
      */
 
-    public $timestamps = true;
+    public $timestamps = false;
 }
