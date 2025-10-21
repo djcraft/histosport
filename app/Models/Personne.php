@@ -48,4 +48,14 @@ class Personne extends Model
     {
         return $this->belongsToMany(Club::class, 'club_personne', 'personne_id', 'club_id');
     }
+
+    /**
+     * The disciplines that belong to the personne.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function disciplines()
+    {
+        return $this->belongsToMany(Discipline::class, 'discipline_personne', 'personne_id', 'discipline_id');
+    }
 }
