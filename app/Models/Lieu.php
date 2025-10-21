@@ -38,4 +38,12 @@ class Lieu extends Model
      */
 
     public $timestamps = false;
+
+    /**
+     * Get the clubs for the lieu.
+     */
+    public function clubs()
+    {
+        return $this->hasMany(Club::class, 'siege', 'lieu_id');
+    }
 }

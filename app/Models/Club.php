@@ -39,4 +39,53 @@ class Club extends Model
 
     public $timestamps = true;
 
+    /**
+     * Get the siege associated with the club.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function siege()
+    {
+        return $this->belongsTo(Lieu::class, 'siege', 'lieu_id');
+    }
+
+    /**
+     * The personnes that belong to the club.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function personnes()
+    {
+        return $this->belongsToMany(Personne::class, 'club_personne', 'club_id', 'personne_id');
+    }
+
+    /**
+     * The sources that belong to the club.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function sources()
+    {
+        return $this->belongsToMany(Source::class, 'club_source', 'club_id', 'source_id');
+    }
+
+    /**
+     * The competitions that belong to the club.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function competitions()
+    {
+        return $this->belongsToMany(Competition::class, 'club_competition', 'club_id', 'competition_id');
+    }
+
+    /**
+     * The disciplines that belong to the club.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function disciplines()
+    {
+        return $this->belongsToMany(Discipline::class, 'club_discipline', 'club_id', 'discipline_id');
+    }
 }

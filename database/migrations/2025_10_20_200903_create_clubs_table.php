@@ -11,9 +11,20 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('clubs', function (Blueprint $table) {
-            $table->id();
+        Schema::create('club', function (Blueprint $table) {
+            $table->increments('club_id');
             $table->timestamps();
+            $table->string('nom', 255);
+            $table->date('fondation')->nullable();
+            $table->date('disparition')->nullable();
+            $table->date('declaration')->nullable();
+            $table->longText('notes')->nullable();
+            $table->unsignedInteger('siege')->nullable();
+            $table->foreign('siege')
+                    ->references('lieu_id')
+                    ->on('lieu')
+                    ->onDelete('set null')
+                    ->onUpdate('restrict');
         });
     }
 
@@ -22,6 +33,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('clubs');
+        Schema::dropIfExists('club');
     }
 };

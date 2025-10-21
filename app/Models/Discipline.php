@@ -38,4 +38,14 @@ class Discipline extends Model
      */
 
     public $timestamps = true;
+
+    /**
+     * Get the clubs for the discipline.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function clubs()
+    {
+        return $this->belongsToMany(Club::class, 'club_discipline', 'discipline_id', 'club_id');
+    }
 }

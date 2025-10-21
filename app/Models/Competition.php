@@ -36,6 +36,15 @@ class Competition extends Model
      *
      * @var bool
      */
-
     public $timestamps = true;
+
+    /**
+     * Get the clubs for the competition.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function clubs()
+    {
+        return $this->belongsToMany(Club::class, 'club_competition', 'competition_id', 'club_id');
+    }
 }

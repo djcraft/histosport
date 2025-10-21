@@ -38,4 +38,14 @@ class Personne extends Model
      */
 
     public $timestamps = true;
+
+    /**
+     * The clubs that belong to the personne.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function clubs()
+    {
+        return $this->belongsToMany(Club::class, 'club_personne', 'personne_id', 'club_id');
+    }
 }

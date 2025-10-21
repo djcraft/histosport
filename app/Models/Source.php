@@ -38,4 +38,14 @@ class Source extends Model
      */
 
     public $timestamps = true;
+
+    /**
+     * Get the clubs for the source.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function clubs()
+    {
+        return $this->belongsToMany(Club::class, 'club_source', 'source_id', 'club_id');
+    }
 }
