@@ -16,8 +16,8 @@ class LieuController extends Controller
      */
     public function index()
     {
-        $lieux = Lieu::with(['clubs', 'sources'])->get();
-        return response()->json($lieux);
+        $lieux = Lieu::with(['clubs', 'sources'])->paginate(15);
+        return view('livewire.lieux.index', compact('lieux'));
     }
 
     /**
@@ -46,7 +46,7 @@ class LieuController extends Controller
             'donnees_avant' => null,
             'donnees_apres' => json_encode($lieu->toArray()),
         ]);
-        return response()->json($lieu, 201);
+    return redirect()->route('lieux.show', $lieu)->with('success', 'Lieu créé avec succès');
     }
 
     /**
@@ -58,7 +58,7 @@ class LieuController extends Controller
     public function show(Lieu $lieu)
     {
         $lieu->load(['clubs', 'sources']);
-        return response()->json($lieu);
+    return view('livewire.lieux.show', compact('lieu'));
     }
 
     /**
@@ -89,7 +89,7 @@ class LieuController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => json_encode($donnees_apres),
         ]);
-        return response()->json($lieu);
+    return redirect()->route('lieux.show', $lieu)->with('success', 'Lieu modifié avec succès');
     }
 
     /**
@@ -111,6 +111,6 @@ class LieuController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => null,
         ]);
-        return response()->json(['message' => 'Lieu supprimé']);
+    return redirect()->route('lieux.index')->with('success', 'Lieu supprimé avec succès');
     }
 }

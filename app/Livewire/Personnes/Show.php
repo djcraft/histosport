@@ -8,6 +8,11 @@ class Show extends Component
 {
     public function render()
     {
-        return view('livewire.personnes.show');
+        // Récupération de la personne à afficher (id via route ou propriété)
+        $personne = $this->personne ?? null;
+        if (!$personne && request()->route('personne')) {
+            $personne = \App\Models\Personne::with(['clubs', 'disciplines', 'sources'])->findOrFail(request()->route('personne'));
+        }
+        return view('livewire.personnes.show', compact('personne'));
     }
 }

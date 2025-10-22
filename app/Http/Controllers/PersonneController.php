@@ -16,8 +16,8 @@ class PersonneController extends Controller
      */
     public function index()
     {
-        $personnes = Personne::with(['clubs', 'disciplines', 'sources'])->get();
-        return response()->json($personnes);
+        $personnes = Personne::with(['clubs', 'disciplines', 'sources'])->paginate(15);
+        return view('livewire.personnes.index', compact('personnes'));
     }
 
     /**
@@ -46,7 +46,7 @@ class PersonneController extends Controller
             'donnees_avant' => null,
             'donnees_apres' => json_encode($personne->toArray()),
         ]);
-        return response()->json($personne, 201);
+    return redirect()->route('personnes.show', $personne)->with('success', 'Personne créée avec succès');
     }
 
     /**
@@ -58,7 +58,7 @@ class PersonneController extends Controller
     public function show(Personne $personne)
     {
         $personne->load(['clubs', 'disciplines', 'sources']);
-        return response()->json($personne);
+    return view('livewire.personnes.show', compact('personne'));
     }
 
     /**
@@ -89,7 +89,7 @@ class PersonneController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => json_encode($donnees_apres),
         ]);
-        return response()->json($personne);
+    return redirect()->route('personnes.show', $personne)->with('success', 'Personne modifiée avec succès');
     }
 
     /**
@@ -111,6 +111,6 @@ class PersonneController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => null,
         ]);
-        return response()->json(['message' => 'Personne supprimée']);
+    return redirect()->route('personnes.index')->with('success', 'Personne supprimée avec succès');
     }
 }

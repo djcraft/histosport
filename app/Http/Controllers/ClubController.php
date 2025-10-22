@@ -16,8 +16,8 @@ class ClubController extends Controller
      */
     public function index()
     {
-        $clubs = Club::with(['siege', 'personnes', 'disciplines', 'competitions', 'sources', 'lieuxUtilises', 'sections'])->get();
-        return response()->json($clubs);
+        $clubs = Club::with(['siege', 'personnes', 'disciplines', 'competitions', 'sources', 'lieuxUtilises', 'sections'])->paginate(15);
+        return view('livewire.clubs.index', compact('clubs'));
     }
 
     /**
@@ -25,7 +25,7 @@ class ClubController extends Controller
      */
     public function create()
     {
-        //
+        return view('livewire.clubs.create');
     }
 
     /**
@@ -46,7 +46,7 @@ class ClubController extends Controller
             'donnees_avant' => null,
             'donnees_apres' => json_encode($club->toArray()),
         ]);
-        return response()->json($club, 201);
+        return redirect()->route('clubs.show', $club)->with('success', 'Club créé avec succès');
     }
 
     /**
@@ -54,49 +54,6 @@ class ClubController extends Controller
      */
     /**
      * Affiche un club avec ses relations.
-     */
-    public function show(Club $club)
-    {
-        $club->load(['siege', 'personnes', 'disciplines', 'competitions', 'sources', 'lieuxUtilises', 'sections']);
-        return response()->json($club);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Club $club)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    /**
-     * Met à jour un club et historise l'action.
-     */
-    public function update(UpdateClubRequest $request, Club $club)
-    {
-        $donnees_avant = $club->toArray();
-        $club->update($request->validated());
-        $donnees_apres = $club->toArray();
-        // Historisation
-        $club->historisations()->create([
-            'entity_type' => 'club',
-            'entity_id' => $club->club_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'modification',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => json_encode($donnees_apres),
-        ]);
-        return response()->json($club);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    /**
-     * Supprime un club et historise l'action.
      */
     public function destroy(Club $club)
     {
@@ -111,6 +68,36 @@ class ClubController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => null,
         ]);
-        return response()->json(['message' => 'Club supprimé']);
+        return redirect()->route('clubs.index')->with('success', 'Club supprimé avec succès');
     }
+    /**
+     * Update the specified resource in storage.
+     */
+    /**
+     * Met à jour un club et historise l'action.
+     */
+    public function update(UpdateClubRequest $request, Club $club)
+    {
+        $donnees_avant = $club->toArray();
+        $club->update($request->validated());
+        $donnees_apres = $club->toArray();
+        // Historisation
+            $club->historisations()->create([
+                'entity_type' => 'club',
+                'entity_id' => $club->club_id,
+                'utilisateur_id' => auth()->id(),
+                'action' => 'modification',
+                'donnees_avant' => json_encode($donnees_avant),
+                'donnees_apres' => json_encode($donnees_apres),
+            ]);
+            return redirect()->route('clubs.show', $club)->with('success', 'Club modifié avec succès');
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    /**
+     * Supprime un club et historise l'action.
+     */
+    // (Méthode destroy déjà adaptée plus haut, duplication supprimée)
 }

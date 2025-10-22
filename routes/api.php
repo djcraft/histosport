@@ -12,13 +12,13 @@ use App\Http\Controllers\CompetitionParticipantController;
 use App\Http\Controllers\ApiDocController;
 // Documentation API
 Route::get('/', [ApiDocController::class, 'index']);
-Route::apiResource('clubs', ClubController::class);
-Route::apiResource('personnes', PersonneController::class);
-Route::apiResource('disciplines', DisciplineController::class);
-Route::apiResource('lieux', LieuController::class);
-Route::apiResource('competitions', CompetitionController::class);
-Route::apiResource('sources', SourceController::class);
-Route::apiResource('competition_participant', CompetitionParticipantController::class);
+Route::apiResource('clubs', ClubController::class)->names('api.clubs');
+Route::apiResource('personnes', PersonneController::class)->names('api.personnes');
+Route::apiResource('disciplines', DisciplineController::class)->names('api.disciplines');
+Route::apiResource('lieux', LieuController::class)->names('api.lieux');
+Route::apiResource('competitions', CompetitionController::class)->names('api.competitions');
+Route::apiResource('sources', SourceController::class)->names('api.sources');
+Route::apiResource('competition_participant', CompetitionParticipantController::class)->names('api.competition_participant');
 
 // Historisation (exemple d'accès à l'historique d'une entité)
 Route::get('{entity}/{id}/historisations', function ($entity, $id) {

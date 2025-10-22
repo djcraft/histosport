@@ -9,7 +9,7 @@ class Discipline extends Model
 {
     /** @use HasFactory<\Database\Factories\DisciplineFactory> */
     use HasFactory;
-
+    protected $fillable = ['nom', 'description'];
     /**
      * The table with the model.
      *

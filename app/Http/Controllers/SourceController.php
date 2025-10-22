@@ -16,8 +16,8 @@ class SourceController extends Controller
      */
     public function index()
     {
-        $sources = Source::with(['clubs', 'personnes', 'disciplines', 'competitions', 'lieux'])->get();
-        return response()->json($sources);
+        $sources = Source::with(['clubs', 'personnes', 'disciplines', 'competitions', 'lieux'])->paginate(15);
+        return view('livewire.sources.index', compact('sources'));
     }
 
     /**
@@ -25,7 +25,8 @@ class SourceController extends Controller
      */
     public function create()
     {
-        //
+    $lieux = \App\Models\Lieu::all();
+    return view('livewire.sources.create', compact('lieux'));
     }
 
     /**
@@ -46,7 +47,7 @@ class SourceController extends Controller
             'donnees_avant' => null,
             'donnees_apres' => json_encode($source->toArray()),
         ]);
-        return response()->json($source, 201);
+    return redirect()->route('sources.show', $source)->with('success', 'Source créée avec succès');
     }
 
     /**
@@ -58,7 +59,7 @@ class SourceController extends Controller
     public function show(Source $source)
     {
         $source->load(['clubs', 'personnes', 'disciplines', 'competitions', 'lieux']);
-        return response()->json($source);
+    return view('livewire.sources.show', compact('source'));
     }
 
     /**
@@ -89,7 +90,7 @@ class SourceController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => json_encode($donnees_apres),
         ]);
-        return response()->json($source);
+    return redirect()->route('sources.show', $source)->with('success', 'Source modifiée avec succès');
     }
 
     /**
@@ -111,6 +112,6 @@ class SourceController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => null,
         ]);
-        return response()->json(['message' => 'Source supprimée']);
+    return redirect()->route('sources.index')->with('success', 'Source supprimée avec succès');
     }
 }

@@ -16,8 +16,8 @@ class CompetitionController extends Controller
      */
     public function index()
     {
-        $competitions = Competition::with(['participants', 'sources'])->get();
-        return response()->json($competitions);
+        $competitions = Competition::with(['participants', 'sources'])->paginate(15);
+        return view('livewire.competitions.index', compact('competitions'));
     }
 
     /**
@@ -46,7 +46,7 @@ class CompetitionController extends Controller
             'donnees_avant' => null,
             'donnees_apres' => json_encode($competition->toArray()),
         ]);
-        return response()->json($competition, 201);
+    return redirect()->route('competitions.show', $competition)->with('success', 'Compétition créée avec succès');
     }
 
     /**
@@ -58,7 +58,7 @@ class CompetitionController extends Controller
     public function show(Competition $competition)
     {
         $competition->load(['participants', 'sources']);
-        return response()->json($competition);
+    return view('livewire.competitions.show', compact('competition'));
     }
 
     /**
@@ -89,7 +89,7 @@ class CompetitionController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => json_encode($donnees_apres),
         ]);
-        return response()->json($competition);
+    return redirect()->route('competitions.show', $competition)->with('success', 'Compétition modifiée avec succès');
     }
 
     /**
@@ -111,6 +111,6 @@ class CompetitionController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => null,
         ]);
-        return response()->json(['message' => 'Compétition supprimée']);
+    return redirect()->route('competitions.index')->with('success', 'Compétition supprimée avec succès');
     }
 }

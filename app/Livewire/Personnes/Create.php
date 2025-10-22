@@ -8,6 +8,8 @@ class Create extends Component
 {
     public function render()
     {
-        return view('livewire.personnes.create');
+    $allClubs = \App\Models\Club::all();
+    $sources = \App\Models\Source::all();
+    return view('livewire.personnes.create', compact('allClubs', 'sources'));
     }
 }

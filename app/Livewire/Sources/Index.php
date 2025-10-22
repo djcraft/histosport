@@ -8,6 +8,7 @@ class Index extends Component
 {
     public function render()
     {
-        return view('livewire.sources.index');
+        $sources = \App\Models\Source::with(['clubs', 'personnes', 'disciplines', 'competitions', 'lieux'])->paginate(15);
+        return view('livewire.sources.index', compact('sources'));
     }
 }

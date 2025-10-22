@@ -8,6 +8,8 @@ class Edit extends Component
 {
     public function render()
     {
-        return view('livewire.clubs.edit');
+    $lieux = \App\Models\Lieu::all();
+    $sources = \App\Models\Source::all();
+    return view('livewire.clubs.edit', compact('lieux', 'sources'));
     }
 }

@@ -16,8 +16,8 @@ class DisciplineController extends Controller
      */
     public function index()
     {
-        $disciplines = Discipline::with(['clubs', 'personnes', 'sources'])->get();
-        return response()->json($disciplines);
+        $disciplines = Discipline::with(['clubs', 'personnes', 'sources'])->paginate(15);
+        return view('livewire.disciplines.index', compact('disciplines'));
     }
 
     /**
@@ -46,7 +46,7 @@ class DisciplineController extends Controller
             'donnees_avant' => null,
             'donnees_apres' => json_encode($discipline->toArray()),
         ]);
-        return response()->json($discipline, 201);
+    return redirect()->route('disciplines.show', $discipline)->with('success', 'Discipline créée avec succès');
     }
 
     /**
@@ -58,7 +58,7 @@ class DisciplineController extends Controller
     public function show(Discipline $discipline)
     {
         $discipline->load(['clubs', 'personnes', 'sources']);
-        return response()->json($discipline);
+    return view('livewire.disciplines.show', compact('discipline'));
     }
 
     /**
@@ -89,7 +89,7 @@ class DisciplineController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => json_encode($donnees_apres),
         ]);
-        return response()->json($discipline);
+    return redirect()->route('disciplines.show', $discipline)->with('success', 'Discipline modifiée avec succès');
     }
 
     /**
@@ -111,6 +111,6 @@ class DisciplineController extends Controller
             'donnees_avant' => json_encode($donnees_avant),
             'donnees_apres' => null,
         ]);
-        return response()->json(['message' => 'Discipline supprimée']);
+    return redirect()->route('disciplines.index')->with('success', 'Discipline supprimée avec succès');
     }
 }
