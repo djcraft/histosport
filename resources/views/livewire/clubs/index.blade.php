@@ -17,7 +17,6 @@
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Couleurs</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Siège</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Disciplines</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Notes</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
                 </tr>
             </thead>
@@ -34,11 +33,7 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $club->couleurs }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($club->siege)
-                                {{ $club->siege->adresse ?? '' }}
-                                {{ $club->siege->code_postal ? ', ' . $club->siege->code_postal : '' }}
-                                {{ $club->siege->commune ? ', ' . $club->siege->commune : '' }}
-                                {{ $club->siege->departement ? ', ' . $club->siege->departement : '' }}
-                                {{ $club->siege->pays ? ', ' . $club->siege->pays : '' }}
+                                {{ $club->siege->adresse ?? '' }}{{ $club->siege->code_postal ? ', ' . $club->siege->code_postal : '' }}{{ $club->siege->commune ? ', ' . $club->siege->commune : '' }}
                             @else
                                 -
                             @endif
@@ -48,7 +43,6 @@
                                 <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $discipline->nom }}</span>
                             @endforeach
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $club->notes }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <a href="{{ route('clubs.show', $club) }}" class="text-blue-600 hover:underline mr-2">Voir</a>
                             <a href="{{ route('clubs.edit', $club) }}" class="text-yellow-600 hover:underline mr-2">Modifier</a>

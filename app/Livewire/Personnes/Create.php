@@ -6,7 +6,6 @@ use Livewire\Component;
 
 use App\Models\Personne;
 use App\Models\Club;
-use App\Models\Source;
 use App\Models\Lieu;
 
 class Create extends Component
@@ -21,12 +20,10 @@ class Create extends Component
     public $titre;
     public $adresse_id;
     public $clubs = [];
-    public $sources = [];
     public $disciplines = [];
     public $lieux = [];
     public $adresses = [];
     public $allClubs = [];
-    public $allSources = [];
     public $allDisciplines = [];
 
     public function mount()
@@ -34,7 +31,6 @@ class Create extends Component
         $this->lieux = Lieu::all();
         $this->adresses = Lieu::all();
         $this->allClubs = Club::all();
-        $this->allSources = Source::all();
         $this->allDisciplines = \App\Models\Discipline::all();
     }
 
@@ -44,7 +40,6 @@ class Create extends Component
             'lieux' => $this->lieux,
             'adresses' => $this->adresses,
             'allClubs' => $this->allClubs,
-            'sources' => $this->allSources,
             'disciplines' => $this->allDisciplines,
         ]);
     }
@@ -83,11 +78,6 @@ class Create extends Component
         // Disciplines (many-to-many)
         if (!empty($this->disciplines)) {
             $personne->disciplines()->sync($this->disciplines);
-        }
-
-        // Sources (morphToMany)
-        if (!empty($this->sources)) {
-            $personne->sources()->sync($this->sources);
         }
 
         session()->flash('success', 'Personne créée avec succès.');

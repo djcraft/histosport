@@ -16,7 +16,13 @@
             </div>
             <div>
                 <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu de naissance :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $personne->lieu_naissance->adresse ?? '-' }}</span>
+                <span class="block text-gray-900 dark:text-gray-100">
+                    @if($personne->lieu_naissance)
+                        {{ $personne->lieu_naissance->adresse ?? '' }} {{ $personne->lieu_naissance->code_postal ?? '' }} {{ $personne->lieu_naissance->commune ?? '' }}
+                    @else
+                        -
+                    @endif
+                </span>
             </div>
         </div>
         <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -26,7 +32,13 @@
             </div>
             <div>
                 <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu de décès :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $personne->lieu_deces->adresse ?? '-' }}</span>
+                <span class="block text-gray-900 dark:text-gray-100">
+                    @if($personne->lieu_deces)
+                        {{ $personne->lieu_deces->adresse ?? '' }} {{ $personne->lieu_deces->code_postal ?? '' }} {{ $personne->lieu_deces->commune ?? '' }}
+                    @else
+                        -
+                    @endif
+                </span>
             </div>
         </div>
         <div class="mb-4">
@@ -39,7 +51,13 @@
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Adresse :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $personne->adresse->adresse ?? '-' }}</span>
+            <span class="block text-gray-900 dark:text-gray-100">
+                @if($personne->adresse)
+                    {{ $personne->adresse->adresse ?? '' }} {{ $personne->adresse->code_postal ?? '' }} {{ $personne->adresse->commune ?? '' }}
+                @else
+                    -
+                @endif
+            </span>
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Clubs :</span>
@@ -54,16 +72,6 @@
             @empty
                 <span class="text-gray-500">Aucune</span>
             @endforelse
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
-            <div class="mt-1">
-                @forelse($personne->sources as $source)
-                    <span class="inline-block bg-green-200 dark:bg-green-700 text-xs rounded px-2 py-1 mr-1">{{ $source->titre }}</span>
-                @empty
-                    <span class="block text-gray-900 dark:text-gray-100">-</span>
-                @endforelse
-            </div>
         </div>
         <div class="flex justify-end">
             <a href="{{ route('personnes.edit', $personne) }}" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">Modifier</a>

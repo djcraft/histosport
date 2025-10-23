@@ -6,7 +6,6 @@ use Livewire\Component;
 
 use App\Models\Personne;
 use App\Models\Club;
-use App\Models\Source;
 use App\Models\Lieu;
 
 class Edit extends Component
@@ -22,12 +21,10 @@ class Edit extends Component
     public $titre;
     public $adresse_id;
     public $clubs = [];
-    public $sources = [];
     public $disciplines = [];
     public $lieux = [];
     public $adresses = [];
     public $allClubs = [];
-    public $allSources = [];
     public $allDisciplines = [];
 
     public function mount(Personne $personne)
@@ -43,12 +40,10 @@ class Edit extends Component
         $this->titre = $personne->titre;
         $this->adresse_id = $personne->adresse_id;
         $this->clubs = $personne->clubs->pluck('club_id')->toArray();
-        $this->sources = $personne->sources->pluck('source_id')->toArray();
         $this->disciplines = $personne->disciplines->pluck('discipline_id')->toArray();
         $this->lieux = Lieu::all();
         $this->adresses = Lieu::all();
         $this->allClubs = Club::all();
-        $this->allSources = Source::all();
         $this->allDisciplines = \App\Models\Discipline::all();
     }
 
@@ -58,7 +53,6 @@ class Edit extends Component
             'lieux' => $this->lieux,
             'adresses' => $this->adresses,
             'allClubs' => $this->allClubs,
-            'sources' => $this->allSources,
             'disciplines' => $this->allDisciplines,
         ]);
     }
@@ -94,9 +88,6 @@ class Edit extends Component
 
         // Disciplines (many-to-many)
         $this->personne->disciplines()->sync($this->disciplines);
-
-        // Sources (morphToMany)
-        $this->personne->sources()->sync($this->sources);
 
         session()->flash('success', 'Personne modifiée avec succès.');
         return redirect()->route('personnes.index');

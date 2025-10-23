@@ -21,8 +21,10 @@ class Club extends Model
         'date_declaration',
         'acronyme',
         'couleurs',
-        'notes',
         'siege_id',
+        'notes',
+        // Ajouté pour permettre l'enregistrement de toutes les colonnes
+        // Si d'autres colonnes sont ajoutées à la table clubs, les ajouter ici
     ];
     /** @use HasFactory<\Database\Factories\ClubFactory> */
     use HasFactory;

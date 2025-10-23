@@ -26,12 +26,30 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->nom }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->prenom }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->date_naissance }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->lieu_naissance->adresse ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($personne->lieu_naissance)
+                                {{ $personne->lieu_naissance->adresse ?? '' }} {{ $personne->lieu_naissance->code_postal ?? '' }} {{ $personne->lieu_naissance->commune ?? '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->date_deces }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->lieu_deces->adresse ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($personne->lieu_deces)
+                                {{ $personne->lieu_deces->adresse ?? '' }} {{ $personne->lieu_deces->code_postal ?? '' }} {{ $personne->lieu_deces->commune ?? '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->sexe }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->titre }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->adresse->adresse ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($personne->adresse)
+                                {{ $personne->adresse->adresse ?? '' }} {{ $personne->adresse->code_postal ?? '' }} {{ $personne->adresse->commune ?? '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @foreach($personne->clubs as $club)
                                 <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $club->nom }}</span>

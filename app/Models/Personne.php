@@ -8,6 +8,21 @@ use Illuminate\Database\Eloquent\Model;
 class Personne extends Model
 {
     /**
+     * Lieu de naissance de la personne.
+     */
+    public function lieu_naissance()
+    {
+        return $this->belongsTo(Lieu::class, 'lieu_naissance_id', 'lieu_id');
+    }
+
+    /**
+     * Lieu de décès de la personne.
+     */
+    public function lieu_deces()
+    {
+        return $this->belongsTo(Lieu::class, 'lieu_deces_id', 'lieu_id');
+    }
+    /**
      * Les attributs assignables en masse.
      *
      * @var array
@@ -75,10 +90,14 @@ class Personne extends Model
         return $this->belongsToMany(Discipline::class, 'discipline_personne', 'personne_id', 'discipline_id');
     }
 
-    public function sources()
+    // La relation sources a été supprimée pour le modèle Personne.
+
+    /**
+     * Lieu d'adresse de la personne.
+     */
+    public function adresse()
     {
-        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
-            ->wherePivot('entity_type', 'personne');
+        return $this->belongsTo(Lieu::class, 'adresse_id', 'lieu_id');
     }
 
     public function historisations()

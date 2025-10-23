@@ -14,7 +14,14 @@
             </div>
             <div>
                 <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $competition->lieu->adresse ?? '-' }}</span>
+                <span class="block text-gray-900 dark:text-gray-100">
+                    @if($competition->lieu)
+                        {{ $competition->lieu->adresse ?? '' }} {{ $competition->lieu->code_postal ?? '' }} {{ $competition->lieu->commune ?? '' }}
+                        {{ $competition->lieu->departement ?? '' }} {{ $competition->lieu->pays ?? '' }}
+                    @else
+                        -
+                    @endif
+                </span>
             </div>
         </div>
         <div class="mb-4">

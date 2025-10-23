@@ -23,7 +23,13 @@
                     <tr>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->nom }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->date }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->lieu->adresse ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($competition->lieu)
+                                {{ $competition->lieu->adresse ?? '' }} {{ $competition->lieu->code_postal ?? '' }} {{ $competition->lieu->commune ?? '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($competition->organisateur_club)
                                 {{ $competition->organisateur_club->nom }}
