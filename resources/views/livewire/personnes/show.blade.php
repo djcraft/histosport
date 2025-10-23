@@ -47,6 +47,14 @@
                 <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $club->nom }}</span>
             @endforeach
         </div>
+        <div class="mb-4">
+            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
+            @forelse($personne->disciplines as $discipline)
+                <span class="inline-block bg-blue-200 dark:bg-blue-700 text-xs rounded px-2 py-1 mr-1">{{ $discipline->nom }}</span>
+            @empty
+                <span class="text-gray-500">Aucune</span>
+            @endforelse
+        </div>
         <div class="flex justify-end">
             <a href="{{ route('personnes.edit', $personne) }}" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">Modifier</a>
         </div>

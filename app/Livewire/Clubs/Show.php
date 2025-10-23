@@ -10,7 +10,7 @@ class Show extends Component
     {
         $club = $this->club ?? null;
         if (!$club && request()->route('club')) {
-            $club = \App\Models\Club::with(['disciplines', 'personnes', 'sources', 'lieux'])->findOrFail(request()->route('club'));
+            $club = \App\Models\Club::with(['disciplines', 'personnes', 'sources', 'siege'])->findOrFail(request()->route('club'));
         }
         return view('livewire.clubs.show', compact('club'));
     }

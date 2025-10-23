@@ -38,17 +38,52 @@ class Competition extends Model
      */
     public $timestamps = true;
 
+
     /**
-     * Get the clubs for the competition.
-     *
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     * Les attributs pouvant être assignés en masse.
      */
+    protected $fillable = [
+        'nom',
+        'date',
+        'lieu_id',
+        'organisateur_club_id',
+        'organisateur_personne_id',
+        'type',
+        'duree',
+        'niveau',
+    ];
+
+
+    /**
+     * Club organisateur de la compétition.
+     */
+    public function organisateur_club()
+    {
+        return $this->belongsTo(Club::class, 'organisateur_club_id', 'club_id');
+    }
+
+    /**
+     * Personne organisatrice de la compétition.
+     */
+    public function organisateur_personne()
+    {
+        return $this->belongsTo(Personne::class, 'organisateur_personne_id', 'personne_id');
+    }
+
     /**
      * Retourne tous les participants (clubs ou personnes) à la compétition.
      */
     public function participants()
     {
         return $this->hasMany(CompetitionParticipant::class, 'competition_id', 'competition_id');
+    }
+
+    /**
+     * Les disciplines associées à la compétition.
+     */
+    public function disciplines()
+    {
+        return $this->belongsToMany(Discipline::class, 'competition_discipline', 'competition_id', 'discipline_id');
     }
 
     public function sources()

@@ -7,6 +7,16 @@ return new class extends Migration
 {
     public function up(): void
     {
+        // Table pivot competition_discipline
+        Schema::create('competition_discipline', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('competition_id');
+            $table->unsignedBigInteger('discipline_id');
+            $table->timestamps();
+            $table->foreign('competition_id')->references('competition_id')->on('competitions')->onDelete('cascade');
+            $table->foreign('discipline_id')->references('discipline_id')->on('disciplines')->onDelete('cascade');
+            $table->unique(['competition_id', 'discipline_id']);
+        });
         // Table pivot discipline_personne
         Schema::create('discipline_personne', function (Blueprint $table) {
             $table->id();
@@ -16,7 +26,7 @@ return new class extends Migration
             $table->foreign('discipline_id')->references('discipline_id')->on('disciplines')->onDelete('cascade');
             $table->foreign('personne_id')->references('personne_id')->on('personnes')->onDelete('cascade');
         });
-    
+
         // Table pivot club_personne
         Schema::create('club_personne', function (Blueprint $table) {
             $table->id();
@@ -64,6 +74,7 @@ return new class extends Migration
 
     public function down(): void
     {
+        Schema::dropIfExists('competition_discipline');
         Schema::dropIfExists('discipline_personne');
         Schema::dropIfExists('club_personne');
         Schema::dropIfExists('club_discipline');

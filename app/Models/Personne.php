@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Personne extends Model
 {
+    /**
+     * Les attributs assignables en masse.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'nom',
+        'prenom',
+        'date_naissance',
+        'lieu_naissance_id',
+        'date_deces',
+        'lieu_deces_id',
+        'sexe',
+        'titre',
+        'adresse_id',
+    ];
     /** @use HasFactory<\Database\Factories\PersonneFactory> */
     use HasFactory;
 

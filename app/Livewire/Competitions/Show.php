@@ -10,7 +10,7 @@ class Show extends Component
     {
         $competition = $this->competition ?? null;
         if (!$competition && request()->route('competition')) {
-            $competition = \App\Models\Competition::with(['participants', 'sources', 'historisations', 'discipline'])->findOrFail(request()->route('competition'));
+            $competition = \App\Models\Competition::with(['participants', 'sources', 'historisations', 'disciplines'])->findOrFail(request()->route('competition'));
         }
         return view('livewire.competitions.show', compact('competition'));
     }

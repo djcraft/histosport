@@ -7,6 +7,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class Club extends Model
 {
+    /**
+     * Les attributs assignables en masse.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'nom',
+        'nom_origine',
+        'surnoms',
+        'date_fondation',
+        'date_disparition',
+        'date_declaration',
+        'acronyme',
+        'couleurs',
+        'notes',
+        'siege_id',
+    ];
     /** @use HasFactory<\Database\Factories\ClubFactory> */
     use HasFactory;
 
