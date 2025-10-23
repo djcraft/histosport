@@ -37,15 +37,6 @@ class PersonneController extends Controller
     public function store(StorePersonneRequest $request)
     {
         $personne = Personne::create($request->validated());
-        // Historisation
-        $personne->historisations()->create([
-            'entity_type' => 'personne',
-            'entity_id' => $personne->personne_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'création',
-            'donnees_avant' => null,
-            'donnees_apres' => json_encode($personne->toArray()),
-        ]);
     return redirect()->route('personnes.show', $personne)->with('success', 'Personne créée avec succès');
     }
 
@@ -80,15 +71,6 @@ class PersonneController extends Controller
         $donnees_avant = $personne->toArray();
         $personne->update($request->validated());
         $donnees_apres = $personne->toArray();
-        // Historisation
-        $personne->historisations()->create([
-            'entity_type' => 'personne',
-            'entity_id' => $personne->personne_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'modification',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => json_encode($donnees_apres),
-        ]);
     return redirect()->route('personnes.show', $personne)->with('success', 'Personne modifiée avec succès');
     }
 
@@ -102,15 +84,6 @@ class PersonneController extends Controller
     {
         $donnees_avant = $personne->toArray();
         $personne->delete();
-        // Historisation
-        $personne->historisations()->create([
-            'entity_type' => 'personne',
-            'entity_id' => $personne->personne_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'suppression',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => null,
-        ]);
     return redirect()->route('personnes.index')->with('success', 'Personne supprimée avec succès');
     }
 }

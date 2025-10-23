@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Source extends Model
 {
+    public static string $entityType = 'source';
     /**
      * Les attributs assignables en masse.
      *
@@ -62,7 +63,7 @@ class Source extends Model
      */
     public function clubs()
     {
-        return $this->morphToMany(Club::class, 'entity', 'entity_source', 'source_id', 'entity_id')
+        return $this->belongsToMany(Club::class, 'entity_source', 'source_id', 'entity_id')
             ->wherePivot('entity_type', 'club');
     }
 
@@ -72,15 +73,11 @@ class Source extends Model
             ->wherePivot('entity_type', 'personne');
     }
 
-    public function disciplines()
-    {
-        return $this->morphToMany(Discipline::class, 'entity', 'entity_source', 'source_id', 'entity_id')
-            ->wherePivot('entity_type', 'discipline');
-    }
+    // Relation disciplines supprimée : non associée aux sources
 
     public function competitions()
     {
-        return $this->morphToMany(Competition::class, 'entity', 'entity_source', 'source_id', 'entity_id')
+        return $this->belongsToMany(Competition::class, 'entity_source', 'source_id', 'entity_id')
             ->wherePivot('entity_type', 'competition');
     }
 

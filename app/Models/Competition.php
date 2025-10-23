@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Competition extends Model
 {
+    public static string $entityType = 'competition';
     /** @use HasFactory<\Database\Factories\CompetitionFactory> */
     use HasFactory;
 

@@ -27,9 +27,27 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->annee_reference }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->type }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->cote }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->lieu_edition->adresse ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->lieu_conservation->adresse ?? '-' }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->lieu_couverture->adresse ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($source->lieuEdition)
+                                {{ $source->lieuEdition->adresse ?? '' }} {{ $source->lieuEdition->code_postal ?? '' }} {{ $source->lieuEdition->commune ?? '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($source->lieuConservation)
+                                {{ $source->lieuConservation->adresse ?? '' }} {{ $source->lieuConservation->code_postal ?? '' }} {{ $source->lieuConservation->commune ?? '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($source->lieuCouverture)
+                                {{ $source->lieuCouverture->adresse ?? '' }} {{ $source->lieuCouverture->code_postal ?? '' }} {{ $source->lieuCouverture->commune ?? '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->url }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
                             <a href="{{ route('sources.show', $source) }}" class="text-blue-600 hover:underline mr-2">Voir</a>

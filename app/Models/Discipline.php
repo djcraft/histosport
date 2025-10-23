@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Discipline extends Model
 {
+    public static string $entityType = 'discipline';
     /** @use HasFactory<\Database\Factories\DisciplineFactory> */
     use HasFactory;
     protected $fillable = ['nom', 'description'];

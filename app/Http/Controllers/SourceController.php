@@ -38,15 +38,6 @@ class SourceController extends Controller
     public function store(StoreSourceRequest $request)
     {
         $source = Source::create($request->validated());
-        // Historisation
-        $source->historisations()->create([
-            'entity_type' => 'source',
-            'entity_id' => $source->source_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'création',
-            'donnees_avant' => null,
-            'donnees_apres' => json_encode($source->toArray()),
-        ]);
     return redirect()->route('sources.show', $source)->with('success', 'Source créée avec succès');
     }
 
@@ -78,18 +69,7 @@ class SourceController extends Controller
      */
     public function update(UpdateSourceRequest $request, Source $source)
     {
-        $donnees_avant = $source->toArray();
         $source->update($request->validated());
-        $donnees_apres = $source->toArray();
-        // Historisation
-        $source->historisations()->create([
-            'entity_type' => 'source',
-            'entity_id' => $source->source_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'modification',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => json_encode($donnees_apres),
-        ]);
     return redirect()->route('sources.show', $source)->with('success', 'Source modifiée avec succès');
     }
 
@@ -101,17 +81,7 @@ class SourceController extends Controller
      */
     public function destroy(Source $source)
     {
-        $donnees_avant = $source->toArray();
         $source->delete();
-        // Historisation
-        $source->historisations()->create([
-            'entity_type' => 'source',
-            'entity_id' => $source->source_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'suppression',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => null,
-        ]);
     return redirect()->route('sources.index')->with('success', 'Source supprimée avec succès');
     }
 }

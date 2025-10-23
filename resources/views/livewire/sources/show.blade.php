@@ -33,39 +33,53 @@
         <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
                 <span class="font-semibold text-gray-700 dark:text-gray-300">Lieu d'édition :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $source->lieu_edition->adresse ?? '-' }}</span>
+                <span class="block text-gray-900 dark:text-gray-100">
+                    @if($source->lieuEdition)
+                        {{ $source->lieuEdition->adresse ?? '' }} {{ $source->lieuEdition->code_postal ?? '' }} {{ $source->lieuEdition->commune ?? '' }}
+                    @else
+                        -
+                    @endif
+                </span>
             </div>
             <div>
                 <span class="font-semibold text-gray-700 dark:text-gray-300">Lieu de conservation :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $source->lieu_conservation->adresse ?? '-' }}</span>
+                <span class="block text-gray-900 dark:text-gray-100">
+                    @if($source->lieuConservation)
+                        {{ $source->lieuConservation->adresse ?? '' }} {{ $source->lieuConservation->code_postal ?? '' }} {{ $source->lieuConservation->commune ?? '' }}
+                    @else
+                        -
+                    @endif
+                </span>
             </div>
             <div>
                 <span class="font-semibold text-gray-700 dark:text-gray-300">Lieu de couverture :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $source->lieu_couverture->adresse ?? '-' }}</span>
+                <span class="block text-gray-900 dark:text-gray-100">
+                    @if($source->lieuCouverture)
+                        {{ $source->lieuCouverture->adresse ?? '' }} {{ $source->lieuCouverture->code_postal ?? '' }} {{ $source->lieuCouverture->commune ?? '' }}
+                    @else
+                        -
+                    @endif
+                </span>
             </div>
         </div>
         <div class="mb-4">
             <span class="font-semibold text-gray-700 dark:text-gray-300">Clubs associés :</span>
             <div class="mt-1">
-                @foreach($source->clubs as $club)
-                    <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $club->nom }}</span>
-                @endforeach
-            </div>
-        </div>
-        <div class="mb-4">
-            <span class="font-semibold text-gray-700 dark:text-gray-300">Personnes associées :</span>
-            <div class="mt-1">
-                @foreach($source->personnes as $personne)
-                    <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $personne->nom }}</span>
-                @endforeach
+                    @forelse($source->clubs as $club)
+                        <a href="{{ route('clubs.show', $club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $club->nom }}</a>
+                    @empty
+                        <span class="block text-gray-900 dark:text-gray-100">-</span>
+                    @endforelse
             </div>
         </div>
         <div class="mb-4">
             <span class="font-semibold text-gray-700 dark:text-gray-300">Compétitions associées :</span>
             <div class="mt-1">
-                @foreach($source->competitions as $competition)
-                    <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $competition->nom }}</span>
-                @endforeach
+                    @forelse($source->competitions as $competition)
+                        <a href="{{ route('competitions.show', $competition) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $competition->nom }}</a>
+                    @empty
+                        <span class="block text-gray-900 dark:text-gray-100">-</span>
+                    @endforelse
             </div>
         </div>
         <div class="mb-4">

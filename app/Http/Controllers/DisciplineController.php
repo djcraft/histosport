@@ -37,15 +37,6 @@ class DisciplineController extends Controller
     public function store(StoreDisciplineRequest $request)
     {
         $discipline = Discipline::create($request->validated());
-        // Historisation
-        $discipline->historisations()->create([
-            'entity_type' => 'discipline',
-            'entity_id' => $discipline->discipline_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'création',
-            'donnees_avant' => null,
-            'donnees_apres' => json_encode($discipline->toArray()),
-        ]);
     return redirect()->route('disciplines.show', $discipline)->with('success', 'Discipline créée avec succès');
     }
 
@@ -77,18 +68,7 @@ class DisciplineController extends Controller
      */
     public function update(UpdateDisciplineRequest $request, Discipline $discipline)
     {
-        $donnees_avant = $discipline->toArray();
         $discipline->update($request->validated());
-        $donnees_apres = $discipline->toArray();
-        // Historisation
-        $discipline->historisations()->create([
-            'entity_type' => 'discipline',
-            'entity_id' => $discipline->discipline_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'modification',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => json_encode($donnees_apres),
-        ]);
     return redirect()->route('disciplines.show', $discipline)->with('success', 'Discipline modifiée avec succès');
     }
 
@@ -100,17 +80,7 @@ class DisciplineController extends Controller
      */
     public function destroy(Discipline $discipline)
     {
-        $donnees_avant = $discipline->toArray();
         $discipline->delete();
-        // Historisation
-        $discipline->historisations()->create([
-            'entity_type' => 'discipline',
-            'entity_id' => $discipline->discipline_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'suppression',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => null,
-        ]);
     return redirect()->route('disciplines.index')->with('success', 'Discipline supprimée avec succès');
     }
 }

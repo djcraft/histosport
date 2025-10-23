@@ -52,7 +52,7 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @foreach($personne->clubs as $club)
-                                <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $club->nom }}</span>
+                                <a href="{{ route('clubs.show', $club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $club->nom }}</a>
                             @endforeach
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">

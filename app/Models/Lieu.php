@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lieu extends Model
 {
+    public static string $entityType = 'lieu';
     protected $fillable = [
         'adresse',
         'code_postal',

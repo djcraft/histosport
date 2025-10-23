@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Personne extends Model
 {
+    public static string $entityType = 'personne';
     /**
      * Lieu de naissance de la personne.
      */

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CompetitionParticipant extends Model
 {
+    public static string $entityType = 'competition_participant';
     protected $table = 'competition_participant';
     protected $primaryKey = 'id';
     public $incrementing = true;

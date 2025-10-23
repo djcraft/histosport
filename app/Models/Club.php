@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Club extends Model
 {
+    public static string $entityType = 'club';
     /**
      * Les attributs assignables en masse.
      *

@@ -10,7 +10,15 @@ class Show extends Component
     {
         $source = $this->source ?? null;
         if (!$source && request()->route('source')) {
-            $source = \App\Models\Source::with(['clubs', 'personnes', 'disciplines', 'competitions', 'lieux', 'historisations'])->findOrFail(request()->route('source'));
+            $source = \App\Models\Source::with([
+                'clubs',
+                'competitions',
+                'lieux',
+                'historisations',
+                'lieuEdition',
+                'lieuConservation',
+                'lieuCouverture',
+            ])->findOrFail(request()->route('source'));
         }
         return view('livewire.sources.show', compact('source'));
     }

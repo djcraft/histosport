@@ -62,13 +62,13 @@
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Clubs :</span>
             @foreach($personne->clubs as $club)
-                <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $club->nom }}</span>
+                <a href="{{ route('clubs.show', $club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $club->nom }}</a>
             @endforeach
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
             @forelse($personne->disciplines as $discipline)
-                <span class="inline-block bg-blue-200 dark:bg-blue-700 text-xs rounded px-2 py-1 mr-1">{{ $discipline->nom }}</span>
+                <a href="{{ route('disciplines.show', $discipline) }}" class="inline-block bg-blue-200 dark:bg-blue-700 text-xs rounded px-2 py-1 mr-1 hover:bg-blue-300 dark:hover:bg-blue-600 transition">{{ $discipline->nom }}</a>
             @empty
                 <span class="text-gray-500">Aucune</span>
             @endforelse

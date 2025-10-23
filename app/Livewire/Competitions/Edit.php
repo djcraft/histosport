@@ -79,11 +79,18 @@ class Edit extends Component
             'niveau' => $this->niveau,
         ]);
 
-        // Gestion des disciplines (relation n-n)
+        // Gestion des disciplines (relation n-n) via modèle pivot pour historisation
+        $competitionId = $this->competition->competition_id;
+        // Supprimer les liens existants
+        \App\Models\CompetitionDiscipline::where('competition_id', $competitionId)->delete();
+        // Ajouter les nouveaux liens
         if (!empty($this->discipline_ids)) {
-            $this->competition->disciplines()->sync($this->discipline_ids);
-        } else {
-            $this->competition->disciplines()->detach();
+            foreach ($this->discipline_ids as $disciplineId) {
+                \App\Models\CompetitionDiscipline::create([
+                    'competition_id' => $competitionId,
+                    'discipline_id' => $disciplineId,
+                ]);
+            }
         }
 
         // Gestion des sources (ajout du champ entity_type, exclusion des valeurs nulles ou 0)

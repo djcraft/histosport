@@ -54,7 +54,7 @@
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
             <div class="mt-1">
                 @forelse($competition->disciplines as $discipline)
-                    <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $discipline->nom }}</span>
+                    <a href="{{ route('disciplines.show', $discipline) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $discipline->nom }}</a>
                 @empty
                     <span class="block text-gray-900 dark:text-gray-100">-</span>
                 @endforelse
@@ -64,25 +64,34 @@
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Participants :</span>
             <div class="mt-1">
                 @foreach($competition->participants as $participant)
-                    <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">
-                        {{ $participant->club ? $participant->club->nom : $participant->personne->nom }}
-                        @if($participant->resultat)
-                            <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $participant->resultat }})</span>
-                        @endif
-                    </span>
+                    @if($participant->club)
+                        <a href="{{ route('clubs.show', $participant->club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            {{ $participant->club->nom }}
+                            @if($participant->resultat)
+                                <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $participant->resultat }})</span>
+                            @endif
+                        </a>
+                    @elseif($participant->personne)
+                        <a href="{{ route('personnes.show', $participant->personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                            {{ $participant->personne->nom }}
+                            @if($participant->resultat)
+                                <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $participant->resultat }})</span>
+                            @endif
+                        </a>
+                    @endif
                 @endforeach
             </div>
         </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
-            <div class="mt-1">
+            <div class="mb-4">
+                <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
+                <div class="mt-1">
                     @forelse($competition->sources as $source)
-                        <span class="inline-block bg-gray-100 dark:bg-gray-800 text-xs rounded px-2 py-1 mr-1 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300">{{ $source->titre }}</span>
+                        <a href="{{ route('sources.show', $source) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $source->titre }}</a>
                     @empty
                         <span class="block text-gray-900 dark:text-gray-100">-</span>
                     @endforelse
+                </div>
             </div>
-        </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Historisation :</span>
             <div class="mt-1">

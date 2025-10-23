@@ -37,15 +37,6 @@ class CompetitionController extends Controller
     public function store(StoreCompetitionRequest $request)
     {
         $competition = Competition::create($request->validated());
-        // Historisation
-        $competition->historisations()->create([
-            'entity_type' => 'competition',
-            'entity_id' => $competition->competition_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'création',
-            'donnees_avant' => null,
-            'donnees_apres' => json_encode($competition->toArray()),
-        ]);
     return redirect()->route('competitions.show', $competition)->with('success', 'Compétition créée avec succès');
     }
 
@@ -77,18 +68,7 @@ class CompetitionController extends Controller
      */
     public function update(UpdateCompetitionRequest $request, Competition $competition)
     {
-        $donnees_avant = $competition->toArray();
         $competition->update($request->validated());
-        $donnees_apres = $competition->toArray();
-        // Historisation
-        $competition->historisations()->create([
-            'entity_type' => 'competition',
-            'entity_id' => $competition->competition_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'modification',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => json_encode($donnees_apres),
-        ]);
     return redirect()->route('competitions.show', $competition)->with('success', 'Compétition modifiée avec succès');
     }
 
@@ -100,17 +80,7 @@ class CompetitionController extends Controller
      */
     public function destroy(Competition $competition)
     {
-        $donnees_avant = $competition->toArray();
         $competition->delete();
-        // Historisation
-        $competition->historisations()->create([
-            'entity_type' => 'competition',
-            'entity_id' => $competition->competition_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'suppression',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => null,
-        ]);
     return redirect()->route('competitions.index')->with('success', 'Compétition supprimée avec succès');
     }
 }

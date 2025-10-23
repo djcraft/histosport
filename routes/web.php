@@ -69,4 +69,20 @@ Route::middleware(['auth'])->group(function () {
     Route::get('sources/create', App\Livewire\Sources\Create::class)->name('sources.create');
     Route::get('sources/{source}/edit', App\Livewire\Sources\Edit::class)->name('sources.edit');
     Route::get('sources/{source}', App\Livewire\Sources\Show::class)->name('sources.show');
+    // Historisations
+    Route::get('historisations', function() {
+        $query = \App\Models\Historisation::query()->with('utilisateur');
+        if (request('entity_type')) {
+            $query->where('entity_type', request('entity_type'));
+        }
+        if (request('entity_id')) {
+            $query->where('entity_id', request('entity_id'));
+        }
+        $historisations = $query->orderByDesc('date')->paginate(20);
+        return view('historisations.index', compact('historisations'));
+    })->name('historisations.index');
+
+    Route::post('historisations/{id}/restore', [\App\Http\Controllers\HistorisationRestoreController::class, 'restore'])
+        ->name('historisations.restore')
+        ->middleware(['auth']);
 });

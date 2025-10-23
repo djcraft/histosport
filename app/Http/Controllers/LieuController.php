@@ -37,15 +37,6 @@ class LieuController extends Controller
     public function store(StoreLieuRequest $request)
     {
         $lieu = Lieu::create($request->validated());
-        // Historisation
-        $lieu->historisations()->create([
-            'entity_type' => 'lieu',
-            'entity_id' => $lieu->lieu_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'création',
-            'donnees_avant' => null,
-            'donnees_apres' => json_encode($lieu->toArray()),
-        ]);
     return redirect()->route('lieux.show', $lieu)->with('success', 'Lieu créé avec succès');
     }
 
@@ -77,18 +68,7 @@ class LieuController extends Controller
      */
     public function update(UpdateLieuRequest $request, Lieu $lieu)
     {
-        $donnees_avant = $lieu->toArray();
         $lieu->update($request->validated());
-        $donnees_apres = $lieu->toArray();
-        // Historisation
-        $lieu->historisations()->create([
-            'entity_type' => 'lieu',
-            'entity_id' => $lieu->lieu_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'modification',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => json_encode($donnees_apres),
-        ]);
     return redirect()->route('lieux.show', $lieu)->with('success', 'Lieu modifié avec succès');
     }
 
@@ -100,17 +80,7 @@ class LieuController extends Controller
      */
     public function destroy(Lieu $lieu)
     {
-        $donnees_avant = $lieu->toArray();
         $lieu->delete();
-        // Historisation
-        $lieu->historisations()->create([
-            'entity_type' => 'lieu',
-            'entity_id' => $lieu->lieu_id,
-            'utilisateur_id' => auth()->id(),
-            'action' => 'suppression',
-            'donnees_avant' => json_encode($donnees_avant),
-            'donnees_apres' => null,
-        ]);
     return redirect()->route('lieux.index')->with('success', 'Lieu supprimé avec succès');
     }
 }
