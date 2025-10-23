@@ -86,8 +86,14 @@ class Edit extends Component
             $this->competition->disciplines()->detach();
         }
 
-        // Gestion des sources
-        $this->competition->sources()->sync($this->sources);
+        // Gestion des sources (ajout du champ entity_type, exclusion des valeurs nulles ou 0)
+        $validSources = array_filter(array_map('intval', (array) $this->sources), function($id) {
+            return $id > 0;
+        });
+        $this->competition->sources()->syncWithPivotValues(
+            $validSources,
+            ['entity_type' => 'competition']
+        );
 
         // Gestion des participants
         $this->competition->participants()->delete();

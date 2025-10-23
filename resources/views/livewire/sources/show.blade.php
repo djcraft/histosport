@@ -45,14 +45,6 @@
             </div>
         </div>
         <div class="mb-4">
-            <span class="font-semibold text-gray-700 dark:text-gray-300">Lieux associés :</span>
-            <div class="mt-1">
-                @foreach($source->lieux as $lieu)
-                    <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $lieu->nom }}</span>
-                @endforeach
-            </div>
-        </div>
-        <div class="mb-4">
             <span class="font-semibold text-gray-700 dark:text-gray-300">Clubs associés :</span>
             <div class="mt-1">
                 @foreach($source->clubs as $club)
@@ -65,14 +57,6 @@
             <div class="mt-1">
                 @foreach($source->personnes as $personne)
                     <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $personne->nom }}</span>
-                @endforeach
-            </div>
-        </div>
-        <div class="mb-4">
-            <span class="font-semibold text-gray-700 dark:text-gray-300">Disciplines associées :</span>
-            <div class="mt-1">
-                @foreach($source->disciplines as $discipline)
-                    <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $discipline->nom }}</span>
                 @endforeach
             </div>
         </div>

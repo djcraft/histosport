@@ -13,7 +13,7 @@ class Create extends Component
 {
     public $nom;
     public $siege_id;
-    public $source_ids = [];
+    public $selectedSources = [];
     public $lieux = [];
     public $sources = [];
     public $personnes = [];
@@ -24,7 +24,7 @@ class Create extends Component
     public function mount()
     {
         $this->lieux = Lieu::all();
-        $this->sources = Source::all();
+    $this->sources = Source::all();
         $this->personnes = Personne::all();
         $this->disciplines = Discipline::all();
     }
@@ -36,6 +36,7 @@ class Create extends Component
             'sources' => $this->sources,
             'personnes' => $this->personnes,
             'disciplines' => $this->disciplines,
+            'selectedSources' => $this->selectedSources,
         ]);
     }
 
@@ -43,7 +44,7 @@ class Create extends Component
     {
         $this->validate([
             'nom' => 'required|string|max:255',
-            'siege_id' => 'nullable|exists:lieux,lieu_id',
+            'siege_id' => 'nullable|exists:lieu,lieu_id',
         ]);
 
         $club = Club::create([
@@ -52,9 +53,10 @@ class Create extends Component
         ]);
 
         // Sources (morphToMany)
-        if (!empty($this->source_ids)) {
-            $club->sources()->sync($this->source_ids);
-        }
+        $club->sources()->syncWithPivotValues(
+            array_map('intval', (array) $this->selectedSources),
+            ['entity_type' => 'club']
+        );
 
         // Personnes (many-to-many)
         if (!empty($this->personnes)) {

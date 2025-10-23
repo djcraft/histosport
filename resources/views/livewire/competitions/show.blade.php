@@ -69,9 +69,11 @@
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
             <div class="mt-1">
-                @foreach($competition->sources as $source)
-                    <span class="inline-block bg-blue-200 dark:bg-blue-700 text-xs rounded px-2 py-1 mr-1">{{ $source->titre }}</span>
-                @endforeach
+                    @forelse($competition->sources as $source)
+                        <span class="inline-block bg-gray-100 dark:bg-gray-800 text-xs rounded px-2 py-1 mr-1 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300">{{ $source->titre }}</span>
+                    @empty
+                        <span class="block text-gray-900 dark:text-gray-100">-</span>
+                    @endforelse
             </div>
         </div>
         <div class="mb-4">

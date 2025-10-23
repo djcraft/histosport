@@ -24,6 +24,7 @@ class Edit extends Component
     public $notes;
     public $siege_id;
     public $sources = [];
+    public $selectedSources = [];
     public $personnes = [];
     public $disciplines = [];
     public $lieux = [];
@@ -32,6 +33,7 @@ class Edit extends Component
 
     public function mount(Club $club)
     {
+        $club->load('sources');
         $this->club = $club;
         $this->nom = $club->nom;
         $this->nom_origine = $club->nom_origine;
@@ -44,6 +46,7 @@ class Edit extends Component
         $this->notes = $club->notes;
         $this->siege_id = $club->siege_id;
         $this->sources = Source::all();
+        $this->selectedSources = $club->sources->pluck('source_id')->toArray();
         $this->personnes = Personne::all();
         $this->disciplines = Discipline::all();
         $this->lieux = Lieu::all();
@@ -60,6 +63,7 @@ class Edit extends Component
             'disciplines' => $this->disciplines,
             'selectedPersonnes' => $this->selectedPersonnes,
             'selectedDisciplines' => $this->selectedDisciplines,
+            'selectedSources' => $this->selectedSources,
         ]);
     }
 
@@ -67,7 +71,7 @@ class Edit extends Component
     {
         $this->validate([
             'nom' => 'required|string|max:255',
-            'siege_id' => 'nullable|exists:lieux,lieu_id',
+            'siege_id' => 'nullable|exists:lieu,lieu_id',
         ]);
 
         $this->club->update([
@@ -84,9 +88,12 @@ class Edit extends Component
         ]);
 
         // Sources (morphToMany)
-        if (!empty($this->sources)) {
-            $this->club->sources()->sync($this->sources);
-        }
+            $this->club->sources()->syncWithPivotValues(
+                array_map('intval', (array) $this->selectedSources),
+                ['entity_type' => 'club']
+            );
+        $this->club->refresh();
+        $this->club->load('sources');
 
         // Personnes (many-to-many)
         $this->club->personnes()->sync($this->selectedPersonnes);

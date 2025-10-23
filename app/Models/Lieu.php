@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Lieu extends Model
 {
+    protected $fillable = [
+        'adresse',
+        'code_postal',
+        'commune',
+        'departement',
+        'pays',
+    ];
     /** @use HasFactory<\Database\Factories\LieuFactory> */
     use HasFactory;
 
@@ -47,11 +54,6 @@ class Lieu extends Model
         return $this->hasMany(Club::class, 'siege_id', 'lieu_id');
     }
 
-    public function sources()
-    {
-        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
-            ->wherePivot('entity_type', 'lieu');
-    }
 
     public function historisations()
     {

@@ -10,38 +10,11 @@ class Competition extends Model
     /** @use HasFactory<\Database\Factories\CompetitionFactory> */
     use HasFactory;
 
-    /**
-     * The table with the model.
-     *
-     * @var string
-     */
     protected $table = 'competitions';
-
-    /**
-     * The primary key associated with the table.
-     *
-     * @var int
-     */
     protected $primaryKey = 'competition_id';
-
-    /**
-     * Indicates if the model's ID is auto-incrementing.
-     *
-     * @var bool
-     */
     public $incrementing = true;
-
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
     public $timestamps = true;
 
-
-    /**
-     * Les attributs pouvant être assignés en masse.
-     */
     protected $fillable = [
         'nom',
         'date',
@@ -53,6 +26,13 @@ class Competition extends Model
         'niveau',
     ];
 
+    /**
+     * Lieu de la compétition.
+     */
+    public function lieu()
+    {
+        return $this->belongsTo(Lieu::class, 'lieu_id', 'lieu_id');
+    }
 
     /**
      * Club organisateur de la compétition.
@@ -88,7 +68,8 @@ class Competition extends Model
 
     public function sources()
     {
-        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
+        // Utilisation de belongsToMany pour une table pivot personnalisée
+        return $this->belongsToMany(Source::class, 'entity_source', 'entity_id', 'source_id')
             ->wherePivot('entity_type', 'competition');
     }
 

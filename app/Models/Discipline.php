@@ -59,11 +59,6 @@ class Discipline extends Model
         return $this->belongsToMany(Personne::class, 'discipline_personne', 'discipline_id', 'personne_id');
     }
 
-    public function sources()
-    {
-        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
-            ->wherePivot('entity_type', 'discipline');
-    }
 
     public function historisations()
     {

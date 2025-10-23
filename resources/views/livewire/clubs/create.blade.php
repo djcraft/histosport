@@ -41,7 +41,9 @@
                 <select wire:model="siege_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                     <option value="">Sélectionner un lieu</option>
                     @foreach($lieux as $lieu)
-                        <option value="{{ $lieu->lieu_id }}">{{ $lieu->nom }}</option>
+                        <option value="{{ $lieu->lieu_id }}">
+                            {{ $lieu->adresse }}{{ $lieu->code_postal ? ', ' . $lieu->code_postal : '' }}{{ $lieu->commune ? ', ' . $lieu->commune : '' }}{{ $lieu->departement ? ', ' . $lieu->departement : '' }}{{ $lieu->pays ? ', ' . $lieu->pays : '' }}
+                        </option>
                     @endforeach
                 </select>
             </div>
@@ -63,7 +65,7 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
-                <select wire:model="sources" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                <select wire:model="selectedSources" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                     @foreach($sources as $source)
                         <option value="{{ $source->source_id }}">{{ $source->titre }}</option>
                     @endforeach

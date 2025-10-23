@@ -83,7 +83,8 @@ class Club extends Model
      */
     public function sources()
     {
-        return $this->morphToMany(Source::class, 'entity', 'entity_source', 'entity_id', 'source_id')
+        // Utilisation de belongsToMany pour une table pivot personnalisée
+        return $this->belongsToMany(Source::class, 'entity_source', 'entity_id', 'source_id')
             ->wherePivot('entity_type', 'club');
     }
 

@@ -32,7 +32,17 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $club->date_declaration }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $club->acronyme }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $club->couleurs }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $club->siege->nom ?? '-' }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
+                            @if($club->siege)
+                                {{ $club->siege->adresse ?? '' }}
+                                {{ $club->siege->code_postal ? ', ' . $club->siege->code_postal : '' }}
+                                {{ $club->siege->commune ? ', ' . $club->siege->commune : '' }}
+                                {{ $club->siege->departement ? ', ' . $club->siege->departement : '' }}
+                                {{ $club->siege->pays ? ', ' . $club->siege->pays : '' }}
+                            @else
+                                -
+                            @endif
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @foreach($club->disciplines as $discipline)
                                 <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $discipline->nom }}</span>

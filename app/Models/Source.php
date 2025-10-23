@@ -7,6 +7,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Source extends Model
 {
+    /**
+     * Les attributs assignables en masse.
+     *
+     * @var array
+     */
+    protected $fillable = [
+        'titre',
+        'auteur',
+        'annee_reference',
+        'type',
+        'cote',
+        'url',
+        'lieu_edition_id',
+        'lieu_conservation_id',
+        'lieu_couverture_id',
+    ];
     /** @use HasFactory<\Database\Factories\SourceFactory> */
     use HasFactory;
 

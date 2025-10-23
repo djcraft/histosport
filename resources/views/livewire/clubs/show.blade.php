@@ -37,7 +37,16 @@
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu (siège) :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $club->siege->nom ?? '-' }}</span>
+            <span class="block text-gray-900 dark:text-gray-100">
+                @if($club->siege)
+                    {{ $club->siege->adresse ?? '' }}<br>
+                    {{ $club->siege->code_postal ?? '' }} {{ $club->siege->commune ?? '' }}<br>
+                    {{ $club->siege->departement ?? '' }}<br>
+                    {{ $club->siege->pays ?? '' }}
+                @else
+                    -
+                @endif
+            </span>
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
@@ -45,6 +54,16 @@
                 @foreach($club->disciplines as $discipline)
                     <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1">{{ $discipline->nom }}</span>
                 @endforeach
+            </div>
+        </div>
+        <div class="mb-4">
+            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
+            <div class="mt-1">
+                @forelse($club->sources as $source)
+                    <span class="inline-block bg-gray-100 dark:bg-gray-800 text-xs rounded px-2 py-1 mr-1 border border-gray-300 dark:border-gray-700 text-gray-700 dark:text-gray-300">{{ $source->titre }}</span>
+                @empty
+                    <span class="block text-gray-900 dark:text-gray-100">-</span>
+                @endforelse
             </div>
         </div>
         <div class="mb-4">
