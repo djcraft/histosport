@@ -25,13 +25,16 @@ class Create extends Component
     public $adresses = [];
     public $allClubs = [];
     public $allDisciplines = [];
+    public $sources = [];
+    public $allSources = [];
 
     public function mount()
     {
-        $this->lieux = Lieu::all();
-        $this->adresses = Lieu::all();
-        $this->allClubs = Club::all();
-        $this->allDisciplines = \App\Models\Discipline::all();
+    $this->lieux = Lieu::all();
+    $this->adresses = Lieu::all();
+    $this->allClubs = Club::all();
+    $this->allDisciplines = \App\Models\Discipline::all();
+    $this->allSources = \App\Models\Source::all();
     }
 
     public function render()
@@ -41,6 +44,7 @@ class Create extends Component
             'adresses' => $this->adresses,
             'allClubs' => $this->allClubs,
             'disciplines' => $this->allDisciplines,
+            'allSources' => $this->allSources,
         ]);
     }
 
@@ -98,6 +102,14 @@ class Create extends Component
         // Disciplines (many-to-many)
         if (!empty($this->disciplines)) {
             $personne->disciplines()->sync($this->disciplines);
+        }
+
+        // Sources (many-to-many polymorphique)
+        if (!empty($this->sources)) {
+            $personne->sources()->syncWithPivotValues(
+                array_map('intval', (array) $this->sources),
+                ['entity_type' => 'personne']
+            );
         }
 
         session()->flash('success', 'Personne créée avec succès.');

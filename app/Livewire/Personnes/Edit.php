@@ -26,6 +26,8 @@ class Edit extends Component
     public $adresses = [];
     public $allClubs = [];
     public $allDisciplines = [];
+    public $sources = [];
+    public $allSources = [];
 
     public function mount(Personne $personne)
     {
@@ -39,12 +41,14 @@ class Edit extends Component
         $this->sexe = $personne->sexe;
         $this->titre = $personne->titre;
         $this->adresse_id = $personne->adresse_id;
-        $this->clubs = $personne->clubs->pluck('club_id')->toArray();
-        $this->disciplines = $personne->disciplines->pluck('discipline_id')->toArray();
-        $this->lieux = Lieu::all();
-        $this->adresses = Lieu::all();
-        $this->allClubs = Club::all();
-        $this->allDisciplines = \App\Models\Discipline::all();
+    $this->clubs = $personne->clubs->pluck('club_id')->toArray();
+    $this->disciplines = $personne->disciplines->pluck('discipline_id')->toArray();
+    $this->sources = $personne->sources->pluck('source_id')->toArray();
+    $this->lieux = Lieu::all();
+    $this->adresses = Lieu::all();
+    $this->allClubs = Club::all();
+    $this->allDisciplines = \App\Models\Discipline::all();
+    $this->allSources = \App\Models\Source::all();
     }
 
     public function render()
@@ -54,6 +58,7 @@ class Edit extends Component
             'adresses' => $this->adresses,
             'allClubs' => $this->allClubs,
             'disciplines' => $this->allDisciplines,
+            'allSources' => $this->allSources,
         ]);
     }
 
@@ -109,7 +114,13 @@ class Edit extends Component
         // Disciplines (many-to-many)
         $this->personne->disciplines()->sync($this->disciplines);
 
-        session()->flash('success', 'Personne modifiée avec succès.');
-        return redirect()->route('personnes.index');
+        // Sources (many-to-many polymorphique)
+        $this->personne->sources()->syncWithPivotValues(
+            array_map('intval', (array) $this->sources),
+            ['entity_type' => 'personne']
+        );
+
+    session()->flash('success', 'Personne modifiée avec succès.');
+    return redirect()->route('personnes.index');
     }
 }

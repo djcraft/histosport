@@ -91,7 +91,14 @@ class Personne extends Model
         return $this->belongsToMany(Discipline::class, 'discipline_personne', 'personne_id', 'discipline_id');
     }
 
-    // La relation sources a été supprimée pour le modèle Personne.
+    /**
+     * Les sources associées à la personne via le pivot entity_source (fonctionnement identique à Club).
+     */
+    public function sources()
+    {
+        return $this->belongsToMany(Source::class, 'entity_source', 'entity_id', 'source_id')
+            ->wherePivot('entity_type', 'personne');
+    }
 
     /**
      * Lieu d'adresse de la personne.
