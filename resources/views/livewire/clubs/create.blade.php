@@ -49,7 +49,7 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Personnes associées</label>
-                <select wire:model="personnes" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                <select wire:model="selectedPersonnes" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                     @foreach($personnes as $personne)
                         <option value="{{ $personne->personne_id }}">{{ $personne->nom }} {{ $personne->prenom }}</option>
                     @endforeach
@@ -57,7 +57,7 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines associées</label>
-                <select wire:model="disciplines" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                <select wire:model="selectedDisciplines" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                     @foreach($disciplines as $discipline)
                         <option value="{{ $discipline->discipline_id }}">{{ $discipline->nom }}</option>
                     @endforeach

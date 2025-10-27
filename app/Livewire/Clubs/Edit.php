@@ -96,10 +96,18 @@ class Edit extends Component
         $this->club->load('sources');
 
         // Personnes (many-to-many)
-        $this->club->personnes()->sync($this->selectedPersonnes);
+        if (!empty($this->selectedPersonnes)) {
+            $this->club->personnes()->sync($this->selectedPersonnes);
+        } else {
+            $this->club->personnes()->sync([]);
+        }
 
         // Disciplines (many-to-many)
-        $this->club->disciplines()->sync($this->selectedDisciplines);
+        if (!empty($this->selectedDisciplines)) {
+            $this->club->disciplines()->sync($this->selectedDisciplines);
+        } else {
+            $this->club->disciplines()->sync([]);
+        }
 
         session()->flash('success', 'Club mis à jour avec succès.');
         return redirect()->route('clubs.index');

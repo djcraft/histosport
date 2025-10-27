@@ -14,6 +14,13 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')" class="grid">
                     <flux:navlist.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>{{ __('Dashboard') }}</flux:navlist.item>
+                    <flux:navlist.item icon="users" :href="route('clubs.index')" :current="request()->routeIs('clubs.*')" wire:navigate>Clubs</flux:navlist.item>
+                    <flux:navlist.item icon="user" :href="route('personnes.index')" :current="request()->routeIs('personnes.*')" wire:navigate>Personnes</flux:navlist.item>
+                    <flux:navlist.item icon="user" :href="route('disciplines.index')" :current="request()->routeIs('disciplines.*')" wire:navigate>Disciplines</flux:navlist.item>
+                    <flux:navlist.item icon="flag" :href="route('competitions.index')" :current="request()->routeIs('competitions.*')" wire:navigate>Compétitions</flux:navlist.item>
+                    <flux:navlist.item icon="user" :href="route('lieux.index')" :current="request()->routeIs('lieux.*')" wire:navigate>Lieux</flux:navlist.item>
+                    <flux:navlist.item icon="user" :href="route('sources.index')" :current="request()->routeIs('sources.*')" wire:navigate>Sources</flux:navlist.item>
+                    <flux:navlist.item icon="user" :href="route('historisations.index')" :current="request()->routeIs('historisations.*')" wire:navigate>Historisations</flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
 

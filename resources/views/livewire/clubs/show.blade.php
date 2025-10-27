@@ -57,6 +57,16 @@
             </div>
         </div>
         <div class="mb-4">
+            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Personnes associées :</span>
+            <div class="mt-1">
+                @forelse($club->personnes as $personne)
+                    <a href="{{ route('personnes.show', $personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $personne->nom }} {{ $personne->prenom }}</a>
+                @empty
+                    <span class="block text-gray-900 dark:text-gray-100">-</span>
+                @endforelse
+            </div>
+        </div>
+        <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
             <!-- Seules les sources associées au club via entity_type = 'club' sont affichées ici -->
             <div class="mt-1">

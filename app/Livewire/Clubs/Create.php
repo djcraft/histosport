@@ -12,6 +12,14 @@ use App\Models\Source;
 class Create extends Component
 {
     public $nom;
+    public $nom_origine;
+    public $surnoms;
+    public $date_fondation;
+    public $date_disparition;
+    public $date_declaration;
+    public $acronyme;
+    public $couleurs;
+    public $notes;
     public $siege_id;
     public $selectedSources = [];
     public $lieux = [];
@@ -49,6 +57,14 @@ class Create extends Component
 
         $club = Club::create([
             'nom' => $this->nom,
+            'nom_origine' => $this->nom_origine,
+            'surnoms' => $this->surnoms,
+            'date_fondation' => $this->date_fondation,
+            'date_disparition' => $this->date_disparition,
+            'date_declaration' => $this->date_declaration,
+            'acronyme' => $this->acronyme,
+            'couleurs' => $this->couleurs,
+            'notes' => $this->notes,
             'siege_id' => $this->siege_id,
         ]);
 
@@ -59,13 +75,13 @@ class Create extends Component
         );
 
         // Personnes (many-to-many)
-        if (!empty($this->personnes)) {
-            $club->personnes()->sync($this->personnes);
+        if (!empty($this->selectedPersonnes)) {
+            $club->personnes()->sync($this->selectedPersonnes);
         }
 
         // Disciplines (many-to-many)
-        if (!empty($this->disciplines)) {
-            $club->disciplines()->sync($this->disciplines);
+        if (!empty($this->selectedDisciplines)) {
+            $club->disciplines()->sync($this->selectedDisciplines);
         }
 
         session()->flash('success', 'Club créé avec succès.');
