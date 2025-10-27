@@ -80,7 +80,11 @@ class DisciplineController extends Controller
      */
     public function destroy(Discipline $discipline)
     {
+        // Nettoyage des relations pivots
+        $discipline->clubs()->detach();
+        $discipline->personnes()->detach();
+        // Suppression de la discipline
         $discipline->delete();
-    return redirect()->route('disciplines.index')->with('success', 'Discipline supprimée avec succès');
+        return redirect()->route('disciplines.index')->with('success', 'Discipline supprimée avec succès');
     }
 }

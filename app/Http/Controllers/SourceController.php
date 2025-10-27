@@ -81,7 +81,13 @@ class SourceController extends Controller
      */
     public function destroy(Source $source)
     {
+        // Nettoyage des relations pivots
+        $source->clubs()->detach();
+        $source->competitions()->detach();
+        $source->personnes()->detach();
+        $source->lieux()->detach();
+        // Suppression de la source
         $source->delete();
-    return redirect()->route('sources.index')->with('success', 'Source supprimée avec succès');
+        return redirect()->route('sources.index')->with('success', 'Source supprimée avec succès');
     }
 }

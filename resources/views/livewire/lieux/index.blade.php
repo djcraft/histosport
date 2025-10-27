@@ -24,8 +24,9 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->departement }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->pays }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('lieux.show', $lieu) }}" class="text-blue-600 hover:underline mr-2">Voir</a>
-                            <a href="{{ route('lieux.edit', $lieu) }}" class="text-yellow-600 hover:underline mr-2">Modifier</a>
+                            <a href="{{ route('lieux.show', $lieu) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
+                            <a href="{{ route('lieux.edit', $lieu) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
+                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-lieu-modal', {detail: {lieuId: {{ $lieu->lieu_id }}, lieuName: '{{ addslashes($lieu->adresse) }}'}}))">Supprimer</button>
                         </td>
                     </tr>
                 @endforeach
@@ -35,4 +36,33 @@
             {{ $lieux->links() }}
         </div>
     </div>
+
+    <!-- Modal de suppression -->
+    <div id="deleteLieuModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-bold mb-2 text-red-700">Confirmer la suppression du lieu</h3>
+            <div class="mb-4 text-gray-700 dark:text-gray-300">
+                <span id="deleteLieuName"></span><br>
+                <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (clubs, personnes, compétitions, sources) associées à ce lieu.</span>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600" onclick="closeDeleteLieuModal()">Annuler</button>
+                <form id="deleteLieuForm" method="POST" action="" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+window.addEventListener('open-delete-lieu-modal', function(e) {
+    document.getElementById('deleteLieuModal').classList.remove('hidden');
+    document.getElementById('deleteLieuName').textContent = 'Lieu : ' + e.detail.lieuName;
+    document.getElementById('deleteLieuForm').action = '/lieux/' + e.detail.lieuId;
+});
+function closeDeleteLieuModal() {
+    document.getElementById('deleteLieuModal').classList.add('hidden');
+}
+</script>

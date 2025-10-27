@@ -80,7 +80,12 @@ class CompetitionController extends Controller
      */
     public function destroy(Competition $competition)
     {
+        // Nettoyage des relations pivots
+        $competition->disciplines()->detach();
+        $competition->sources()->detach();
+        $competition->participants()->delete();
+        // Suppression de la compétition
         $competition->delete();
-    return redirect()->route('competitions.index')->with('success', 'Compétition supprimée avec succès');
+        return redirect()->route('competitions.index')->with('success', 'Compétition supprimée avec succès');
     }
 }

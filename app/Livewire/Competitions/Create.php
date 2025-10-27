@@ -66,7 +66,9 @@ class Create extends Component
 
         // Gestion des sources (relation morphToMany)
         if (!empty($this->sources)) {
-            $competition->sources()->sync($this->sources);
+            foreach ($this->sources as $sourceId) {
+                $competition->sources()->attach($sourceId, ['entity_type' => 'competition']);
+            }
         }
 
         // Gestion des participants (clubs et personnes)

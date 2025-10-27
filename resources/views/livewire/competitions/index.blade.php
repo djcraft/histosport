@@ -50,8 +50,9 @@
                             @endforelse
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('competitions.show', $competition) }}" class="text-blue-600 hover:underline mr-2">Voir</a>
-                            <a href="{{ route('competitions.edit', $competition) }}" class="text-yellow-600 hover:underline mr-2">Modifier</a>
+                            <a href="{{ route('competitions.show', $competition) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
+                            <a href="{{ route('competitions.edit', $competition) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
+                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-competition-modal', {detail: {competitionId: {{ $competition->competition_id }}, competitionName: '{{ addslashes($competition->nom) }}'}}))">Supprimer</button>
                         </td>
                     </tr>
                 @endforeach
@@ -61,4 +62,33 @@
             {{ $competitions->links() }}
         </div>
     </div>
+
+    <!-- Modal de suppression -->
+    <div id="deleteCompetitionModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-bold mb-2 text-red-700">Confirmer la suppression de la compétition</h3>
+            <div class="mb-4 text-gray-700 dark:text-gray-300">
+                <span id="deleteCompetitionName"></span><br>
+                <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (disciplines, clubs, personnes, sources) associées à cette compétition.</span>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600" onclick="closeDeleteCompetitionModal()">Annuler</button>
+                <form id="deleteCompetitionForm" method="POST" action="" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+window.addEventListener('open-delete-competition-modal', function(e) {
+    document.getElementById('deleteCompetitionModal').classList.remove('hidden');
+    document.getElementById('deleteCompetitionName').textContent = 'Compétition : ' + e.detail.competitionName;
+    document.getElementById('deleteCompetitionForm').action = '/competitions/' + e.detail.competitionId;
+});
+function closeDeleteCompetitionModal() {
+    document.getElementById('deleteCompetitionModal').classList.add('hidden');
+}
+</script>

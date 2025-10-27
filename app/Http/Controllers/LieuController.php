@@ -80,7 +80,10 @@ class LieuController extends Controller
      */
     public function destroy(Lieu $lieu)
     {
+        // Nettoyage des relations pivots
+        $lieu->clubs()->update(['siege_id' => null]);
+        // Suppression du lieu
         $lieu->delete();
-    return redirect()->route('lieux.index')->with('success', 'Lieu supprimé avec succès');
+        return redirect()->route('lieux.index')->with('success', 'Lieu supprimé avec succès');
     }
 }

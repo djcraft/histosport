@@ -48,8 +48,17 @@ class ClubController extends Controller
      */
     public function destroy(Club $club)
     {
-        $club->delete();
-        return redirect()->route('clubs.index')->with('success', 'Club supprimé avec succès');
+    // Nettoyage des relations pivots
+    $club->personnes()->detach();
+    $club->disciplines()->detach();
+    // Suppression des participations du club à des compétitions
+    \App\Models\CompetitionParticipant::where('club_id', $club->club_id)->delete();
+    $club->sources()->detach();
+    $club->lieuxUtilises()->detach();
+    $club->sections()->detach();
+    // Suppression du club
+    $club->delete();
+    return redirect()->route('clubs.index')->with('success', 'Club supprimé avec succès');
     }
     /**
      * Update the specified resource in storage.

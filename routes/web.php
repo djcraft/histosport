@@ -17,6 +17,13 @@ Route::view('dashboard', 'dashboard')
 
 
 Route::middleware(['auth'])->group(function () {
+    // Suppression (DELETE) pour chaque entité
+    Route::delete('clubs/{club}', [App\Http\Controllers\ClubController::class, 'destroy'])->name('clubs.destroy');
+    Route::delete('personnes/{personne}', [App\Http\Controllers\PersonneController::class, 'destroy'])->name('personnes.destroy');
+    Route::delete('disciplines/{discipline}', [App\Http\Controllers\DisciplineController::class, 'destroy'])->name('disciplines.destroy');
+    Route::delete('competitions/{competition}', [App\Http\Controllers\CompetitionController::class, 'destroy'])->name('competitions.destroy');
+    Route::delete('sources/{source}', [App\Http\Controllers\SourceController::class, 'destroy'])->name('sources.destroy');
+    Route::delete('lieux/{lieu}', [App\Http\Controllers\LieuController::class, 'destroy'])->name('lieux.destroy');
     Route::redirect('settings', 'settings/profile');
 
     Route::get('settings/profile', Profile::class)->name('profile.edit');

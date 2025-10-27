@@ -50,8 +50,9 @@
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->url }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('sources.show', $source) }}" class="text-blue-600 hover:underline mr-2">Voir</a>
-                            <a href="{{ route('sources.edit', $source) }}" class="text-yellow-600 hover:underline mr-2">Modifier</a>
+                            <a href="{{ route('sources.show', $source) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
+                            <a href="{{ route('sources.edit', $source) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
+                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-source-modal', {detail: {sourceId: {{ $source->source_id }}, sourceName: '{{ addslashes($source->titre) }}'}}))">Supprimer</button>
                         </td>
                     </tr>
                 @endforeach
@@ -61,4 +62,33 @@
             {{ $sources->links() }}
         </div>
     </div>
+
+    <!-- Modal de suppression -->
+    <div id="deleteSourceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
+            <h3 class="text-lg font-bold mb-2 text-red-700">Confirmer la suppression de la source</h3>
+            <div class="mb-4 text-gray-700 dark:text-gray-300">
+                <span id="deleteSourceName"></span><br>
+                <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (clubs, disciplines, compétitions, personnes) associées à cette source.</span>
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600" onclick="closeDeleteSourceModal()">Annuler</button>
+                <form id="deleteSourceForm" method="POST" action="" class="inline">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+                </form>
+            </div>
+        </div>
+    </div>
 </div>
+<script>
+window.addEventListener('open-delete-source-modal', function(e) {
+    document.getElementById('deleteSourceModal').classList.remove('hidden');
+    document.getElementById('deleteSourceName').textContent = 'Source : ' + e.detail.sourceName;
+    document.getElementById('deleteSourceForm').action = '/sources/' + e.detail.sourceId;
+});
+function closeDeleteSourceModal() {
+    document.getElementById('deleteSourceModal').classList.add('hidden');
+}
+</script>

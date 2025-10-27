@@ -82,8 +82,11 @@ class PersonneController extends Controller
      */
     public function destroy(Personne $personne)
     {
-        $donnees_avant = $personne->toArray();
+        // Nettoyage des relations pivots
+        $personne->clubs()->detach();
+        $personne->disciplines()->detach();
+        // Suppression de la personne
         $personne->delete();
-    return redirect()->route('personnes.index')->with('success', 'Personne supprimée avec succès');
+        return redirect()->route('personnes.index')->with('success', 'Personne supprimée avec succès');
     }
 }
