@@ -33,8 +33,10 @@ return new class extends Migration
             $table->unsignedBigInteger('club_id');
             $table->unsignedBigInteger('personne_id');
             $table->string('role', 100)->nullable(); // ex: membre, dirigeant
-            $table->date('date_debut')->nullable();
-            $table->date('date_fin')->nullable();
+            $table->string('date_debut', 10)->nullable();
+            $table->string('date_debut_precision', 10)->nullable();
+            $table->string('date_fin', 10)->nullable();
+            $table->string('date_fin_precision', 10)->nullable();
             $table->timestamps();
             $table->foreign('club_id')->references('club_id')->on('clubs')->onDelete('cascade');
             $table->foreign('personne_id')->references('personne_id')->on('personnes')->onDelete('cascade');

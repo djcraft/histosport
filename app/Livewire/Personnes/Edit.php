@@ -62,21 +62,41 @@ class Edit extends Component
         $this->validate([
             'nom' => 'required|string|max:255',
             'prenom' => 'nullable|string|max:255',
-            'date_naissance' => 'nullable|date',
+            'date_naissance' => 'nullable|string|max:10',
             'lieu_naissance_id' => 'nullable|exists:lieu,lieu_id',
-            'date_deces' => 'nullable|date',
+            'date_deces' => 'nullable|string|max:10',
             'lieu_deces_id' => 'nullable|exists:lieu,lieu_id',
             'sexe' => 'nullable|string|max:10',
             'titre' => 'nullable|string|max:100',
             'adresse_id' => 'nullable|exists:lieu,lieu_id',
         ]);
 
+        // Détection automatique de la précision des dates
+        $dateNaissancePrecision = null;
+        $dateDecesPrecision = null;
+        if (preg_match('/^\d{4}$/', $this->date_naissance)) {
+            $dateNaissancePrecision = 'year';
+        } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_naissance)) {
+            $dateNaissancePrecision = 'month';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_naissance)) {
+            $dateNaissancePrecision = 'day';
+        }
+        if (preg_match('/^\d{4}$/', $this->date_deces)) {
+            $dateDecesPrecision = 'year';
+        } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_deces)) {
+            $dateDecesPrecision = 'month';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_deces)) {
+            $dateDecesPrecision = 'day';
+        }
+
         $this->personne->update([
             'nom' => $this->nom,
             'prenom' => $this->prenom,
             'date_naissance' => $this->date_naissance,
+            'date_naissance_precision' => $dateNaissancePrecision,
             'lieu_naissance_id' => $this->lieu_naissance_id,
             'date_deces' => $this->date_deces,
+            'date_deces_precision' => $dateDecesPrecision,
             'lieu_deces_id' => $this->lieu_deces_id,
             'sexe' => $this->sexe,
             'titre' => $this->titre,

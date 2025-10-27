@@ -74,13 +74,42 @@ class Edit extends Component
             'siege_id' => 'nullable|exists:lieu,lieu_id',
         ]);
 
+        // Détection automatique de la précision des dates
+        $dateFondationPrecision = null;
+        $dateDisparitionPrecision = null;
+        $dateDeclarationPrecision = null;
+        if (preg_match('/^\d{4}$/', $this->date_fondation)) {
+            $dateFondationPrecision = 'year';
+        } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_fondation)) {
+            $dateFondationPrecision = 'month';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_fondation)) {
+            $dateFondationPrecision = 'day';
+        }
+        if (preg_match('/^\d{4}$/', $this->date_disparition)) {
+            $dateDisparitionPrecision = 'year';
+        } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_disparition)) {
+            $dateDisparitionPrecision = 'month';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_disparition)) {
+            $dateDisparitionPrecision = 'day';
+        }
+        if (preg_match('/^\d{4}$/', $this->date_declaration)) {
+            $dateDeclarationPrecision = 'year';
+        } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_declaration)) {
+            $dateDeclarationPrecision = 'month';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_declaration)) {
+            $dateDeclarationPrecision = 'day';
+        }
+
         $this->club->update([
             'nom' => $this->nom,
             'nom_origine' => $this->nom_origine,
             'surnoms' => $this->surnoms,
             'date_fondation' => $this->date_fondation,
+            'date_fondation_precision' => $dateFondationPrecision,
             'date_disparition' => $this->date_disparition,
+            'date_disparition_precision' => $dateDisparitionPrecision,
             'date_declaration' => $this->date_declaration,
+            'date_declaration_precision' => $dateDeclarationPrecision,
             'acronyme' => $this->acronyme,
             'couleurs' => $this->couleurs,
             'notes' => $this->notes,

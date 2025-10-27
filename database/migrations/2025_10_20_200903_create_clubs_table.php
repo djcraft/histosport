@@ -16,9 +16,12 @@ return new class extends Migration
             $table->string('nom', 255);
             $table->string('nom_origine', 255)->nullable();
             $table->string('surnoms', 255)->nullable();
-            $table->date('date_fondation')->nullable();
-            $table->date('date_disparition')->nullable();
-            $table->date('date_declaration')->nullable();
+            $table->string('date_fondation', 10)->nullable();
+            $table->string('date_fondation_precision', 10)->nullable();
+            $table->string('date_disparition', 10)->nullable();
+            $table->string('date_disparition_precision', 10)->nullable();
+            $table->string('date_declaration', 10)->nullable();
+            $table->string('date_declaration_precision', 10)->nullable();
             $table->string('acronyme', 50)->nullable();
             $table->string('couleurs', 100)->nullable();
             $table->unsignedBigInteger('siege_id')->nullable();

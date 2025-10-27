@@ -15,9 +15,11 @@ return new class extends Migration
             $table->id('personne_id');
             $table->string('nom', 255);
             $table->string('prenom', 255)->nullable();
-            $table->date('date_naissance')->nullable();
+            $table->string('date_naissance', 10)->nullable();
+            $table->string('date_naissance_precision', 10)->nullable();
             $table->unsignedBigInteger('lieu_naissance_id')->nullable();
-            $table->date('date_deces')->nullable();
+            $table->string('date_deces', 10)->nullable();
+            $table->string('date_deces_precision', 10)->nullable();
             $table->unsignedBigInteger('lieu_deces_id')->nullable();
             $table->string('sexe', 10)->nullable();
             $table->string('titre', 100)->nullable();

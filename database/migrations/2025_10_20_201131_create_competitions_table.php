@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('competitions', function (Blueprint $table) {
             $table->id('competition_id');
             $table->string('nom', 255);
-            $table->date('date')->nullable();
+            $table->string('date', 10)->nullable();
+            $table->string('date_precision', 10)->nullable();
             $table->unsignedBigInteger('lieu_id')->nullable();
             $table->unsignedBigInteger('organisateur_club_id')->nullable();
             $table->unsignedBigInteger('organisateur_personne_id')->nullable();

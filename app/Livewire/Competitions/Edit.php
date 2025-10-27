@@ -68,9 +68,20 @@ class Edit extends Component
             return;
         }
 
+        // Détection automatique de la précision de la date
+        $datePrecision = null;
+        if (preg_match('/^\d{4}$/', $this->date)) {
+            $datePrecision = 'year';
+        } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date)) {
+            $datePrecision = 'month';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date)) {
+            $datePrecision = 'day';
+        }
+
         $this->competition->update([
             'nom' => $this->nom,
             'date' => $this->date,
+            'date_precision' => $datePrecision,
             'lieu_id' => $this->lieu_id,
             'organisateur_club_id' => $this->organisateur_club_id !== '' ? $this->organisateur_club_id : null,
             'organisateur_personne_id' => $this->organisateur_personne_id !== '' ? $this->organisateur_personne_id : null,

@@ -11,7 +11,7 @@
             <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Date</label>
-                    <input type="date" wire:model.defer="date" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                    <input type="text" wire:model.defer="date" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu</label>

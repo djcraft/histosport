@@ -13,7 +13,8 @@ return new class extends Migration
             $table->string('entity_type', 50); // ex: club, personne, discipline, competition
             $table->unsignedBigInteger('entity_id');
             $table->unsignedBigInteger('source_id');
-            $table->date('date_source')->nullable();
+            $table->string('date_source', 10)->nullable();
+            $table->string('date_source_precision', 10)->nullable();
             $table->text('commentaire')->nullable();
             $table->timestamps();
 

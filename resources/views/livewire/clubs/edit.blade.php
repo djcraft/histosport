@@ -17,15 +17,15 @@
             <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de fondation</label>
-                    <input type="date" wire:model="date_fondation" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                    <input type="text" wire:model="date_fondation" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de disparition</label>
-                    <input type="date" wire:model="date_disparition" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                    <input type="text" wire:model="date_disparition" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de déclaration</label>
-                    <input type="date" wire:model="date_declaration" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                    <input type="text" wire:model="date_declaration" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 </div>
             </div>
             <div class="mb-4">

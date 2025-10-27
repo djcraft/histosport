@@ -31,10 +31,21 @@ class Edit extends Component
             'lieu_couverture_id' => 'nullable|integer|exists:lieu,lieu_id',
         ]);
 
+        // Détection automatique de la précision de l'année de référence
+        $anneeReferencePrecision = null;
+        if (preg_match('/^\d{4}$/', $this->annee_reference)) {
+            $anneeReferencePrecision = 'year';
+        } elseif (preg_match('/^\d{4}-\d{2}$/', $this->annee_reference)) {
+            $anneeReferencePrecision = 'month';
+        } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->annee_reference)) {
+            $anneeReferencePrecision = 'day';
+        }
+
         $this->source->update([
             'titre' => $this->titre,
             'auteur' => $this->auteur,
             'annee_reference' => $this->annee_reference,
+            'annee_reference_precision' => $anneeReferencePrecision,
             'type' => $this->type,
             'cote' => $this->cote,
             'url' => $this->url,
