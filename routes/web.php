@@ -11,9 +11,43 @@ Route::get('/', function () {
     return view('welcome');
 })->name('home');
 
-Route::view('dashboard', 'dashboard')
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
+
+
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
+
+Route::get('dashboard', function () {
+    $clubCount = \App\Models\Club::count();
+    $personneCount = \App\Models\Personne::count();
+    $competitionCount = \App\Models\Competition::count();
+
+    // Préparer les labels des 12 derniers mois
+    $labels = collect(range(0, 11))->map(function ($i) {
+        return Carbon::now()->subMonths(11 - $i)->format('M Y');
+    })->toArray();
+
+    // Récupérer les données mensuelles
+    $clubsData = [];
+    $personnesData = [];
+    $competitionsData = [];
+    foreach (range(0, 11) as $i) {
+        $start = Carbon::now()->subMonths(11 - $i)->startOfMonth();
+        $end = Carbon::now()->subMonths(11 - $i)->endOfMonth();
+        $clubsData[] = \App\Models\Club::whereBetween('created_at', [$start, $end])->count();
+        $personnesData[] = \App\Models\Personne::whereBetween('created_at', [$start, $end])->count();
+        $competitionsData[] = \App\Models\Competition::whereBetween('created_at', [$start, $end])->count();
+    }
+
+    return view('dashboard', [
+        'clubCount' => $clubCount,
+        'personneCount' => $personneCount,
+        'competitionCount' => $competitionCount,
+        'labels' => $labels,
+        'clubsData' => $clubsData,
+        'personnesData' => $personnesData,
+        'competitionsData' => $competitionsData,
+    ]);
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::middleware(['auth'])->group(function () {
