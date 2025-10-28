@@ -1,12 +1,35 @@
 <div>
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Sources</h1>
-        <a href="{{ route('sources.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter une source</a>
+        <div class="flex gap-2 justify-end w-full">
+            <form method="POST" action="{{ route('sources.import') }}" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="file" accept=".xlsx" class="mr-2" required>
+                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Importer XLSX</button>
+            </form>
+            <form method="POST" action="{{ route('sources.export') }}" id="exportForm">
+                @csrf
+                <input type="hidden" name="ids" id="exportIds">
+                <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Exporter la sélection</button>
+            </form>
+            <a href="{{ route('sources.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter une source</a>
+        </div>
     </div>
+    @if(session('import_report'))
+        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
+            <strong>Rapport d'import :</strong><br>
+            @foreach(session('import_report') as $key => $value)
+                <div>{{ ucfirst($key) }} : {{ is_array($value) ? implode(', ', $value) : $value }}</div>
+            @endforeach
+        </div>
+    @endif
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <input type="checkbox" id="selectAllSources" onclick="toggleAllSources(this)">
+                    </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titre</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Auteur</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Année référence</th>
@@ -22,6 +45,9 @@
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @foreach($sources as $source)
                     <tr>
+                        <td class="px-4 py-4 text-center">
+                            <input type="checkbox" class="source-checkbox" value="{{ $source->source_id }}">
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->titre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->auteur }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->annee_reference }}</td>
@@ -91,4 +117,14 @@ window.addEventListener('open-delete-source-modal', function(e) {
 function closeDeleteSourceModal() {
     document.getElementById('deleteSourceModal').classList.add('hidden');
 }
+
+// Sélection multiple
+function toggleAllSources(source) {
+    const checkboxes = document.querySelectorAll('.source-checkbox');
+    checkboxes.forEach(cb => cb.checked = source.checked);
+}
+document.getElementById('exportForm').addEventListener('submit', function(e) {
+    const selected = Array.from(document.querySelectorAll('.source-checkbox:checked')).map(cb => cb.value);
+    document.getElementById('exportIds').value = selected.join(',');
+});
 </script>

@@ -1,12 +1,35 @@
 <div>
+    @if(session('import_report'))
+        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
+            <strong>Rapport d'import :</strong><br>
+            @foreach(session('import_report') as $key => $value)
+                <div>{{ ucfirst($key) }} : {{ $value }}</div>
+            @endforeach
+        </div>
+    @endif
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Compétitions</h1>
-        <a href="{{ route('competitions.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter une compétition</a>
+        <div class="flex gap-2">
+            <form method="POST" action="{{ route('competitions.import') }}" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="file" accept=".xlsx" class="mr-2" required>
+                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Importer XLSX</button>
+            </form>
+            <form method="POST" action="{{ route('competitions.export') }}" id="exportFormCompetitions">
+                @csrf
+                <input type="hidden" name="ids" id="selectedCompetitionsInput">
+                <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Exporter la sélection</button>
+            </form>
+            <a href="{{ route('competitions.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter une compétition</a>
+        </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
             <thead class="bg-gray-50 dark:bg-gray-700">
                 <tr>
+                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                        <input type="checkbox" id="selectAllCompetitions" onclick="toggleAllCompetitions(this)">
+                    </th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lieu</th>
@@ -21,6 +44,9 @@
             <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                 @foreach($competitions as $competition)
                     <tr>
+                        <td class="px-4 py-4 text-center">
+                            <input type="checkbox" class="competition-checkbox" value="{{ $competition->competition_id }}">
+                        </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->nom }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->date }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
@@ -56,6 +82,21 @@
                         </td>
                     </tr>
                 @endforeach
+<script>
+function toggleAllCompetitions(cb) {
+    document.querySelectorAll('.competition-checkbox').forEach(function(box) {
+        box.checked = cb.checked;
+    });
+    updateSelectedCompetitions();
+}
+document.querySelectorAll('.competition-checkbox').forEach(function(box) {
+    box.addEventListener('change', updateSelectedCompetitions);
+});
+function updateSelectedCompetitions() {
+    const ids = Array.from(document.querySelectorAll('.competition-checkbox:checked')).map(cb => cb.value);
+    document.getElementById('selectedCompetitionsInput').value = ids.join(',');
+}
+</script>
             </tbody>
         </table>
         <div class="p-4">

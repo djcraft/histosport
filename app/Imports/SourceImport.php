@@ -1,0 +1,140 @@
+<?php
+
+namespace App\Imports;
+
+use App\Models\Source;
+use App\Models\Lieu;
+use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use Maatwebsite\Excel\Concerns\Importable;
+
+class SourceImport implements ToModel, WithHeadingRow
+{
+    use Importable;
+
+    public $created = [];
+    public $updated = [];
+    public $errors = [];
+
+    public function model(array $row)
+    {
+        try {
+            $data = [
+                'titre' => $row['titre'] ?? null,
+                'auteur' => $row['auteur'] ?? null,
+                'annee_reference' => $row['annee_reference'] ?? null,
+                'type' => $row['type'] ?? null,
+                'cote' => $row['cote'] ?? null,
+                'url' => $row['url'] ?? null,
+            ];
+            // Lieux liés
+            if (!empty($row['lieu_edition'])) {
+                $lieuParts = explode(',', $row['lieu_edition']);
+                $lieuEdition = Lieu::firstOrCreate([
+                    'adresse' => trim($lieuParts[0] ?? ''),
+                    'code_postal' => trim($lieuParts[1] ?? ''),
+                    'commune' => trim($lieuParts[2] ?? ''),
+                ]);
+                $data['lieu_edition_id'] = $lieuEdition->lieu_id;
+            }
+            if (!empty($row['lieu_conservation'])) {
+                $lieuParts = explode(',', $row['lieu_conservation']);
+                $lieuConservation = Lieu::firstOrCreate([
+                    'adresse' => trim($lieuParts[0] ?? ''),
+                    'code_postal' => trim($lieuParts[1] ?? ''),
+                    'commune' => trim($lieuParts[2] ?? ''),
+                ]);
+                $data['lieu_conservation_id'] = $lieuConservation->lieu_id;
+            }
+            if (!empty($row['lieu_couverture'])) {
+                $lieuParts = explode(',', $row['lieu_couverture']);
+                $lieuCouverture = Lieu::firstOrCreate([
+                    'adresse' => trim($lieuParts[0] ?? ''),
+                    'code_postal' => trim($lieuParts[1] ?? ''),
+                    'commune' => trim($lieuParts[2] ?? ''),
+                ]);
+                $data['lieu_couverture_id'] = $lieuCouverture->lieu_id;
+            }
+            $source = Source::where('titre', $data['titre'])->first();
+            if ($source) {
+                $source->update($data);
+                $this->updated[] = $data['titre'];
+            } else {
+                $source = Source::create($data);
+                $this->created[] = $data['titre'];
+            }
+            // Synchronisation des lieux liés (édition, conservation, couverture)
+            // Suppression des liens absents
+            foreach ([
+                'lieu_edition_id' => 'lieu_edition',
+                'lieu_conservation_id' => 'lieu_conservation',
+                'lieu_couverture_id' => 'lieu_couverture',
+            ] as $field => $col) {
+                if (empty($row[$col])) {
+                    $source->$field = null;
+                }
+            }
+            $source->save();
+            // Synchronisation des entités liées (entity_source)
+            // Clubs
+            $clubIds = [];
+            if (!empty($row['clubs'])) {
+                $clubNames = array_map('trim', explode(',', $row['clubs']));
+                foreach ($clubNames as $nom) {
+                    $club = \App\Models\Club::where('nom', $nom)->first();
+                    if ($club) {
+                        $clubIds[] = $club->club_id;
+                    }
+                }
+            }
+            $source->clubs()->sync($clubIds);
+
+            // Personnes
+            $personneIds = [];
+            if (!empty($row['personnes'])) {
+                $personnesList = array_map('trim', explode(',', $row['personnes']));
+                foreach ($personnesList as $personneFullName) {
+                    $personneParts = explode(' ', $personneFullName);
+                    $prenom = array_shift($personneParts);
+                    $nom = implode(' ', $personneParts);
+                    $personne = \App\Models\Personne::where('prenom', $prenom)->where('nom', $nom)->first();
+                    if ($personne) {
+                        $personneIds[] = $personne->personne_id;
+                    }
+                }
+            }
+            $source->personnes()->sync($personneIds);
+
+            // Compétitions
+            $competitionIds = [];
+            if (!empty($row['competitions'])) {
+                $competitionNames = array_map('trim', explode(',', $row['competitions']));
+                foreach ($competitionNames as $nom) {
+                    $competition = \App\Models\Competition::where('nom', $nom)->first();
+                    if ($competition) {
+                        $competitionIds[] = $competition->competition_id;
+                    }
+                }
+            }
+            $source->competitions()->sync($competitionIds);
+
+            // Lieux
+            $lieuIds = [];
+            if (!empty($row['lieux'])) {
+                $lieuNames = array_map('trim', explode(',', $row['lieux']));
+                foreach ($lieuNames as $lieuNom) {
+                    $lieu = \App\Models\Lieu::where('adresse', $lieuNom)->first();
+                    if ($lieu) {
+                        $lieuIds[] = $lieu->lieu_id;
+                    }
+                }
+            }
+            $source->lieux()->sync($lieuIds);
+
+            return $source;
+        } catch (\Exception $e) {
+            $this->errors[] = $row['titre'] ?? '';
+            return null;
+        }
+    }
+}
