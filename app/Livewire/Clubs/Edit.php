@@ -24,12 +24,15 @@ class Edit extends Component
     public $notes;
     public $siege_id;
     public $sources = [];
-    public $selectedSources = [];
     public $personnes = [];
     public $disciplines = [];
     public $lieux = [];
-    public $selectedPersonnes = [];
-    public $selectedDisciplines = [];
+
+    // Propriétés liées aux champs cachés SearchBar
+    public $selected_personne_id = [];
+    public $selected_discipline_id = [];
+    public $selected_source_id = [];
+    public $selected_lieu_id = null;
 
     public function mount(Club $club)
     {
@@ -46,12 +49,15 @@ class Edit extends Component
         $this->notes = $club->notes;
         $this->siege_id = $club->siege_id;
         $this->sources = Source::all();
-        $this->selectedSources = $club->sources->pluck('source_id')->toArray();
         $this->personnes = Personne::all();
         $this->disciplines = Discipline::all();
         $this->lieux = Lieu::all();
-        $this->selectedPersonnes = $club->personnes->pluck('personne_id')->toArray();
-        $this->selectedDisciplines = $club->disciplines->pluck('discipline_id')->toArray();
+
+        // Initialisation des propriétés pour SearchBar
+        $this->selected_personne_id = $club->personnes->pluck('personne_id')->toArray();
+        $this->selected_discipline_id = $club->disciplines->pluck('discipline_id')->toArray();
+        $this->selected_source_id = $club->sources->pluck('source_id')->toArray();
+        $this->selected_lieu_id = $club->siege_id;
     }
 
     public function render()
@@ -61,9 +67,10 @@ class Edit extends Component
             'sources' => $this->sources,
             'personnes' => $this->personnes,
             'disciplines' => $this->disciplines,
-            'selectedPersonnes' => $this->selectedPersonnes,
-            'selectedDisciplines' => $this->selectedDisciplines,
-            'selectedSources' => $this->selectedSources,
+            'selectedPersonnes' => $this->selected_personne_id,
+            'selectedDisciplines' => $this->selected_discipline_id,
+            'selectedSources' => $this->selected_source_id,
+            'siege_id' => $this->selected_lieu_id,
         ]);
     }
 
@@ -71,7 +78,7 @@ class Edit extends Component
     {
         $this->validate([
             'nom' => 'required|string|max:255',
-            'siege_id' => 'nullable|exists:lieu,lieu_id',
+            'selected_lieu_id' => 'nullable|exists:lieu,lieu_id',
         ]);
 
         // Détection automatique de la précision des dates
@@ -113,27 +120,27 @@ class Edit extends Component
             'acronyme' => $this->acronyme,
             'couleurs' => $this->couleurs,
             'notes' => $this->notes,
-            'siege_id' => $this->siege_id,
+            'siege_id' => $this->selected_lieu_id,
         ]);
 
         // Sources (morphToMany)
-            $this->club->sources()->syncWithPivotValues(
-                array_map('intval', (array) $this->selectedSources),
-                ['entity_type' => 'club']
-            );
+        $this->club->sources()->syncWithPivotValues(
+            array_map('intval', (array) $this->selected_source_id),
+            ['entity_type' => 'club']
+        );
         $this->club->refresh();
         $this->club->load('sources');
 
         // Personnes (many-to-many)
-        if (!empty($this->selectedPersonnes)) {
-            $this->club->personnes()->sync($this->selectedPersonnes);
+        if (!empty($this->selected_personne_id)) {
+            $this->club->personnes()->sync($this->selected_personne_id);
         } else {
             $this->club->personnes()->sync([]);
         }
 
         // Disciplines (many-to-many)
-        if (!empty($this->selectedDisciplines)) {
-            $this->club->disciplines()->sync($this->selectedDisciplines);
+        if (!empty($this->selected_discipline_id)) {
+            $this->club->disciplines()->sync($this->selected_discipline_id);
         } else {
             $this->club->disciplines()->sync([]);
         }

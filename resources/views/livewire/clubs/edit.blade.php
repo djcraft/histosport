@@ -38,38 +38,51 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu (siège)</label>
-                <select wire:model="siege_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    <option value="">Sélectionner un lieu</option>
-                    @foreach($lieux as $lieu)
-                        <option value="{{ $lieu->lieu_id }}">
-                            {{ $lieu->adresse }}{{ $lieu->code_postal ? ', ' . $lieu->code_postal : '' }}{{ $lieu->commune ? ', ' . $lieu->commune : '' }}{{ $lieu->departement ? ', ' . $lieu->departement : '' }}{{ $lieu->pays ? ', ' . $lieu->pays : '' }}
-                        </option>
-                    @endforeach
-                </select>
+                <livewire:search-bar 
+                    entity-class="App\\Models\\Lieu"
+                    display-field="adresse"
+                    id-field="lieu_id"
+                    multi=false
+                    :search-fields="['adresse','commune','departement','pays']"
+                    wire:model="selected_lieu_id"
+                    wire:key="search-bar-lieu"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Personnes associées</label>
-                <select wire:model="selectedPersonnes" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($personnes as $personne)
-                        <option value="{{ $personne->personne_id }}">{{ $personne->nom }} {{ $personne->prenom }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar 
+                    entity-class="App\\Models\\Personne"
+                    display-field="nom"
+                    id-field="personne_id"
+                    multi=true
+                    :search-fields="['nom','prenom']"
+                    wire:model="selected_personne_id"
+                    wire:key="search-bar-personnes"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines associées</label>
-                <select wire:model="selectedDisciplines" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($disciplines as $discipline)
-                        <option value="{{ $discipline->discipline_id }}">{{ $discipline->nom }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar 
+                    entity-class="App\\Models\\Discipline"
+                    display-field="nom"
+                    id-field="discipline_id"
+                    multi=true
+                    :search-fields="['nom']"
+                    wire:model="selected_discipline_id"
+                    wire:key="search-bar-disciplines"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
-                <select wire:model="selectedSources" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($sources as $source)
-                        <option value="{{ $source->source_id }}">{{ $source->titre }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar 
+                    entity-class="App\\Models\\Source"
+                    display-field="titre"
+                    id-field="source_id"
+                    multi=true
+                    :search-fields="['titre']"
+                    wire:model="selected_source_id"
+                    wire:key="search-bar-sources"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Notes</label>
