@@ -50,11 +50,18 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->nom }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->date }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @if($competition->lieu)
-                                {{ $competition->lieu->adresse ?? '' }} {{ $competition->lieu->code_postal ?? '' }} {{ $competition->lieu->commune ?? '' }}
-                            @else
-                                -
-                            @endif
+                                @if($competition->lieu)
+                                    <a href="{{ route('lieux.show', $competition->lieu) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
+                                        {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
+                                        {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
+                                        {{ $competition->lieu->code_postal ?? '' }}{{ $competition->lieu->code_postal ? ', ' : '' }}
+                                        {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
+                                        {{ $competition->lieu->departement ?? '' }}{{ $competition->lieu->departement ? ', ' : '' }}
+                                        {{ $competition->lieu->pays ?? '' }}
+                                    </a>
+                                @else
+                                    -
+                                @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($competition->organisateur_club)

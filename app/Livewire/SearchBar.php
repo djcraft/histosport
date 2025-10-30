@@ -13,9 +13,9 @@ class SearchBar extends Component
     #[\Livewire\Attributes\Modelable]
     public $modelValue = [];
     public $multi = true;
-
     // Paramètres dynamiques
     public $entityClass = '';
+    public $displayFields = [];
     public $displayField = '';
     public $searchFields = [];
     public $idField = 'id';
@@ -28,8 +28,12 @@ class SearchBar extends Component
             }
         } else {
             if (is_array($this->modelValue)) {
-                $this->modelValue = count($this->modelValue) ? $this->modelValue[0] : null;
+                $this->modelValue = count($this->modelValue) ? (is_numeric($this->modelValue[0]) ? intval($this->modelValue[0]) : $this->modelValue[0]) : null;
             }
+        }
+        // Si displayFields n'est pas défini, le fallback est displayField
+        if (empty($this->displayFields)) {
+            $this->displayFields = [$this->displayField];
         }
     }
 
@@ -61,8 +65,8 @@ class SearchBar extends Component
             }
             $this->dispatch('update:modelValue', $this->modelValue);
         } else {
-            $this->modelValue = $id;
-            $this->dispatch('update:modelValue', $id);
+            $this->modelValue = is_numeric($id) ? intval($id) : $id;
+            $this->dispatch('update:modelValue', $this->modelValue);
         }
         $this->search = '';
         $this->results = [];
@@ -93,6 +97,7 @@ class SearchBar extends Component
         $selectedItems = $model::whereIn($this->idField, $ids)->get();
         return view('livewire.search-bar', [
             'selectedItems' => $selectedItems,
+            'displayFields' => $this->displayFields,
             'displayField' => $this->displayField,
             'idField' => $this->idField,
             'results' => $this->results,

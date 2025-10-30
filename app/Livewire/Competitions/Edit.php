@@ -13,6 +13,7 @@ class Edit extends Component
     public $nom;
     public $date;
     public $lieu_id;
+    public $site_ids = [];
     public $organisateur_club_id;
     public $organisateur_personne_id;
     public $type;
@@ -67,6 +68,7 @@ class Edit extends Component
         $this->nom = $competition->nom;
         $this->date = $competition->date;
         $this->lieu_id = $competition->lieu_id;
+        $this->site_ids = $competition->sites->pluck('lieu_id')->toArray();
         $this->organisateur_club_id = $competition->organisateur_club_id;
         $this->organisateur_personne_id = $competition->organisateur_personne_id;
         $this->type = $competition->type;
@@ -101,6 +103,8 @@ class Edit extends Component
             'nom' => 'required|string|max:255',
             'discipline_ids' => 'array',
             'discipline_ids.*' => 'exists:disciplines,discipline_id',
+            'site_ids' => 'nullable|array',
+            'site_ids.*' => 'exists:lieu,lieu_id',
             // ... autres règles de validation
         ]);
 
@@ -121,11 +125,13 @@ class Edit extends Component
             $datePrecision = 'day';
         }
 
+        // Correction : lieu_id doit être un entier ou null, jamais un tableau
+        $lieu_id = is_array($this->lieu_id) ? (count($this->lieu_id) ? $this->lieu_id[0] : null) : $this->lieu_id;
         $this->competition->update([
             'nom' => $this->nom,
             'date' => $this->date,
             'date_precision' => $datePrecision,
-            'lieu_id' => $this->lieu_id,
+            'lieu_id' => $lieu_id,
             'organisateur_club_id' => $this->organisateur_club_id !== '' ? $this->organisateur_club_id : null,
             'organisateur_personne_id' => $this->organisateur_personne_id !== '' ? $this->organisateur_personne_id : null,
             'type' => $this->type,
@@ -135,9 +141,7 @@ class Edit extends Component
 
         // Gestion des disciplines (relation n-n) via modèle pivot pour historisation
         $competitionId = $this->competition->competition_id;
-        // Supprimer les liens existants
         \App\Models\CompetitionDiscipline::where('competition_id', $competitionId)->delete();
-        // Ajouter les nouveaux liens
         if (!empty($this->discipline_ids)) {
             foreach ($this->discipline_ids as $disciplineId) {
                 \App\Models\CompetitionDiscipline::create([
@@ -146,6 +150,9 @@ class Edit extends Component
                 ]);
             }
         }
+
+        // Gestion des sites (lieux multiples)
+        $this->competition->sites()->sync($this->site_ids);
 
         // Gestion des sources (ajout du champ entity_type, exclusion des valeurs nulles ou 0)
         $validSources = array_filter(array_map('intval', (array) $this->sources), function($id) {

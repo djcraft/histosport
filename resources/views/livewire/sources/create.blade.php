@@ -35,10 +35,11 @@
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu d'édition</label>
                     <livewire:search-bar
                         entity-class="App\\Models\\Lieu"
-                        display-field="adresse"
+                        :display-fields="['nom','adresse','code_postal','commune']"
+                        display-field="nom"
                         id-field="lieu_id"
                         multi=false
-                        :search-fields="['adresse','commune','departement','pays']"
+                        :search-fields="['nom','adresse','commune','departement','pays','code_postal']"
                         wire:model="lieu_edition_id"
                         wire:key="search-bar-lieu-edition-source-create"
                         class="w-full"
@@ -48,10 +49,11 @@
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de conservation</label>
                     <livewire:search-bar
                         entity-class="App\\Models\\Lieu"
-                        display-field="adresse"
+                        :display-fields="['nom','adresse','code_postal','commune']"
+                        display-field="nom"
                         id-field="lieu_id"
                         multi=false
-                        :search-fields="['adresse','commune','departement','pays']"
+                        :search-fields="['nom','adresse','commune','departement','pays','code_postal']"
                         wire:model="lieu_conservation_id"
                         wire:key="search-bar-lieu-conservation-source-create"
                         class="w-full"
@@ -61,10 +63,11 @@
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de couverture</label>
                     <livewire:search-bar
                         entity-class="App\\Models\\Lieu"
-                        display-field="adresse"
+                        :display-fields="['nom','adresse','code_postal','commune']"
+                        display-field="nom"
                         id-field="lieu_id"
                         multi=false
-                        :search-fields="['adresse','commune','departement','pays']"
+                        :search-fields="['nom','adresse','commune','departement','pays','code_postal']"
                         wire:model="lieu_couverture_id"
                         wire:key="search-bar-lieu-couverture-source-create"
                         class="w-full"

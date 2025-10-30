@@ -43,7 +43,7 @@
                         <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu d'édition</label>
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            display-field="nom"
+                            :display-fields="['nom','adresse','commune','departement','pays']"
                             id-field="lieu_id"
                             multi=false
                             :search-fields="['nom','adresse','commune','departement','pays']"
@@ -57,7 +57,7 @@
                         <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de conservation</label>
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            display-field="nom"
+                            :display-fields="['nom','adresse','commune','departement','pays']"
                             id-field="lieu_id"
                             multi=false
                             :search-fields="['nom','adresse','commune','departement','pays']"
@@ -71,7 +71,7 @@
                         <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de couverture</label>
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            display-field="nom"
+                            :display-fields="['nom','adresse','commune','departement','pays']"
                             id-field="lieu_id"
                             multi=false
                             :search-fields="['nom','adresse','commune','departement','pays']"

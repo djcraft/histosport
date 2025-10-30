@@ -20,10 +20,10 @@
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            display-field="adresse"
+                            :display-fields="['nom','adresse','commune','departement','pays']"
                             id-field="lieu_id"
                             multi=false
-                            :search-fields="['adresse','commune','departement','pays']"
+                            :search-fields="['nom','adresse','commune','departement','pays']"
                             wire:model="lieu_naissance_id"
                             wire:key="search-bar-lieu-naissance-personne-create"
                             class="w-full"
@@ -48,10 +48,10 @@
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            display-field="adresse"
+                            :display-fields="['nom','adresse','commune','departement','pays']"
                             id-field="lieu_id"
                             multi=false
-                            :search-fields="['adresse','commune','departement','pays']"
+                            :search-fields="['nom','adresse','commune','departement','pays']"
                             wire:model="lieu_deces_id"
                             wire:key="search-bar-lieu-deces-personne-create"
                             class="w-full"
@@ -84,7 +84,7 @@
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Lieu"
-                        display-field="adresse"
+                        :display-fields="['nom','adresse','commune','departement','pays']"
                         id-field="lieu_id"
                         multi=false
                         :search-fields="['adresse','commune','departement','pays']"

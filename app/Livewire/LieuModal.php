@@ -15,7 +15,7 @@ class LieuModal extends Component
     public $show = false;
 
     protected $rules = [
-        'nom' => 'required|string|max:255|unique:lieux,nom',
+        'nom' => 'nullable|string|max:255',
         'adresse' => 'nullable|string|max:255',
         'code_postal' => 'nullable|string|max:20',
         'commune' => 'nullable|string|max:100',

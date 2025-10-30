@@ -13,15 +13,39 @@
                 <span class="block text-gray-900 dark:text-gray-100">{{ $competition->date }}</span>
             </div>
             <div>
-                <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu :</span>
-                <span class="block text-gray-900 dark:text-gray-100">
-                    @if($competition->lieu)
-                        {{ $competition->lieu->adresse ?? '' }} {{ $competition->lieu->code_postal ?? '' }} {{ $competition->lieu->commune ?? '' }}
-                        {{ $competition->lieu->departement ?? '' }} {{ $competition->lieu->pays ?? '' }}
-                    @else
-                        -
-                    @endif
-                </span>
+                <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu principal :</span>
+                        @if($competition->lieu)
+                            <a href="{{ route('lieux.show', $competition->lieu) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
+                                {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
+                                {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
+                                {{ $competition->lieu->code_postal ?? '' }}{{ $competition->lieu->code_postal ? ', ' : '' }}
+                                {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
+                                {{ $competition->lieu->departement ?? '' }}{{ $competition->lieu->departement ? ', ' : '' }}
+                                {{ $competition->lieu->pays ?? '' }}
+                            </a>
+                        @else
+                            <span class="block text-gray-900 dark:text-gray-100">-</span>
+                        @endif
+            </div>
+            <div>
+                <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sites de la compétition :</span>
+                    <div class="mt-1 flex flex-wrap gap-3">
+                        @forelse($competition->sites as $site)
+                            <a href="{{ route('lieux.show', $site) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
+                                {{ $site->nom ?? '' }}{{ $site->nom ? ', ' : '' }}
+                                {{ $site->adresse ?? '' }}{{ $site->adresse ? ', ' : '' }}
+                                {{ $site->code_postal ?? '' }}{{ $site->code_postal ? ', ' : '' }}
+                                {{ $site->commune ?? '' }}{{ $site->commune ? ', ' : '' }}
+                                {{ $site->departement ?? '' }}{{ $site->departement ? ', ' : '' }}
+                                {{ $site->pays ?? '' }}
+                                @if($site->pivot->type)
+                                    <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $site->pivot->type }})</span>
+                                @endif
+                            </a>
+                        @empty
+                            <span class="block text-gray-900 dark:text-gray-100">-</span>
+                        @endforelse
+                    </div>
             </div>
         </div>
         <div class="mb-4">

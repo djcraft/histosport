@@ -1,7 +1,7 @@
 <div>
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
-        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Créer une compétition</h2>
-        <form wire:submit.prevent="save">
+        <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Modifier la compétition</h2>
+        <form wire:submit.prevent="update">
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Nom</label>
                 <input type="text" wire:model.defer="nom" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" required>
@@ -12,16 +12,16 @@
                     <input type="text" wire:model.defer="date" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
                 </div>
                 <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu</label>
+                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu principal</label>
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            display-field="adresse"
+                            :display-fields="['nom','adresse','commune','departement','pays']"
                             id-field="lieu_id"
                             multi=false
-                            :search-fields="['adresse','commune','departement','pays']"
+                            :search-fields="['nom','adresse','commune','departement','pays']"
                             wire:model="lieu_id"
-                            wire:key="search-bar-lieu-competition-create"
+                            wire:key="search-bar-lieu-competition-edit"
                             class="w-full"
                         />
                         <button type="button"
@@ -33,6 +33,19 @@
                         </button>
                     </div>
                 </div>
+            </div>
+            <div class="md:col-span-2">
+                <label class="block text-gray-700 dark:text-gray-300 mb-2">Sites de la compétition</label>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Lieu"
+                    :display-fields="['nom','adresse','commune','departement','pays']"
+                    id-field="lieu_id"
+                    multi=true
+                    :search-fields="['nom','adresse','commune','departement','pays']"
+                    wire:model="site_ids"
+                    wire:key="search-bar-sites-competition-edit"
+                    class="w-full lg:w-[700px]"
+                />
             </div>
             <div class="mb-2">
                 <div class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded px-3 py-2 mb-2 text-sm">
@@ -49,19 +62,19 @@
                         multi=false
                         :search-fields="['nom','acronyme']"
                         wire:model="organisateur_club_id"
-                        wire:key="'search-bar-organisateur-club-competition-create-' . ($organisateur_personne_id ?? 'none')"
+                        wire:key="'search-bar-organisateur-club-competition-edit-' . ($organisateur_personne_id ?? 'none')"
                     />
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Organisateur (personne)</label>
                     <livewire:search-bar
-                        entity-class="App\\Models\Personne"
+                        entity-class="App\\Models\\Personne"
                         display-field="nom"
                         id-field="personne_id"
                         multi=false
                         :search-fields="['nom','prenom']"
                         wire:model="organisateur_personne_id"
-                        wire:key="'search-bar-organisateur-personne-competition-create-' . ($organisateur_club_id ?? 'none')"
+                        wire:key="'search-bar-organisateur-personne-competition-edit-' . ($organisateur_club_id ?? 'none')"
                     />
                 </div>
             </div>
@@ -89,7 +102,7 @@
                         multi=true
                         :search-fields="['nom']"
                         wire:model="discipline_ids"
-                        wire:key="search-bar-disciplines-competition-create"
+                        wire:key="search-bar-disciplines-competition-edit"
                         class="w-full"
                     />
                     <button type="button"
@@ -110,7 +123,7 @@
                     multi=true
                     :search-fields="['nom','acronyme']"
                     wire:model="participant_club_ids"
-                    wire:key="search-bar-participants-club-competition-create"
+                    wire:key="search-bar-participants-club-competition-edit"
                 />
                 <label class="block text-gray-700 dark:text-gray-300 mb-2 mt-4">Participants (personnes)</label>
                 <livewire:search-bar
@@ -120,7 +133,7 @@
                     multi=true
                     :search-fields="['nom','prenom']"
                     wire:model="participant_personne_ids"
-                    wire:key="search-bar-participants-personne-competition-create"
+                    wire:key="search-bar-participants-personne-competition-edit"
                 />
             </div>
             <div class="mb-4">
@@ -132,8 +145,8 @@
                         id-field="source_id"
                         multi=true
                         :search-fields="['titre','auteur']"
-                        wire:model="selected_source_id"
-                        wire:key="search-bar-sources-competition-create"
+                        wire:model="sources"
+                        wire:key="search-bar-sources-competition-edit"
                         class="w-full"
                     />
                     <button type="button"

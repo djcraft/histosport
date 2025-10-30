@@ -27,6 +27,9 @@ class Create extends Component
 
     public function save()
     {
+        $this->lieu_edition_id = is_numeric($this->lieu_edition_id) ? intval($this->lieu_edition_id) : null;
+        $this->lieu_conservation_id = is_numeric($this->lieu_conservation_id) ? intval($this->lieu_conservation_id) : null;
+        $this->lieu_couverture_id = is_numeric($this->lieu_couverture_id) ? intval($this->lieu_couverture_id) : null;
         $this->validate([
             'titre' => 'required|string|max:255',
             'auteur' => 'nullable|string|max:255',

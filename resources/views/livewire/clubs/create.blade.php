@@ -41,10 +41,10 @@
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Lieu"
-                        display-field="adresse"
+                        :display-fields="['nom','adresse','commune','departement','pays']"
                         id-field="lieu_id"
                         multi=false
-                        :search-fields="['adresse','commune','departement','pays']"
+                        :search-fields="['nom','adresse','commune','departement','pays']"
                         wire:model="selected_lieu_id"
                         wire:key="search-bar-lieu-create"
                         class="w-full"

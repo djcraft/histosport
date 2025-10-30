@@ -13,6 +13,7 @@ class Create extends Component
     public $nom;
     public $date;
     public $lieu_id;
+    public $site_ids = [];
     public $organisateur_club_id;
     public $organisateur_personne_id;
     public $type;
@@ -105,7 +106,6 @@ class Create extends Component
         $clubs = \App\Models\Club::all();
         $personnes = \App\Models\Personne::all();
         $allDisciplines = Discipline::all();
-        // Pour le formulaire, on propose la liste des clubs et personnes comme participants potentiels
         return view('livewire.competitions.create', compact('allSources', 'lieux', 'clubs', 'personnes', 'allDisciplines'));
     }
 
@@ -115,7 +115,8 @@ class Create extends Component
             'nom' => 'required|string|max:255',
             'discipline_ids' => 'nullable|array',
             'discipline_ids.*' => 'exists:disciplines,discipline_id',
-            // ... autres règles de validation
+            'site_ids' => 'nullable|array',
+            'site_ids.*' => 'exists:lieu,lieu_id',
         ]);
 
         // Empêcher la sélection simultanée d'un club et d'une personne comme organisateur
@@ -165,6 +166,11 @@ class Create extends Component
         // Gestion des disciplines (relation n-n)
         if (!empty($this->discipline_ids)) {
             $competition->disciplines()->sync($this->discipline_ids);
+        }
+
+        // Gestion des sites (lieux multiples)
+        if (!empty($this->site_ids)) {
+            $competition->sites()->sync($this->site_ids);
         }
 
         // Gestion des sources (relation morphToMany)

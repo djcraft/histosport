@@ -78,4 +78,14 @@ class Competition extends Model
     {
         return $this->morphMany(Historisation::class, 'entity');
     }
+
+        /**
+         * Sites de la compétition (plusieurs lieux).
+         */
+        public function sites()
+        {
+            return $this->belongsToMany(Lieu::class, 'competition_lieu', 'competition_id', 'lieu_id')
+                ->withPivot('type', 'ordre')
+                ->withTimestamps();
+        }
 }

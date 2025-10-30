@@ -42,6 +42,16 @@ class SourceModal extends Component
 
     public function save()
     {
+        // Conversion des valeurs si tableau (mono-select)
+        if (is_array($this->lieu_edition_id)) {
+            $this->lieu_edition_id = count($this->lieu_edition_id) ? intval($this->lieu_edition_id[0]) : null;
+        }
+        if (is_array($this->lieu_conservation_id)) {
+            $this->lieu_conservation_id = count($this->lieu_conservation_id) ? intval($this->lieu_conservation_id[0]) : null;
+        }
+        if (is_array($this->lieu_couverture_id)) {
+            $this->lieu_couverture_id = count($this->lieu_couverture_id) ? intval($this->lieu_couverture_id[0]) : null;
+        }
         $this->validate();
         $anneeReferencePrecision = null;
         if (preg_match('/^\d{4}$/', $this->annee_reference)) {

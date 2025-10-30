@@ -61,4 +61,14 @@ class Lieu extends Model
     {
         return $this->morphMany(Historisation::class, 'entity');
     }
+
+        /**
+         * Compétitions utilisant ce lieu comme site.
+         */
+        public function competitions()
+        {
+            return $this->belongsToMany(Competition::class, 'competition_lieu', 'lieu_id', 'competition_id')
+                ->withPivot('type', 'ordre')
+                ->withTimestamps();
+        }
 }

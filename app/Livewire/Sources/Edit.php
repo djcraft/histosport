@@ -28,6 +28,22 @@ class Edit extends Component
 
     public function update()
     {
+        // Conversion si tableau (mono-select)
+        if (is_array($this->lieu_edition_id)) {
+            $this->lieu_edition_id = count($this->lieu_edition_id) ? intval($this->lieu_edition_id[0]) : null;
+        } else {
+            $this->lieu_edition_id = is_numeric($this->lieu_edition_id) ? intval($this->lieu_edition_id) : null;
+        }
+        if (is_array($this->lieu_conservation_id)) {
+            $this->lieu_conservation_id = count($this->lieu_conservation_id) ? intval($this->lieu_conservation_id[0]) : null;
+        } else {
+            $this->lieu_conservation_id = is_numeric($this->lieu_conservation_id) ? intval($this->lieu_conservation_id) : null;
+        }
+        if (is_array($this->lieu_couverture_id)) {
+            $this->lieu_couverture_id = count($this->lieu_couverture_id) ? intval($this->lieu_couverture_id[0]) : null;
+        } else {
+            $this->lieu_couverture_id = is_numeric($this->lieu_couverture_id) ? intval($this->lieu_couverture_id) : null;
+        }
         $this->validate([
             'titre' => 'required|string|max:255',
             'auteur' => 'nullable|string|max:255',
@@ -69,16 +85,17 @@ class Edit extends Component
 
     public function mount(\App\Models\Source $source)
     {
-        $this->source = $source;
-        $this->titre = $source->titre;
-        $this->auteur = $source->auteur;
-        $this->annee_reference = $source->annee_reference;
-        $this->type = $source->type;
-        $this->cote = $source->cote;
-        $this->url = $source->url;
-        $this->lieu_edition_id = $source->lieu_edition_id;
-        $this->lieu_conservation_id = $source->lieu_conservation_id;
-        $this->lieu_couverture_id = $source->lieu_couverture_id;
+    $this->source = $source;
+    $this->titre = $source->titre;
+    $this->auteur = $source->auteur;
+    $this->annee_reference = $source->annee_reference;
+    $this->type = $source->type;
+    $this->cote = $source->cote;
+    $this->url = $source->url;
+    // Conversion pour gérer le cas où la SearchBar transmet un tableau
+    $this->lieu_edition_id = is_array($source->lieu_edition_id) ? (count($source->lieu_edition_id) ? intval($source->lieu_edition_id[0]) : null) : $source->lieu_edition_id;
+    $this->lieu_conservation_id = is_array($source->lieu_conservation_id) ? (count($source->lieu_conservation_id) ? intval($source->lieu_conservation_id[0]) : null) : $source->lieu_conservation_id;
+    $this->lieu_couverture_id = is_array($source->lieu_couverture_id) ? (count($source->lieu_couverture_id) ? intval($source->lieu_couverture_id[0]) : null) : $source->lieu_couverture_id;
     }
 
     public function render()

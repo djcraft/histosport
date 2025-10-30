@@ -37,16 +37,18 @@
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu (siège) :</span>
-            <span class="block text-gray-900 dark:text-gray-100">
-                @if($club->siege)
-                    {{ $club->siege->adresse ?? '' }}<br>
-                    {{ $club->siege->code_postal ?? '' }} {{ $club->siege->commune ?? '' }}<br>
-                    {{ $club->siege->departement ?? '' }}<br>
+            @if($club->siege)
+                <a href="{{ route('lieux.show', $club->siege) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
+                    {{ $club->siege->nom ?? '' }}{{ $club->siege->nom ? ', ' : '' }}
+                    {{ $club->siege->adresse ?? '' }}{{ $club->siege->adresse ? ', ' : '' }}
+                    {{ $club->siege->code_postal ?? '' }}{{ $club->siege->code_postal ? ', ' : '' }}
+                    {{ $club->siege->commune ?? '' }}{{ $club->siege->commune ? ', ' : '' }}
+                    {{ $club->siege->departement ?? '' }}{{ $club->siege->departement ? ', ' : '' }}
                     {{ $club->siege->pays ?? '' }}
-                @else
-                    -
-                @endif
-            </span>
+                </a>
+            @else
+                <span class="block text-gray-900 dark:text-gray-100">-</span>
+            @endif
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
