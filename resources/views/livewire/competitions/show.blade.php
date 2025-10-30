@@ -26,15 +26,19 @@
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Organisateur :</span>
-            <span class="block text-gray-900 dark:text-gray-100">
+            <div class="mt-1">
                 @if($competition->organisateur_club)
-                    {{ $competition->organisateur_club->nom }}
+                    <a href="{{ route('clubs.show', $competition->organisateur_club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        {{ $competition->organisateur_club->nom }}
+                    </a>
                 @elseif($competition->organisateur_personne)
-                    {{ $competition->organisateur_personne->nom }}
+                    <a href="{{ route('personnes.show', $competition->organisateur_personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
+                        {{ $competition->organisateur_personne->nom }}
+                    </a>
                 @else
-                    -
+                    <span class="block text-gray-900 dark:text-gray-100">-</span>
                 @endif
-            </span>
+            </div>
         </div>
         <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>

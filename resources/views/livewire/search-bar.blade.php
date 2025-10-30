@@ -1,17 +1,17 @@
-<div class="position-relative">
+<div class="relative w-full">
     <!-- Input unique de recherche -->
     <input
         type="text"
         wire:model="search"
         wire:input="searchUpdated"
         placeholder="Rechercher et associer..."
-        class="w-full max-w-md mx-auto px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 mb-2"
+        class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 mb-2"
         autocomplete="off"
     />
 
     <!-- Résultats dynamiques -->
     @if($search && count($results))
-        <div class="absolute w-full z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded shadow" style="max-height: 200px; overflow-y: auto;">
+    <div class="absolute left-0 z-10 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded shadow" style="width: 100%; max-height: 200px; overflow-y: auto;">
             @foreach($results as $item)
                 <div
                     class="px-3 py-2 cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 last:border-b-0 transition"
@@ -27,7 +27,8 @@
 
     <!-- Affichage des entités associées (badges) -->
     <div class="mt-3">
-        @if(is_iterable($selectedItems))
+    @if(!empty($modelValue))
+        @if(is_iterable($selectedItems) && count($selectedItems))
             @foreach($selectedItems as $item)
                 <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 align-middle text-gray-900 dark:text-gray-100">
                     {{ $item[$displayField] ?? $item->$displayField }}
@@ -35,19 +36,20 @@
                 </span>
             @endforeach
         @endif
+    @endif
     </div>
 
     <!-- Champs cachés pour le formulaire -->
     @if($multi)
-        @if(is_iterable($selected))
-            @foreach($selected as $id)
+        @if(is_iterable($modelValue))
+            @foreach($modelValue as $id)
                 <input type="hidden" name="selected_{{ $idField }}[]" value="{{ $id }}">
             @endforeach
-        @elseif(is_numeric($selected))
-            <input type="hidden" name="selected_{{ $idField }}[]" value="{{ $selected }}">
+        @elseif(is_numeric($modelValue))
+            <input type="hidden" name="selected_{{ $idField }}[]" value="{{ $modelValue }}">
         @endif
     @else
-        <input type="hidden" name="selected_{{ $idField }}" value="{{ is_iterable($selected) ? ($selected[0] ?? '') : $selected }}">
+        <input type="hidden" name="selected_{{ $idField }}" value="{{ !empty($modelValue) ? (is_iterable($modelValue) ? ($modelValue[0] ?? '') : $modelValue) : '' }}">
     @endif
 
     <!-- Conseils UX :

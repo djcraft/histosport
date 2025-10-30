@@ -15,12 +15,15 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu</label>
-                    <select wire:model.defer="lieu_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner un lieu</option>
-                        @foreach($lieux as $lieu)
-                            <option value="{{ $lieu->lieu_id }}">{{ $lieu->adresse }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Lieu"
+                        display-field="adresse"
+                        id-field="lieu_id"
+                        multi=false
+                        :search-fields="['adresse','commune','departement','pays']"
+                        wire:model="lieu_id"
+                        wire:key="search-bar-lieu-competition-create"
+                    />
                 </div>
             </div>
             <div class="mb-2">
@@ -31,21 +34,27 @@
             <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Organisateur (club)</label>
-                    <select wire:model.defer="organisateur_club_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner un club</option>
-                        @foreach($clubs as $club)
-                            <option value="{{ $club->club_id }}">{{ $club->nom }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Club"
+                        display-field="nom"
+                        id-field="club_id"
+                        multi=false
+                        :search-fields="['nom','acronyme']"
+                        wire:model="organisateur_club_id"
+                        wire:key="'search-bar-organisateur-club-competition-create-' . ($organisateur_personne_id ?? 'none')"
+                    />
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Organisateur (personne)</label>
-                    <select wire:model.defer="organisateur_personne_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner une personne</option>
-                        @foreach($personnes as $personne)
-                            <option value="{{ $personne->personne_id }}">{{ $personne->nom }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\Personne"
+                        display-field="nom"
+                        id-field="personne_id"
+                        multi=false
+                        :search-fields="['nom','prenom']"
+                        wire:model="organisateur_personne_id"
+                        wire:key="'search-bar-organisateur-personne-competition-create-' . ($organisateur_club_id ?? 'none')"
+                    />
                 </div>
             </div>
             <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -64,34 +73,49 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines</label>
-                <select wire:model.defer="discipline_ids" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($allDisciplines as $discipline)
-                        <option value="{{ $discipline->discipline_id }}">{{ $discipline->nom }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Discipline"
+                    display-field="nom"
+                    id-field="discipline_id"
+                    multi=true
+                    :search-fields="['nom']"
+                    wire:model="discipline_ids"
+                    wire:key="search-bar-disciplines-competition-create"
+                />
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Participants</label>
-                <select wire:model.defer="participants" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    <optgroup label="Clubs">
-                        @foreach($clubs as $club)
-                            <option value="{{ 'club_' . $club->club_id }}">{{ $club->nom }}</option>
-                        @endforeach
-                    </optgroup>
-                    <optgroup label="Personnes">
-                        @foreach($personnes as $personne)
-                            <option value="{{ 'personne_' . $personne->personne_id }}">{{ $personne->nom }}</option>
-                        @endforeach
-                    </optgroup>
-                </select>
+                <label class="block text-gray-700 dark:text-gray-300 mb-2">Participants (clubs)</label>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Club"
+                    display-field="nom"
+                    id-field="club_id"
+                    multi=true
+                    :search-fields="['nom','acronyme']"
+                    wire:model="participant_club_ids"
+                    wire:key="search-bar-participants-club-competition-create"
+                />
+                <label class="block text-gray-700 dark:text-gray-300 mb-2 mt-4">Participants (personnes)</label>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Personne"
+                    display-field="nom"
+                    id-field="personne_id"
+                    multi=true
+                    :search-fields="['nom','prenom']"
+                    wire:model="participant_personne_ids"
+                    wire:key="search-bar-participants-personne-competition-create"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
-                <select wire:model.defer="sources" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($allSources as $source)
-                        <option value="{{ $source->id }}">{{ $source->titre }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Source"
+                    display-field="titre"
+                    id-field="source_id"
+                    multi=true
+                    :search-fields="['titre','auteur']"
+                    wire:model="selected_source_id"
+                    wire:key="search-bar-sources-competition-create"
+                />
             </div>
             <div class="flex justify-end">
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Enregistrer</button>

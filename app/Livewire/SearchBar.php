@@ -7,29 +7,28 @@ use Livewire\Component;
 
 class SearchBar extends Component
 {
-    public string $search = '';
-    public array $results = [];
+
+    public $search = '';
+    public $results = [];
     #[\Livewire\Attributes\Modelable]
-    public $selected = [];
-    public bool $multi = true;
+    public $modelValue = [];
+    public $multi = true;
 
     // Paramètres dynamiques
-    public string $entityClass = '';
-    public string $displayField = '';
-    public array $searchFields = [];
-    public string $idField = 'id';
-
+    public $entityClass = '';
+    public $displayField = '';
+    public $searchFields = [];
+    public $idField = 'id';
+    // ...existing code...
     public function mount()
     {
-        // Les propriétés sont déjà initialisées par Livewire via les attributs du composant
-        // On s'assure juste que selected est bien un tableau pour multi, ou une valeur unique pour simple
         if ($this->multi) {
-            if (!is_array($this->selected)) {
-                $this->selected = $this->selected ? [$this->selected] : [];
+            if (!is_array($this->modelValue)) {
+                $this->modelValue = $this->modelValue ? [$this->modelValue] : [];
             }
         } else {
-            if (is_array($this->selected)) {
-                $this->selected = count($this->selected) ? $this->selected[0] : null;
+            if (is_array($this->modelValue)) {
+                $this->modelValue = count($this->modelValue) ? $this->modelValue[0] : null;
             }
         }
     }
@@ -54,14 +53,16 @@ class SearchBar extends Component
     public function select($id)
     {
         if ($this->multi) {
-            if (!is_array($this->selected)) {
-                $this->selected = [];
+            if (!is_array($this->modelValue)) {
+                $this->modelValue = [];
             }
-            if (!in_array($id, $this->selected)) {
-                $this->selected[] = $id;
+            if (!in_array($id, $this->modelValue)) {
+                $this->modelValue[] = $id;
             }
+            $this->dispatch('update:modelValue', $this->modelValue);
         } else {
-            $this->selected = $id;
+            $this->modelValue = $id;
+            $this->dispatch('update:modelValue', $id);
         }
         $this->search = '';
         $this->results = [];
@@ -70,9 +71,11 @@ class SearchBar extends Component
     public function remove($id)
     {
         if ($this->multi) {
-            $this->selected = array_filter((array)$this->selected, fn($itemId) => $itemId != $id);
+            $this->modelValue = array_filter((array)$this->modelValue, fn($itemId) => $itemId != $id);
+            $this->dispatch('update:modelValue', $this->modelValue);
         } else {
-            $this->selected = null;
+            $this->modelValue = null;
+            $this->dispatch('update:modelValue', null);
         }
     }
 
@@ -80,12 +83,12 @@ class SearchBar extends Component
     {
         $model = app($this->entityClass);
         $ids = [];
-        if (is_array($this->selected)) {
-            $ids = $this->selected;
-        } elseif (is_null($this->selected)) {
+        if (is_array($this->modelValue)) {
+            $ids = $this->modelValue;
+        } elseif (is_null($this->modelValue)) {
             $ids = [];
         } else {
-            $ids = [$this->selected];
+            $ids = [$this->modelValue];
         }
         $selectedItems = $model::whereIn($this->idField, $ids)->get();
         return view('livewire.search-bar', [

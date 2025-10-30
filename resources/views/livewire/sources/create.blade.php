@@ -35,30 +35,39 @@
             <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu d'édition</label>
-                    <select wire:model="lieu_edition_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner un lieu</option>
-                        @foreach($lieux as $lieu)
-                            <option value="{{ $lieu->lieu_id }}">{{ $lieu->adresse }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Lieu"
+                        display-field="adresse"
+                        id-field="lieu_id"
+                        multi=false
+                        :search-fields="['adresse','commune','departement','pays']"
+                        wire:model="lieu_edition_id"
+                        wire:key="search-bar-lieu-edition-source-create"
+                    />
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de conservation</label>
-                    <select wire:model="lieu_conservation_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner un lieu</option>
-                        @foreach($lieux as $lieu)
-                            <option value="{{ $lieu->lieu_id }}">{{ $lieu->adresse }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Lieu"
+                        display-field="adresse"
+                        id-field="lieu_id"
+                        multi=false
+                        :search-fields="['adresse','commune','departement','pays']"
+                        wire:model="lieu_conservation_id"
+                        wire:key="search-bar-lieu-conservation-source-create"
+                    />
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de couverture</label>
-                    <select wire:model="lieu_couverture_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner un lieu</option>
-                        @foreach($lieux as $lieu)
-                            <option value="{{ $lieu->lieu_id }}">{{ $lieu->adresse }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Lieu"
+                        display-field="adresse"
+                        id-field="lieu_id"
+                        multi=false
+                        :search-fields="['adresse','commune','departement','pays']"
+                        wire:model="lieu_couverture_id"
+                        wire:key="search-bar-lieu-couverture-source-create"
+                    />
                 </div>
             </div>
             <div class="flex justify-end">

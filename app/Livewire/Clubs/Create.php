@@ -29,6 +29,12 @@ class Create extends Component
     public $selectedPersonnes = [];
     public $selectedDisciplines = [];
 
+    // Propriétés pour compatibilité avec le Blade
+    public $selected_lieu_id = null;
+    public $selected_personne_id = [];
+    public $selected_discipline_id = [];
+    public $selected_source_id = [];
+
     public function mount()
     {
         $this->lieux = Lieu::all();
@@ -52,7 +58,8 @@ class Create extends Component
     {
         $this->validate([
             'nom' => 'required|string|max:255',
-            'siege_id' => 'nullable|exists:lieu,lieu_id',
+            // Validation du siège via la propriété du search-bar
+            'selected_lieu_id' => 'nullable|exists:lieu,lieu_id',
         ]);
 
         // Détection automatique de la précision des dates
@@ -81,6 +88,9 @@ class Create extends Component
             $dateDeclarationPrecision = 'day';
         }
 
+        // Conversion du siège en entier si tableau
+        $siege_id = is_array($this->selected_lieu_id) ? (count($this->selected_lieu_id) ? $this->selected_lieu_id[count($this->selected_lieu_id)-1] : null) : $this->selected_lieu_id;
+
         $club = Club::create([
             'nom' => $this->nom,
             'nom_origine' => $this->nom_origine,
@@ -94,23 +104,23 @@ class Create extends Component
             'acronyme' => $this->acronyme,
             'couleurs' => $this->couleurs,
             'notes' => $this->notes,
-            'siege_id' => $this->siege_id,
+            'siege_id' => $siege_id,
         ]);
 
         // Sources (morphToMany)
         $club->sources()->syncWithPivotValues(
-            array_map('intval', (array) $this->selectedSources),
+            array_map('intval', (array) $this->selected_source_id),
             ['entity_type' => 'club']
         );
 
         // Personnes (many-to-many)
-        if (!empty($this->selectedPersonnes)) {
-            $club->personnes()->sync($this->selectedPersonnes);
+        if (!empty($this->selected_personne_id)) {
+            $club->personnes()->sync($this->selected_personne_id);
         }
 
         // Disciplines (many-to-many)
-        if (!empty($this->selectedDisciplines)) {
-            $club->disciplines()->sync($this->selectedDisciplines);
+        if (!empty($this->selected_discipline_id)) {
+            $club->disciplines()->sync($this->selected_discipline_id);
         }
 
         session()->flash('success', 'Club créé avec succès.');

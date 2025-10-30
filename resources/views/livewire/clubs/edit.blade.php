@@ -38,7 +38,7 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu (siège)</label>
-                <livewire:search-bar 
+                <livewire:search-bar
                     entity-class="App\\Models\\Lieu"
                     display-field="adresse"
                     id-field="lieu_id"
@@ -46,11 +46,12 @@
                     :search-fields="['adresse','commune','departement','pays']"
                     wire:model="selected_lieu_id"
                     wire:key="search-bar-lieu"
+                    class="w-full"
                 />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Personnes associées</label>
-                <livewire:search-bar 
+                <livewire:search-bar
                     entity-class="App\\Models\\Personne"
                     display-field="nom"
                     id-field="personne_id"
@@ -58,11 +59,12 @@
                     :search-fields="['nom','prenom']"
                     wire:model="selected_personne_id"
                     wire:key="search-bar-personnes"
+                    class="w-full"
                 />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines associées</label>
-                <livewire:search-bar 
+                <livewire:search-bar
                     entity-class="App\\Models\\Discipline"
                     display-field="nom"
                     id-field="discipline_id"
@@ -70,11 +72,12 @@
                     :search-fields="['nom']"
                     wire:model="selected_discipline_id"
                     wire:key="search-bar-disciplines"
+                    class="w-full"
                 />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
-                <livewire:search-bar 
+                <livewire:search-bar
                     entity-class="App\\Models\\Source"
                     display-field="titre"
                     id-field="source_id"
@@ -82,6 +85,7 @@
                     :search-fields="['titre']"
                     wire:model="selected_source_id"
                     wire:key="search-bar-sources"
+                    class="w-full"
                 />
             </div>
             <div class="mb-4">

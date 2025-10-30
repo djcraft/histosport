@@ -21,6 +21,39 @@ class Edit extends Component
     public $discipline_ids = [];
     public $sources = [];
     public $participants = [];
+    public $participant_club_ids = [];
+    public $participant_personne_ids = [];
+
+    // Contrôle côté vue : un seul organisateur
+    public function updatedOrganisateurClubId($value)
+    {
+        // Si on sélectionne un club, on vide le champ personne et le badge
+        if (!empty($value)) {
+            if (!empty($this->organisateur_personne_id)) {
+                $this->organisateur_personne_id = null;
+                $this->dispatch('reset-organisateur-personne');
+            }
+        }
+        // Si on tente de sélectionner un autre club, on remplace l’ancien
+        if (is_array($value) && count($value) > 1) {
+            $this->organisateur_club_id = $value[count($value)-1];
+        }
+    }
+
+    public function updatedOrganisateurPersonneId($value)
+    {
+        // Si on sélectionne une personne, on vide le champ club et le badge
+        if (!empty($value)) {
+            if (!empty($this->organisateur_club_id)) {
+                $this->organisateur_club_id = null;
+                $this->dispatch('reset-organisateur-club');
+            }
+        }
+        // Si on tente de sélectionner une autre personne, on remplace l’ancienne
+        if (is_array($value) && count($value) > 1) {
+            $this->organisateur_personne_id = $value[count($value)-1];
+        }
+    }
 
     public function mount(Competition $competition)
     {
@@ -33,13 +66,17 @@ class Edit extends Component
         $this->type = $competition->type;
         $this->duree = $competition->duree;
         $this->niveau = $competition->niveau;
-    $this->discipline_ids = $competition->disciplines->pluck('discipline_id')->toArray();
+        $this->discipline_ids = $competition->disciplines->pluck('discipline_id')->toArray();
         $this->sources = $competition->sources->pluck('source_id')->toArray();
         $this->participants = collect($competition->participants)->map(function($p) {
             if ($p->club_id) return 'club_' . $p->club_id;
             if ($p->personne_id) return 'personne_' . $p->personne_id;
             return null;
         })->filter()->toArray();
+
+        // Initialisation des participants clubs/personnes pour le formulaire
+        $this->participant_club_ids = collect($competition->participants)->pluck('club_id')->filter()->unique()->values()->toArray();
+        $this->participant_personne_ids = collect($competition->participants)->pluck('personne_id')->filter()->unique()->values()->toArray();
     }
 
     public function render()

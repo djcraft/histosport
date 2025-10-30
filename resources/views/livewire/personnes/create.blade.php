@@ -17,12 +17,15 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de naissance</label>
-                    <select wire:model="lieu_naissance_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner un lieu</option>
-                        @foreach($lieux as $lieu)
-                            <option value="{{ $lieu->lieu_id }}">{{ $lieu->adresse }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Lieu"
+                        display-field="adresse"
+                        id-field="lieu_id"
+                        multi=false
+                        :search-fields="['adresse','commune','departement','pays']"
+                        wire:model="lieu_naissance_id"
+                        wire:key="search-bar-lieu-naissance-personne-create"
+                    />
                 </div>
             </div>
             <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -32,12 +35,15 @@
                 </div>
                 <div>
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de décès</label>
-                    <select wire:model="lieu_deces_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                        <option value="">Sélectionner un lieu</option>
-                        @foreach($lieux as $lieu)
-                            <option value="{{ $lieu->lieu_id }}">{{ $lieu->adresse }}</option>
-                        @endforeach
-                    </select>
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Lieu"
+                        display-field="adresse"
+                        id-field="lieu_id"
+                        multi=false
+                        :search-fields="['adresse','commune','departement','pays']"
+                        wire:model="lieu_deces_id"
+                        wire:key="search-bar-lieu-deces-personne-create"
+                    />
                 </div>
             </div>
             <div class="mb-4">
@@ -55,36 +61,51 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Adresse</label>
-                <select wire:model="adresse_id" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    <option value="">Sélectionner une adresse</option>
-                    @foreach($adresses as $adresse)
-                        <option value="{{ $adresse->lieu_id }}">{{ $adresse->adresse }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Lieu"
+                    display-field="adresse"
+                    id-field="lieu_id"
+                    multi=false
+                    :search-fields="['adresse','commune','departement','pays']"
+                    wire:model="adresse_id"
+                    wire:key="search-bar-adresse-personne-create"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines</label>
-                <select wire:model="disciplines" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($allDisciplines as $discipline)
-                        <option value="{{ $discipline->discipline_id }}">{{ $discipline->nom }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Discipline"
+                    display-field="nom"
+                    id-field="discipline_id"
+                    multi=true
+                    :search-fields="['nom']"
+                    wire:model="disciplines"
+                    wire:key="search-bar-disciplines-personne-create"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Clubs</label>
-                <select wire:model="clubs" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($allClubs as $club)
-                        <option value="{{ $club->club_id }}">{{ $club->nom }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Club"
+                    display-field="nom"
+                    id-field="club_id"
+                    multi=true
+                    :search-fields="['nom','acronyme']"
+                    wire:model="clubs"
+                    wire:key="search-bar-clubs-personne-create"
+                />
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
-                <select wire:model="sources" multiple class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    @foreach($allSources as $source)
-                        <option value="{{ $source->source_id }}">{{ $source->titre }}</option>
-                    @endforeach
-                </select>
+                <livewire:search-bar
+                    entity-class="App\\Models\\Source"
+                    display-field="titre"
+                    id-field="source_id"
+                    multi=true
+                    :search-fields="['titre','auteur']"
+                    wire:model="sources"
+                    wire:key="search-bar-sources-personne-create"
+                />
             </div>
             <div class="flex justify-end">
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Enregistrer</button>

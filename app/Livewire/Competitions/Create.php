@@ -8,6 +8,7 @@ use App\Models\Competition;
 use App\Models\Discipline;
 
 class Create extends Component
+
 {
     public $nom;
     public $date;
@@ -20,6 +21,64 @@ class Create extends Component
     public $discipline_ids = [];
     public $sources = [];
     public $participants = [];
+    public $participant_club_ids = [];
+    public $participant_personne_ids = [];
+    public $selected_source_id = [];
+    public $resetKeyClub = 0;
+    public $resetKeyPersonne = 0;
+
+    protected $listeners = [
+        'reset-organisateur-club' => 'forceResetOrganisateurClub',
+        'reset-organisateur-personne' => 'forceResetOrganisateurPersonne',
+    ];
+
+    public function forceResetOrganisateurClub()
+    {
+        $this->organisateur_club_id = null;
+        $this->resetKeyClub++;
+        $this->dispatch('reset-organisateur-club');
+    }
+
+    public function forceResetOrganisateurPersonne()
+    {
+        $this->organisateur_personne_id = null;
+        $this->resetKeyPersonne++;
+        $this->dispatch('reset-organisateur-personne');
+    }
+
+
+    // Contrôle côté vue : un seul organisateur
+    public function updatedOrganisateurClubId($value)
+    {
+        // Si on sélectionne un club, on vide le champ personne et le badge
+        if ($value) {
+            if ($this->organisateur_personne_id !== null && $this->organisateur_personne_id !== '' && $this->organisateur_personne_id != 0) {
+                $this->organisateur_personne_id = null;
+                $this->resetKeyPersonne++;
+                $this->dispatch('reset-organisateur-personne');
+            }
+        }
+        // Si on tente de sélectionner un autre club, on remplace l’ancien
+        if (is_array($value) && count($value) > 1) {
+            $this->organisateur_club_id = $value[count($value)-1];
+        }
+    }
+
+    public function updatedOrganisateurPersonneId($value)
+    {
+        // Si on sélectionne une personne, on vide le champ club et le badge
+        if ($value) {
+            if ($this->organisateur_club_id !== null && $this->organisateur_club_id !== '' && $this->organisateur_club_id != 0) {
+                $this->organisateur_club_id = null;
+                $this->resetKeyClub++;
+                $this->dispatch('reset-organisateur-club');
+            }
+        }
+        // Si on tente de sélectionner une autre personne, on remplace l’ancienne
+        if (is_array($value) && count($value) > 1) {
+            $this->organisateur_personne_id = $value[count($value)-1];
+        }
+    }
 
     public function render()
     {
@@ -58,13 +117,28 @@ class Create extends Component
             $datePrecision = 'day';
         }
 
+        // Correction : conversion en scalaires si tableau
+        $lieu_id = is_array($this->lieu_id) ? (count($this->lieu_id) ? $this->lieu_id[count($this->lieu_id)-1] : null) : $this->lieu_id;
+        $organisateur_club_id = is_array($this->organisateur_club_id) ? (count($this->organisateur_club_id) ? $this->organisateur_club_id[count($this->organisateur_club_id)-1] : null) : $this->organisateur_club_id;
+        $organisateur_personne_id = is_array($this->organisateur_personne_id) ? (count($this->organisateur_personne_id) ? $this->organisateur_personne_id[count($this->organisateur_personne_id)-1] : null) : $this->organisateur_personne_id;
+
+        // Synchronisation des participants et sources sélectionnés
+        $this->participants = [];
+        foreach ((array)$this->participant_club_ids as $clubId) {
+            if ($clubId) $this->participants[] = 'club_' . $clubId;
+        }
+        foreach ((array)$this->participant_personne_ids as $personneId) {
+            if ($personneId) $this->participants[] = 'personne_' . $personneId;
+        }
+        $this->sources = (array)$this->selected_source_id;
+
         $competition = Competition::create([
             'nom' => $this->nom,
             'date' => $this->date,
             'date_precision' => $datePrecision,
-            'lieu_id' => $this->lieu_id,
-            'organisateur_club_id' => $this->organisateur_club_id,
-            'organisateur_personne_id' => $this->organisateur_personne_id,
+            'lieu_id' => $lieu_id,
+            'organisateur_club_id' => $organisateur_club_id,
+            'organisateur_personne_id' => $organisateur_personne_id,
             'type' => $this->type,
             'duree' => $this->duree,
             'niveau' => $this->niveau,
