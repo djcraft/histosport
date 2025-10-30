@@ -16,6 +16,15 @@ class Create extends Component
     public $lieu_conservation_id;
     public $lieu_couverture_id;
 
+    protected $listeners = [
+        'lieuCreated' => 'onLieuCreated',
+    ];
+
+    public function onLieuCreated($id)
+    {
+        $this->lieu_edition_id = $id;
+    }
+
     public function save()
     {
         $this->validate([

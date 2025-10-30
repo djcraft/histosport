@@ -6,6 +6,7 @@ use Livewire\Component;
 
 class Create extends Component
 {
+    public $nom;
     public $adresse;
     public $code_postal;
     public $commune;
@@ -15,6 +16,7 @@ class Create extends Component
     public function save()
     {
         $this->validate([
+            'nom' => 'required|string|max:255',
             'adresse' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:20',
             'commune' => 'nullable|string|max:100',
@@ -23,6 +25,7 @@ class Create extends Component
         ]);
 
         \App\Models\Lieu::create([
+            'nom' => $this->nom,
             'adresse' => $this->adresse,
             'code_postal' => $this->code_postal,
             'commune' => $this->commune,

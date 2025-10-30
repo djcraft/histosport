@@ -1,5 +1,3 @@
-
-
 <div>
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Modifier une source</h2>
@@ -43,6 +41,7 @@
                         :search-fields="['adresse','commune','departement','pays']"
                         wire:model="lieu_edition_id"
                         wire:key="search-bar-lieu-edition-source-edit"
+                        class="w-full"
                     />
                 </div>
                 <div>
@@ -55,6 +54,7 @@
                         :search-fields="['adresse','commune','departement','pays']"
                         wire:model="lieu_conservation_id"
                         wire:key="search-bar-lieu-conservation-source-edit"
+                        class="w-full"
                     />
                 </div>
                 <div>
@@ -67,12 +67,23 @@
                         :search-fields="['adresse','commune','departement','pays']"
                         wire:model="lieu_couverture_id"
                         wire:key="search-bar-lieu-couverture-source-edit"
+                        class="w-full"
                     />
                 </div>
             </div>
-            <div class="flex justify-end">
+            <div class="flex justify-end gap-2">
                 <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Mettre à jour</button>
+                <button type="button"
+                    wire:click="$dispatch('openLieuModal')"
+                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition shadow focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
+                >
+                    Créer un lieu
+                </button>
             </div>
         </form>
     </div>
+<livewire:lieu-modal />
+<livewire:discipline-modal />
+<livewire:source-modal />
 </div>
+

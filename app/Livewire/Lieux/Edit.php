@@ -7,6 +7,7 @@ use Livewire\Component;
 class Edit extends Component
 {
     public $lieu;
+    public $nom;
     public $adresse;
     public $code_postal;
     public $commune;
@@ -15,17 +16,19 @@ class Edit extends Component
 
     public function mount($lieu)
     {
-        $this->lieu = \App\Models\Lieu::findOrFail($lieu);
-        $this->adresse = $this->lieu->adresse;
-        $this->code_postal = $this->lieu->code_postal;
-        $this->commune = $this->lieu->commune;
-        $this->departement = $this->lieu->departement;
-        $this->pays = $this->lieu->pays;
+    $this->lieu = \App\Models\Lieu::findOrFail($lieu);
+    $this->nom = $this->lieu->nom;
+    $this->adresse = $this->lieu->adresse;
+    $this->code_postal = $this->lieu->code_postal;
+    $this->commune = $this->lieu->commune;
+    $this->departement = $this->lieu->departement;
+    $this->pays = $this->lieu->pays;
     }
 
     public function update()
     {
         $this->validate([
+            'nom' => 'required|string|max:255',
             'adresse' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:20',
             'commune' => 'nullable|string|max:100',
@@ -34,6 +37,7 @@ class Edit extends Component
         ]);
 
         $this->lieu->update([
+            'nom' => $this->nom,
             'adresse' => $this->adresse,
             'code_postal' => $this->code_postal,
             'commune' => $this->commune,

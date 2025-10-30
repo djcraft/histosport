@@ -3,6 +3,10 @@
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Créer un lieu</h2>
         <form wire:submit.prevent="save">
             <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 mb-2">Nom</label>
+                <input type="text" wire:model="nom" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+            </div>
+            <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Adresse</label>
                 <input type="text" wire:model="adresse" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             </div>

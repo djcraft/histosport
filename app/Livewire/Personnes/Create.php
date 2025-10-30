@@ -51,7 +51,7 @@ class Create extends Component
     public function save()
     {
         $this->validate([
-            'nom' => 'required|string|max:255',
+            'nom' => 'nullable|string|max:255',
             'prenom' => 'nullable|string|max:255',
             'date_naissance' => 'nullable|string|max:10',
             'lieu_naissance_id' => 'nullable|exists:lieu,lieu_id',

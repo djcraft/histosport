@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('personnes', function (Blueprint $table) {
             $table->id('personne_id');
-            $table->string('nom', 255);
+            $table->string('nom', 255)->nullable();
             $table->string('prenom', 255)->nullable();
             $table->string('date_naissance', 10)->nullable();
             $table->string('date_naissance_precision', 10)->nullable();

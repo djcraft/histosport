@@ -35,10 +35,34 @@ class Create extends Component
     public $selected_discipline_id = [];
     public $selected_source_id = [];
 
+    protected $listeners = [
+        'lieuCreated' => 'onLieuCreated',
+        'disciplineCreated' => 'onDisciplineCreated',
+        'sourceCreated' => 'onSourceCreated',
+    ];
+
+    public function onLieuCreated($id)
+    {
+        $this->lieux = Lieu::all();
+        $this->selected_lieu_id = $id;
+    }
+
+    public function onDisciplineCreated($id)
+    {
+        $this->disciplines = Discipline::all();
+        $this->selected_discipline_id[] = $id;
+    }
+
+    public function onSourceCreated($id)
+    {
+        $this->sources = Source::all();
+        $this->selected_source_id[] = $id;
+    }
+
     public function mount()
     {
         $this->lieux = Lieu::all();
-    $this->sources = Source::all();
+        $this->sources = Source::all();
         $this->personnes = Personne::all();
         $this->disciplines = Discipline::all();
     }

@@ -9,6 +9,7 @@ class Lieu extends Model
 {
     public static string $entityType = 'lieu';
     protected $fillable = [
+        'nom',
         'adresse',
         'code_postal',
         'commune',

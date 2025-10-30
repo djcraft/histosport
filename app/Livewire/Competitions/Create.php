@@ -30,7 +30,25 @@ class Create extends Component
     protected $listeners = [
         'reset-organisateur-club' => 'forceResetOrganisateurClub',
         'reset-organisateur-personne' => 'forceResetOrganisateurPersonne',
+        'lieuCreated' => 'onLieuCreated',
+        'disciplineCreated' => 'onDisciplineCreated',
+        'sourceCreated' => 'onSourceCreated',
     ];
+
+    public function onLieuCreated($id)
+    {
+        $this->lieu_id = $id;
+    }
+
+    public function onDisciplineCreated($id)
+    {
+        $this->discipline_ids[] = $id;
+    }
+
+    public function onSourceCreated($id)
+    {
+        $this->selected_source_id[] = $id;
+    }
 
     public function forceResetOrganisateurClub()
     {

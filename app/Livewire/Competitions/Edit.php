@@ -24,6 +24,12 @@ class Edit extends Component
     public $participant_club_ids = [];
     public $participant_personne_ids = [];
 
+    protected $listeners = [
+        'lieuCreated' => 'onLieuCreated',
+        'disciplineCreated' => 'onDisciplineCreated',
+        'sourceCreated' => 'onSourceCreated',
+    ];
+
     // Contrôle côté vue : un seul organisateur
     public function updatedOrganisateurClubId($value)
     {
@@ -172,5 +178,20 @@ class Edit extends Component
 
         session()->flash('success', 'Compétition modifiée avec succès.');
         return redirect()->route('competitions.index');
+    }
+
+    public function onLieuCreated($id)
+    {
+        $this->lieu_id = $id;
+    }
+
+    public function onDisciplineCreated($id)
+    {
+        $this->discipline_ids[] = $id;
+    }
+
+    public function onSourceCreated($id)
+    {
+        $this->sources[] = $id;
     }
 }

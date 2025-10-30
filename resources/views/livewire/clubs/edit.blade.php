@@ -38,16 +38,25 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu (siège)</label>
-                <livewire:search-bar
-                    entity-class="App\\Models\\Lieu"
-                    display-field="adresse"
-                    id-field="lieu_id"
-                    multi=false
-                    :search-fields="['adresse','commune','departement','pays']"
-                    wire:model="selected_lieu_id"
-                    wire:key="search-bar-lieu"
-                    class="w-full"
-                />
+                <div class="flex w-full">
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Lieu"
+                        display-field="adresse"
+                        id-field="lieu_id"
+                        multi=false
+                        :search-fields="['adresse','commune','departement','pays']"
+                        wire:model="selected_lieu_id"
+                        wire:key="search-bar-lieu"
+                        class="w-full"
+                    />
+                    <button type="button"
+                        wire:click="$dispatch('openLieuModal')"
+                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+                        style="align-self:flex-start;"
+                    >
+                        Créer un lieu
+                    </button>
+                </div>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Personnes associées</label>
@@ -64,29 +73,47 @@
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines associées</label>
-                <livewire:search-bar
-                    entity-class="App\\Models\\Discipline"
-                    display-field="nom"
-                    id-field="discipline_id"
-                    multi=true
-                    :search-fields="['nom']"
-                    wire:model="selected_discipline_id"
-                    wire:key="search-bar-disciplines"
-                    class="w-full"
-                />
+                <div class="flex w-full">
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Discipline"
+                        display-field="nom"
+                        id-field="discipline_id"
+                        multi=true
+                        :search-fields="['nom']"
+                        wire:model="selected_discipline_id"
+                        wire:key="search-bar-disciplines"
+                        class="w-full"
+                    />
+                    <button type="button"
+                        wire:click="$dispatch('openDisciplineModal')"
+                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+                        style="align-self:flex-start;"
+                    >
+                        Créer une discipline
+                    </button>
+                </div>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
-                <livewire:search-bar
-                    entity-class="App\\Models\\Source"
-                    display-field="titre"
-                    id-field="source_id"
-                    multi=true
-                    :search-fields="['titre']"
-                    wire:model="selected_source_id"
-                    wire:key="search-bar-sources"
-                    class="w-full"
-                />
+                <div class="flex w-full">
+                    <livewire:search-bar
+                        entity-class="App\\Models\\Source"
+                        display-field="titre"
+                        id-field="source_id"
+                        multi=true
+                        :search-fields="['titre']"
+                        wire:model="selected_source_id"
+                        wire:key="search-bar-sources"
+                        class="w-full"
+                    />
+                    <button type="button"
+                        wire:click="$dispatch('openSourceModal')"
+                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
+                        style="align-self:flex-start;"
+                    >
+                        Créer une source
+                    </button>
+                </div>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Notes</label>
@@ -97,4 +124,7 @@
             </div>
         </form>
     </div>
+    @livewire('lieu-modal')
+    @livewire('discipline-modal')
+    @livewire('source-modal')
 </div>

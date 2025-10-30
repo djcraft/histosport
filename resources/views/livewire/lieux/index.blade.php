@@ -30,6 +30,7 @@
                     <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
                         <input type="checkbox" id="selectAllLieux" onclick="toggleAllLieux(this)">
                     </th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Code postal</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Commune</th>
@@ -44,6 +45,7 @@
                         <td class="px-4 py-4 text-center">
                             <input type="checkbox" class="lieu-checkbox" value="{{ $lieu->lieu_id }}">
                         </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->nom }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->adresse }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->code_postal }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->commune }}</td>
@@ -52,7 +54,7 @@
                         <td class="px-6 py-4 whitespace-nowrap">
                             <a href="{{ route('lieux.show', $lieu) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
                             <a href="{{ route('lieux.edit', $lieu) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
-                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-lieu-modal', {detail: {lieuId: {{ $lieu->lieu_id }}, lieuName: '{{ addslashes($lieu->adresse) }}'}}))">Supprimer</button>
+                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-lieu-modal', {detail: {lieuId: {{ $lieu->lieu_id }}, lieuName: '{{ addslashes($lieu->nom) }}'}}))">Supprimer</button>
                         </td>
                     </tr>
                 @endforeach

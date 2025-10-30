@@ -17,12 +17,12 @@
                     class="px-3 py-2 cursor-pointer text-gray-900 dark:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700 border-b border-gray-200 dark:border-gray-700 last:border-b-0 transition"
                     wire:click="select({{ $item[$idField] }})"
                 >
-                    {{ $item[$displayField] }}
+                    {{ $item[$displayField] ?? $item->$displayField }}
                 </div>
             @endforeach
         </div>
-    @elseif($search)
-        <div class="text-muted mt-2">Aucun résultat</div>
+    @elseif($search && !count($results))
+        <div class="text-gray-500 dark:text-gray-400 mt-2 italic">Aucun résultat</div>
     @endif
 
     <!-- Affichage des entités associées (badges) -->
