@@ -2,6 +2,19 @@
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Détail du club</h2>
         <div class="mb-4">
+            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Présence simple dans le club :</span>
+            <div class="mt-1">
+                @php
+                    $personnesAvecMandat = $club->clubPersonnes->pluck('personne_id')->toArray();
+                @endphp
+                @forelse($club->personnes as $personne)
+                    @if(!in_array($personne->personne_id, $personnesAvecMandat))
+                        <a href="{{ route('personnes.show', $personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $personne->nom }} {{ $personne->prenom }}</a>
+                    @endif
+                @empty
+                    <span class="block text-gray-900 dark:text-gray-100">Aucune présence simple</span>
+                @endforelse
+            </div>
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Nom :</span>
             <span class="block text-gray-900 dark:text-gray-100">{{ $club->nom }}</span>
         </div>
@@ -59,12 +72,39 @@
             </div>
         </div>
         <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Personnes associées :</span>
-            <div class="mt-1">
-                @forelse($club->personnes as $personne)
-                    <a href="{{ route('personnes.show', $personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $personne->nom }} {{ $personne->prenom }}</a>
+            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Mandats dans le club :</span>
+            <div class="mt-1 space-y-2">
+                @forelse($club->clubPersonnes as $mandat)
+                    <div class="flex items-center space-x-2">
+                        <a href="{{ route('personnes.show', $mandat->personne) }}" class="inline-block align-middle">
+                            <span class="inline-block bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs rounded px-2 py-1 mr-1 align-middle hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $mandat->personne->nom ?? '' }} {{ $mandat->personne->prenom ?? '' }}</span>
+                        </a>
+                        @if(!empty($mandat->role))
+                            <span class="inline-block bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold">{{ $mandat->role }}</span>
+                        @endif
+                        <span class="text-xs text-gray-700 dark:text-gray-300">
+                            @php
+                                $precisions = ['année','year','mois','month','jour','day'];
+                                $debut = $mandat->date_debut;
+                                $debutPrecision = $mandat->date_debut_precision;
+                                $fin = $mandat->date_fin;
+                                $finPrecision = $mandat->date_fin_precision;
+                                $debutAff = ($debut && in_array($debutPrecision, $precisions)) ? formatMandatDate($debut, $debutPrecision) : ($debut ?? null);
+                                $finAff = ($fin && in_array($finPrecision, $precisions)) ? formatMandatDate($fin, $finPrecision) : ($fin ?? null);
+                            @endphp
+                            @if($debutAff && $finAff)
+                                {{ $debutAff }} – {{ $finAff }}
+                            @elseif($debutAff)
+                                {{ $debutAff }}
+                            @elseif($finAff)
+                                Jusqu'à {{ $finAff }}
+                            @elseif(empty($debutAff) && empty($finAff))
+                                <span class="italic text-gray-400">Période inconnue</span>
+                            @endif
+                        </span>
+                    </div>
                 @empty
-                    <span class="block text-gray-900 dark:text-gray-100">-</span>
+                    <span class="block text-gray-900 dark:text-gray-100">Aucun mandat enregistré</span>
                 @endforelse
             </div>
         </div>

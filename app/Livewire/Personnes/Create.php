@@ -80,18 +80,29 @@ class Create extends Component
             $dateDecesPrecision = 'day';
         }
 
+        // Conversion des IDs en entier ou null
+        $lieu_naissance_id = is_array($this->lieu_naissance_id)
+            ? (count($this->lieu_naissance_id) ? (int)$this->lieu_naissance_id[0] : null)
+            : (is_object($this->lieu_naissance_id) && isset($this->lieu_naissance_id->lieu_id) ? (int)$this->lieu_naissance_id->lieu_id : (is_scalar($this->lieu_naissance_id) ? (int)$this->lieu_naissance_id : null));
+        $lieu_deces_id = is_array($this->lieu_deces_id)
+            ? (count($this->lieu_deces_id) ? (int)$this->lieu_deces_id[0] : null)
+            : (is_object($this->lieu_deces_id) && isset($this->lieu_deces_id->lieu_id) ? (int)$this->lieu_deces_id->lieu_id : (is_scalar($this->lieu_deces_id) ? (int)$this->lieu_deces_id : null));
+        $adresse_id = is_array($this->adresse_id)
+            ? (count($this->adresse_id) ? (int)$this->adresse_id[0] : null)
+            : (is_object($this->adresse_id) && isset($this->adresse_id->lieu_id) ? (int)$this->adresse_id->lieu_id : (is_scalar($this->adresse_id) ? (int)$this->adresse_id : null));
+
         $personne = Personne::create([
             'nom' => $this->nom,
             'prenom' => $this->prenom,
             'date_naissance' => $this->date_naissance,
             'date_naissance_precision' => $dateNaissancePrecision,
-            'lieu_naissance_id' => $this->lieu_naissance_id,
+            'lieu_naissance_id' => $lieu_naissance_id,
             'date_deces' => $this->date_deces,
             'date_deces_precision' => $dateDecesPrecision,
-            'lieu_deces_id' => $this->lieu_deces_id,
+            'lieu_deces_id' => $lieu_deces_id,
             'sexe' => $this->sexe,
             'titre' => $this->titre,
-            'adresse_id' => $this->adresse_id,
+            'adresse_id' => $adresse_id,
         ]);
 
         // Clubs (many-to-many)

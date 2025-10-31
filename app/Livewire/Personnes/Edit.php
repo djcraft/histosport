@@ -94,18 +94,27 @@ class Edit extends Component
             $dateDecesPrecision = 'day';
         }
 
+        $lieuNaissanceId = is_array($this->lieu_naissance_id)
+            ? (count($this->lieu_naissance_id) ? $this->lieu_naissance_id[0] : null)
+            : $this->lieu_naissance_id;
+        $lieuDecesId = is_array($this->lieu_deces_id)
+            ? (count($this->lieu_deces_id) ? $this->lieu_deces_id[0] : null)
+            : $this->lieu_deces_id;
+        $adresseId = is_array($this->adresse_id)
+            ? (count($this->adresse_id) ? $this->adresse_id[0] : null)
+            : $this->adresse_id;
         $this->personne->update([
             'nom' => $this->nom,
             'prenom' => $this->prenom,
             'date_naissance' => $this->date_naissance,
             'date_naissance_precision' => $dateNaissancePrecision,
-            'lieu_naissance_id' => $this->lieu_naissance_id,
+            'lieu_naissance_id' => $lieuNaissanceId,
             'date_deces' => $this->date_deces,
             'date_deces_precision' => $dateDecesPrecision,
-            'lieu_deces_id' => $this->lieu_deces_id,
+            'lieu_deces_id' => $lieuDecesId,
             'sexe' => $this->sexe,
             'titre' => $this->titre,
-            'adresse_id' => $this->adresse_id,
+            'adresse_id' => $adresseId,
         ]);
 
         // Clubs (many-to-many)

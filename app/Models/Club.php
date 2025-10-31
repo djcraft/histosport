@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Club extends Model
 {
+    /**
+     * Les mandats datés (pivot club_personne).
+     */
+    public function clubPersonnes()
+    {
+        return $this->hasMany(ClubPersonne::class, 'club_id', 'club_id');
+    }
     public static string $entityType = 'club';
     /**
      * Les attributs assignables en masse.

@@ -21,26 +21,22 @@ class Create extends Component
     public $couleurs;
     public $notes;
     public $siege_id;
-    public $selectedSources = [];
     public $lieux = [];
     public $sources = [];
     public $personnes = [];
     public $disciplines = [];
-    public $selectedPersonnes = [];
-    public $selectedDisciplines = [];
-
-    // Propriétés pour compatibilité avec le Blade
     public $selected_lieu_id = null;
     public $selected_personne_id = [];
     public $selected_discipline_id = [];
     public $selected_source_id = [];
+    // Mandats datés
+    public $clubPersonnes = [];
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',
         'disciplineCreated' => 'onDisciplineCreated',
         'sourceCreated' => 'onSourceCreated',
     ];
-
     public function onLieuCreated($id)
     {
         $this->lieux = Lieu::all();
@@ -49,8 +45,8 @@ class Create extends Component
 
     public function onDisciplineCreated($id)
     {
-        $this->disciplines = Discipline::all();
-        $this->selected_discipline_id[] = $id;
+    $this->disciplines = Discipline::all();
+    $this->selected_discipline_id[] = $id;
     }
 
     public function onSourceCreated($id)
@@ -74,7 +70,7 @@ class Create extends Component
             'sources' => $this->sources,
             'personnes' => $this->personnes,
             'disciplines' => $this->disciplines,
-            'selectedSources' => $this->selectedSources,
+            'clubPersonnes' => $this->clubPersonnes,
         ]);
     }
 
@@ -82,38 +78,35 @@ class Create extends Component
     {
         $this->validate([
             'nom' => 'required|string|max:255',
-            // Validation du siège via la propriété du search-bar
             'selected_lieu_id' => 'nullable|exists:lieu,lieu_id',
         ]);
+        $siege_id = is_array($this->selected_lieu_id) ? (count($this->selected_lieu_id) ? $this->selected_lieu_id[count($this->selected_lieu_id)-1] : null) : $this->selected_lieu_id;
 
         // Détection automatique de la précision des dates
         $dateFondationPrecision = null;
         $dateDisparitionPrecision = null;
         $dateDeclarationPrecision = null;
         if (preg_match('/^\d{4}$/', $this->date_fondation)) {
-            $dateFondationPrecision = 'year';
+            $dateFondationPrecision = 'année';
         } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_fondation)) {
-            $dateFondationPrecision = 'month';
+            $dateFondationPrecision = 'mois';
         } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_fondation)) {
-            $dateFondationPrecision = 'day';
+            $dateFondationPrecision = 'jour';
         }
         if (preg_match('/^\d{4}$/', $this->date_disparition)) {
-            $dateDisparitionPrecision = 'year';
+            $dateDisparitionPrecision = 'année';
         } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_disparition)) {
-            $dateDisparitionPrecision = 'month';
+            $dateDisparitionPrecision = 'mois';
         } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_disparition)) {
-            $dateDisparitionPrecision = 'day';
+            $dateDisparitionPrecision = 'jour';
         }
         if (preg_match('/^\d{4}$/', $this->date_declaration)) {
-            $dateDeclarationPrecision = 'year';
+            $dateDeclarationPrecision = 'année';
         } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_declaration)) {
-            $dateDeclarationPrecision = 'month';
+            $dateDeclarationPrecision = 'mois';
         } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_declaration)) {
-            $dateDeclarationPrecision = 'day';
+            $dateDeclarationPrecision = 'jour';
         }
-
-        // Conversion du siège en entier si tableau
-        $siege_id = is_array($this->selected_lieu_id) ? (count($this->selected_lieu_id) ? $this->selected_lieu_id[count($this->selected_lieu_id)-1] : null) : $this->selected_lieu_id;
 
         $club = Club::create([
             'nom' => $this->nom,
@@ -137,17 +130,92 @@ class Create extends Component
             ['entity_type' => 'club']
         );
 
-        // Personnes (many-to-many)
-        if (!empty($this->selected_personne_id)) {
-            $club->personnes()->sync($this->selected_personne_id);
+        // Mandats datés + présence simple fusionnés
+        $mandatsToInsert = [];
+        $mandatPersonneIds = [];
+        foreach ($this->clubPersonnes as $mandat) {
+            $personneId = null;
+            if (is_array($mandat) && isset($mandat['personne_id'])) {
+                $personneId = (int)$mandat['personne_id'];
+            } elseif (is_object($mandat) && isset($mandat->personne_id)) {
+                $personneId = (int)$mandat->personne_id;
+            }
+            if ($personneId) {
+                $mandatsToInsert[] = [
+                    'personne_id' => $personneId,
+                    'role' => $mandat['role'] ?? null,
+                    'date_debut' => $mandat['date_debut'] ?? null,
+                    'date_debut_precision' => $mandat['date_debut_precision'] ?? null,
+                    'date_fin' => $mandat['date_fin'] ?? null,
+                    'date_fin_precision' => $mandat['date_fin_precision'] ?? null,
+                ];
+                $mandatPersonneIds[] = $personneId;
+            }
+        }
+        $ids = array_map(function($item) {
+            if (is_array($item) && isset($item['personne_id'])) {
+                return (int)$item['personne_id'];
+            }
+            if (is_object($item) && isset($item->personne_id)) {
+                return (int)$item->personne_id;
+            }
+            if (is_scalar($item)) {
+                return (int)$item;
+            }
+            return null;
+        }, $this->selected_personne_id);
+        $ids = array_filter($ids);
+        foreach ($ids as $id) {
+            $mandatsToInsert[] = [
+                'personne_id' => $id,
+                'role' => null,
+                'date_debut' => null,
+                'date_debut_precision' => null,
+                'date_fin' => null,
+                'date_fin_precision' => null,
+            ];
+        }
+        if (!empty($mandatsToInsert)) {
+            $club->personnes()->detach();
+            foreach ($mandatsToInsert as $pivot) {
+                $club->personnes()->attach($pivot['personne_id'], [
+                    'role' => $pivot['role'],
+                    'date_debut' => $pivot['date_debut'],
+                    'date_debut_precision' => $pivot['date_debut_precision'],
+                    'date_fin' => $pivot['date_fin'],
+                    'date_fin_precision' => $pivot['date_fin_precision'],
+                ]);
+            }
         }
 
         // Disciplines (many-to-many)
         if (!empty($this->selected_discipline_id)) {
             $club->disciplines()->sync($this->selected_discipline_id);
+        } else {
+            $club->disciplines()->sync([]);
         }
 
         session()->flash('success', 'Club créé avec succès.');
         return redirect()->route('clubs.index');
+    }
+
+    // Ajout d’un mandat daté
+    public function addClubPersonne()
+    {
+        $this->clubPersonnes[] = [
+            'personne_id' => null,
+            'role' => null,
+            'date_debut' => null,
+            'date_debut_precision' => 'année',
+            'date_fin' => null,
+            'date_fin_precision' => 'année',
+        ];
+    }
+
+    // Suppression d’un mandat daté
+    public function removeClubPersonne($index)
+    {
+        unset($this->clubPersonnes[$index]);
+        $this->clubPersonnes = array_values($this->clubPersonnes);
     }
 }

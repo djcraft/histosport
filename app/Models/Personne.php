@@ -7,6 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 
 class Personne extends Model
 {
+    /**
+     * Les mandats datés (pivot club_personne).
+     */
+    public function clubPersonnes()
+    {
+        return $this->hasMany(ClubPersonne::class, 'personne_id', 'personne_id');
+    }
     public static string $entityType = 'personne';
     /**
      * Lieu de naissance de la personne.

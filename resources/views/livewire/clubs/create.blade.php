@@ -59,7 +59,7 @@
                 </div>
             </div>
             <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Personnes associées</label>
+                <label class="block text-gray-700 dark:text-gray-300 mb-2">Personnes associées (présence simple)</label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Personne"
                     display-field="nom"
@@ -70,6 +70,56 @@
                     wire:key="search-bar-personnes-create"
                     class="w-full"
                 />
+            </div>
+            <div class="mb-4">
+                <label class="block text-gray-700 dark:text-gray-300 mb-2">Mandats datés</label>
+                <div class="space-y-4">
+                    @foreach($clubPersonnes as $index => $clubPersonne)
+                        <div class="border rounded p-3 bg-gray-50 dark:bg-gray-900">
+                            <div class="mb-2">
+                                <label class="block text-gray-700 dark:text-gray-300 mb-1">Personne</label>
+                                <livewire:search-bar
+                                    entity-class="App\\Models\\Personne"
+                                    display-field="nom"
+                                    id-field="personne_id"
+                                    multi=false
+                                    :search-fields="['nom','prenom']"
+                                    wire:model="clubPersonnes.{{ $index }}.personne_id"
+                                    wire:key="search-bar-personne-create-{{ $index }}"
+                                    class="w-full"
+                                />
+                            </div>
+                            <div class="mb-2">
+                                <label class="block text-gray-700 dark:text-gray-300 mb-1">Rôle</label>
+                                <select wire:model="clubPersonnes.{{ $index }}.role" class="w-full px-2 py-1 border rounded">
+                                    <option value="">Sélectionner un rôle</option>
+                                    <option value="Président">Président</option>
+                                    <option value="Trésorier">Trésorier</option>
+                                    <option value="Secrétaire">Secrétaire</option>
+                                    <option value="Membre">Membre</option>
+                                    <option value="Dirigeant">Dirigeant</option>
+                                    <option value="Autre">Autre</option>
+                                </select>
+                            </div>
+                            <div class="mb-2 grid grid-cols-2 gap-2">
+                                <div>
+                                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Date début</label>
+                                    <input type="text" wire:model="clubPersonnes.{{ $index }}.date_debut" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-2 py-1 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Date fin</label>
+                                    <input type="text" wire:model="clubPersonnes.{{ $index }}.date_fin" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-2 py-1 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+                                </div>
+                            </div>
+                            <div class="flex justify-end mt-2">
+                                <button type="button" wire:click="removeClubPersonne({{ $index }})" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Supprimer</button>
+                            </div>
+                        </div>
+                    @endforeach
+                    <div class="flex justify-end">
+                        <button type="button" wire:click="addClubPersonne" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Ajouter une personne</button>
+                    </div>
+                </div>
             </div>
             <div class="mb-4">
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines associées</label>
@@ -124,9 +174,7 @@
             </div>
         </form>
     </div>
-    <livewire:lieu-modal />
-    <livewire:discipline-modal />
-    <livewire:source-modal />
+    @livewire('lieu-modal')
+    @livewire('discipline-modal')
+    @livewire('source-modal')
 </div>
-
-

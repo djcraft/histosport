@@ -3,6 +3,7 @@
 namespace App\Livewire\Clubs;
 
 use Livewire\Component;
+use Illuminate\Support\Facades\DB;
 
 use App\Models\Club;
 use App\Models\Personne;
@@ -29,10 +30,13 @@ class Edit extends Component
     public $lieux = [];
 
     // Propriétés liées aux champs cachés SearchBar
-    public $selected_personne_id = [];
+    // Pour la gestion des mandats datés
+    public $clubPersonnes = [];
     public $selected_discipline_id = [];
     public $selected_source_id = [];
     public $selected_lieu_id = null;
+    // Pour la gestion de la présence simple (multi-select)
+    public $selected_personne_id = [];
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',
@@ -75,8 +79,30 @@ class Edit extends Component
         $this->disciplines = Discipline::all();
         $this->lieux = Lieu::all();
 
-        // Initialisation des propriétés pour SearchBar
-        $this->selected_personne_id = $club->personnes->pluck('personne_id')->toArray();
+        // Séparation mandats datés / présence simple
+        $this->clubPersonnes = [];
+        $this->selected_personne_id = [];
+        if ($club->clubPersonnes) {
+            foreach ($club->clubPersonnes as $mandat) {
+                $isSimple = empty($mandat->role)
+                    && empty($mandat->date_debut)
+                    && empty($mandat->date_debut_precision)
+                    && empty($mandat->date_fin)
+                    && empty($mandat->date_fin_precision);
+                if ($isSimple) {
+                    $this->selected_personne_id[] = $mandat->personne_id;
+                } else {
+                    $this->clubPersonnes[] = [
+                        'personne_id' => $mandat->personne_id,
+                        'role' => $mandat->role,
+                        'date_debut' => $mandat->date_debut,
+                        'date_debut_precision' => $mandat->date_debut_precision,
+                        'date_fin' => $mandat->date_fin,
+                        'date_fin_precision' => $mandat->date_fin_precision,
+                    ];
+                }
+            }
+        }
         $this->selected_discipline_id = $club->disciplines->pluck('discipline_id')->toArray();
         $this->selected_source_id = $club->sources->pluck('source_id')->toArray();
         $this->selected_lieu_id = $club->siege_id;
@@ -89,7 +115,7 @@ class Edit extends Component
             'sources' => $this->sources,
             'personnes' => $this->personnes,
             'disciplines' => $this->disciplines,
-            'selectedPersonnes' => $this->selected_personne_id,
+            'clubPersonnes' => $this->clubPersonnes,
             'selectedDisciplines' => $this->selected_discipline_id,
             'selectedSources' => $this->selected_source_id,
             'siege_id' => $this->selected_lieu_id,
@@ -108,25 +134,25 @@ class Edit extends Component
         $dateDisparitionPrecision = null;
         $dateDeclarationPrecision = null;
         if (preg_match('/^\d{4}$/', $this->date_fondation)) {
-            $dateFondationPrecision = 'year';
+            $dateFondationPrecision = 'année';
         } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_fondation)) {
-            $dateFondationPrecision = 'month';
+            $dateFondationPrecision = 'mois';
         } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_fondation)) {
-            $dateFondationPrecision = 'day';
+            $dateFondationPrecision = 'jour';
         }
         if (preg_match('/^\d{4}$/', $this->date_disparition)) {
-            $dateDisparitionPrecision = 'year';
+            $dateDisparitionPrecision = 'année';
         } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_disparition)) {
-            $dateDisparitionPrecision = 'month';
+            $dateDisparitionPrecision = 'mois';
         } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_disparition)) {
-            $dateDisparitionPrecision = 'day';
+            $dateDisparitionPrecision = 'jour';
         }
         if (preg_match('/^\d{4}$/', $this->date_declaration)) {
-            $dateDeclarationPrecision = 'year';
+            $dateDeclarationPrecision = 'année';
         } elseif (preg_match('/^\d{4}-\d{2}$/', $this->date_declaration)) {
-            $dateDeclarationPrecision = 'month';
+            $dateDeclarationPrecision = 'mois';
         } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->date_declaration)) {
-            $dateDeclarationPrecision = 'day';
+            $dateDeclarationPrecision = 'jour';
         }
 
         $this->club->update([
@@ -153,11 +179,61 @@ class Edit extends Component
         $this->club->refresh();
         $this->club->load('sources');
 
-        // Personnes (many-to-many)
-        if (!empty($this->selected_personne_id)) {
-            $this->club->personnes()->sync($this->selected_personne_id);
-        } else {
-            $this->club->personnes()->sync([]);
+        // Mandats datés (clubPersonnes) + présence simple fusionnés
+        $mandatsToInsert = [];
+        $mandatPersonneIds = [];
+        // Mandats datés : chaque mandat est une ligne
+        foreach ($this->clubPersonnes as $mandat) {
+            $personneId = null;
+            if (is_array($mandat) && isset($mandat['personne_id'])) {
+                $personneId = (int)$mandat['personne_id'];
+            } elseif (is_object($mandat) && isset($mandat->personne_id)) {
+                $personneId = (int)$mandat->personne_id;
+            }
+            if ($personneId) {
+                $mandatsToInsert[] = [
+                    'club_id' => $this->club->club_id,
+                    'personne_id' => $personneId,
+                    'role' => $mandat['role'] ?? null,
+                    'date_debut' => $mandat['date_debut'] ?? null,
+                    'date_debut_precision' => $mandat['date_debut_precision'] ?? null,
+                    'date_fin' => $mandat['date_fin'] ?? null,
+                    'date_fin_precision' => $mandat['date_fin_precision'] ?? null,
+                ];
+                $mandatPersonneIds[] = $personneId;
+            }
+        }
+        // Présence simple : une ligne par personne non déjà présente dans les mandats datés
+        $ids = array_map(function($item) {
+            if (is_array($item) && isset($item['personne_id'])) {
+                return (int)$item['personne_id'];
+            }
+            if (is_object($item) && isset($item->personne_id)) {
+                return (int)$item->personne_id;
+            }
+            if (is_scalar($item)) {
+                return (int)$item;
+            }
+            return null;
+        }, $this->selected_personne_id);
+        $ids = array_filter($ids); // retire les 0 ou null
+        foreach ($ids as $id) {
+            // Toujours ajouter une ligne de présence simple, même si la personne a déjà un mandat daté
+            $mandatsToInsert[] = [
+                'club_id' => $this->club->club_id,
+                'personne_id' => $id,
+                'role' => null,
+                'date_debut' => null,
+                'date_debut_precision' => null,
+                'date_fin' => null,
+                'date_fin_precision' => null,
+            ];
+        }
+        // On supprime tous les mandats existants pour ce club
+        DB::table('club_personne')->where('club_id', $this->club->club_id)->delete();
+        // On ajoute chaque mandat individuellement (plusieurs lignes par personne/club possible)
+        foreach ($mandatsToInsert as $pivot) {
+            DB::table('club_personne')->insert($pivot);
         }
 
         // Disciplines (many-to-many)
@@ -169,5 +245,27 @@ class Edit extends Component
 
         session()->flash('success', 'Club mis à jour avec succès.');
         return redirect()->route('clubs.index');
+    }
+
+    // Méthode pour ajouter un mandat
+    public function addClubPersonne()
+    {
+        $newMandat = [
+            'personne_id' => null,
+            'role' => null,
+            'date_debut' => null,
+            'date_debut_precision' => 'année',
+            'date_fin' => null,
+            'date_fin_precision' => 'année',
+        ];
+        $this->clubPersonnes[] = $newMandat;
+    }
+
+
+    // Méthode pour supprimer un mandat
+    public function removeClubPersonne($index)
+    {
+        unset($this->clubPersonnes[$index]);
+        $this->clubPersonnes = array_values($this->clubPersonnes);
     }
 }
