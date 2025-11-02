@@ -33,10 +33,8 @@
                     <a href="{{ route('lieux.show', $personne->lieu_naissance) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
                         {{ $personne->lieu_naissance->nom ?? '' }}{{ $personne->lieu_naissance->nom ? ', ' : '' }}
                         {{ $personne->lieu_naissance->adresse ?? '' }}{{ $personne->lieu_naissance->adresse ? ', ' : '' }}
-                        {{ $personne->lieu_naissance->code_postal ?? '' }}{{ $personne->lieu_naissance->code_postal ? ', ' : '' }}
                         {{ $personne->lieu_naissance->commune ?? '' }}{{ $personne->lieu_naissance->commune ? ', ' : '' }}
-                        {{ $personne->lieu_naissance->departement ?? '' }}{{ $personne->lieu_naissance->departement ? ', ' : '' }}
-                        {{ $personne->lieu_naissance->pays ?? '' }}
+                        {{ $personne->lieu_naissance->code_postal ?? '' }}
                     </a>
                 @else
                     <span class="block text-gray-900 dark:text-gray-100">-</span>
@@ -54,10 +52,8 @@
                     <a href="{{ route('lieux.show', $personne->lieu_deces) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
                         {{ $personne->lieu_deces->nom ?? '' }}{{ $personne->lieu_deces->nom ? ', ' : '' }}
                         {{ $personne->lieu_deces->adresse ?? '' }}{{ $personne->lieu_deces->adresse ? ', ' : '' }}
-                        {{ $personne->lieu_deces->code_postal ?? '' }}{{ $personne->lieu_deces->code_postal ? ', ' : '' }}
                         {{ $personne->lieu_deces->commune ?? '' }}{{ $personne->lieu_deces->commune ? ', ' : '' }}
-                        {{ $personne->lieu_deces->departement ?? '' }}{{ $personne->lieu_deces->departement ? ', ' : '' }}
-                        {{ $personne->lieu_deces->pays ?? '' }}
+                        {{ $personne->lieu_deces->code_postal ?? '' }}
                     </a>
                 @else
                     <span class="block text-gray-900 dark:text-gray-100">-</span>
@@ -76,11 +72,10 @@
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Adresse :</span>
             @if($personne->adresse)
                 <a href="{{ route('lieux.show', $personne->adresse) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
+                    {{ $personne->adresse->nom ?? '' }}{{ $personne->adresse->nom ? ', ' : '' }}
                     {{ $personne->adresse->adresse ?? '' }}{{ $personne->adresse->adresse ? ', ' : '' }}
-                    {{ $personne->adresse->code_postal ?? '' }}{{ $personne->adresse->code_postal ? ', ' : '' }}
                     {{ $personne->adresse->commune ?? '' }}{{ $personne->adresse->commune ? ', ' : '' }}
-                    {{ $personne->adresse->departement ?? '' }}{{ $personne->adresse->departement ? ', ' : '' }}
-                    {{ $personne->adresse->pays ?? '' }}
+                    {{ $personne->adresse->code_postal ?? '' }}
                 </a>
             @else
                 <span class="block text-gray-900 dark:text-gray-100">-</span>

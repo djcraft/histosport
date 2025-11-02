@@ -20,7 +20,7 @@
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            :display-fields="['nom','adresse','commune','departement','pays']"
+                            :display-fields="['nom','adresse','commune','code_postal']"
                             id-field="lieu_id"
                             multi=false
                             :search-fields="['nom','adresse','commune','departement','pays']"
@@ -48,7 +48,7 @@
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            :display-fields="['nom','adresse','commune','departement','pays']"
+                            :display-fields="['nom','adresse','commune','code_postal']"
                             id-field="lieu_id"
                             multi=false
                             :search-fields="['nom','adresse','commune','departement','pays']"

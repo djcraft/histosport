@@ -16,7 +16,7 @@
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
-                            :display-fields="['nom','adresse','commune','departement','pays']"
+                            :display-fields="['nom','adresse','commune','code_postal']"
                             id-field="lieu_id"
                             multi=false
                             :search-fields="['nom','adresse','commune','departement','pays']"
@@ -38,7 +38,7 @@
                 <label class="block text-gray-700 dark:text-gray-300 mb-2">Sites de la compétition</label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Lieu"
-                    :display-fields="['nom','adresse','commune','departement','pays']"
+                    :display-fields="['nom','adresse','commune','code_postal']"
                     id-field="lieu_id"
                     multi=true
                     :search-fields="['nom','adresse','commune','departement','pays']"
@@ -69,7 +69,7 @@
                     <label class="block text-gray-700 dark:text-gray-300 mb-2">Organisateur (personne)</label>
                     <livewire:search-bar
                         entity-class="App\\Models\\Personne"
-                        display-field="nom"
+                        :display-fields="['nom','prenom']"
                         id-field="personne_id"
                         multi=false
                         :search-fields="['nom','prenom']"
@@ -128,7 +128,7 @@
                 <label class="block text-gray-700 dark:text-gray-300 mb-2 mt-4">Participants (personnes)</label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Personne"
-                    display-field="nom"
+                    :display-fields="['nom','prenom']"
                     id-field="personne_id"
                     multi=true
                     :search-fields="['nom','prenom']"

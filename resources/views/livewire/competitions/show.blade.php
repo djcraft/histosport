@@ -18,10 +18,8 @@
                             <a href="{{ route('lieux.show', $competition->lieu) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
                                 {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
                                 {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
-                                {{ $competition->lieu->code_postal ?? '' }}{{ $competition->lieu->code_postal ? ', ' : '' }}
                                 {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
-                                {{ $competition->lieu->departement ?? '' }}{{ $competition->lieu->departement ? ', ' : '' }}
-                                {{ $competition->lieu->pays ?? '' }}
+                                {{ $competition->lieu->code_postal ?? '' }}
                             </a>
                         @else
                             <span class="block text-gray-900 dark:text-gray-100">-</span>
@@ -34,10 +32,8 @@
                             <a href="{{ route('lieux.show', $site) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
                                 {{ $site->nom ?? '' }}{{ $site->nom ? ', ' : '' }}
                                 {{ $site->adresse ?? '' }}{{ $site->adresse ? ', ' : '' }}
-                                {{ $site->code_postal ?? '' }}{{ $site->code_postal ? ', ' : '' }}
                                 {{ $site->commune ?? '' }}{{ $site->commune ? ', ' : '' }}
-                                {{ $site->departement ?? '' }}{{ $site->departement ? ', ' : '' }}
-                                {{ $site->pays ?? '' }}
+                                {{ $site->code_postal ?? '' }}
                                 @if($site->pivot->type)
                                     <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $site->pivot->type }})</span>
                                 @endif
@@ -58,6 +54,7 @@
                 @elseif($competition->organisateur_personne)
                     <a href="{{ route('personnes.show', $competition->organisateur_personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                         {{ $competition->organisateur_personne->nom }}
+                        {{ $competition->organisateur_personne->prenom }}
                     </a>
                 @else
                     <span class="block text-gray-900 dark:text-gray-100">-</span>
@@ -102,6 +99,7 @@
                     @elseif($participant->personne)
                         <a href="{{ route('personnes.show', $participant->personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
                             {{ $participant->personne->nom }}
+                            {{ $participant->personne->prenom }}
                             @if($participant->resultat)
                                 <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $participant->resultat }})</span>
                             @endif

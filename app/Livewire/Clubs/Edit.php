@@ -155,6 +155,7 @@ class Edit extends Component
             $dateDeclarationPrecision = 'jour';
         }
 
+        $siege_id = is_array($this->selected_lieu_id) ? (count($this->selected_lieu_id) ? intval($this->selected_lieu_id[0]) : null) : $this->selected_lieu_id;
         $this->club->update([
             'nom' => $this->nom,
             'nom_origine' => $this->nom_origine,
@@ -168,7 +169,7 @@ class Edit extends Component
             'acronyme' => $this->acronyme,
             'couleurs' => $this->couleurs,
             'notes' => $this->notes,
-            'siege_id' => $this->selected_lieu_id,
+            'siege_id' => $siege_id,
         ]);
 
         // Sources (morphToMany)
