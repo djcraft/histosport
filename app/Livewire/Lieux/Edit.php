@@ -28,7 +28,7 @@ class Edit extends Component
     public function update()
     {
         $this->validate([
-            'nom' => 'required|string|max:255',
+            'nom' => 'nullable|string|max:255',
             'adresse' => 'nullable|string|max:255',
             'code_postal' => 'nullable|string|max:20',
             'commune' => 'nullable|string|max:100',

@@ -30,7 +30,7 @@ class DisciplineModal extends Component
             'nom' => $this->nom,
             'description' => $this->description,
         ]);
-        $this->dispatch('disciplineCreated', id: $discipline->id);
+        $this->dispatch('disciplineCreated', id: $discipline->discipline_id);
         $this->show = false;
     }
 

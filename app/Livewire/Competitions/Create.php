@@ -27,6 +27,7 @@ class Create extends Component
     public $selected_source_id = [];
     public $resetKeyClub = 0;
     public $resetKeyPersonne = 0;
+    public $resetKeyLieu = 0;
 
     protected $listeners = [
         'reset-organisateur-club' => 'forceResetOrganisateurClub',
@@ -38,17 +39,20 @@ class Create extends Component
 
     public function onLieuCreated($id)
     {
-        $this->lieu_id = $id;
+    $this->lieu_id = $id;
+    $this->resetKeyLieu++;
     }
 
     public function onDisciplineCreated($id)
     {
-        $this->discipline_ids[] = $id;
+    $this->discipline_ids = array_filter((array)$this->discipline_ids, fn($v) => !is_null($v) && $v !== '');
+    $this->discipline_ids[] = $id;
+    $this->dispatch('$refresh');
     }
 
     public function onSourceCreated($id)
     {
-        $this->selected_source_id[] = $id;
+    $this->sources[] = $id;
     }
 
     public function forceResetOrganisateurClub()
@@ -106,7 +110,15 @@ class Create extends Component
         $clubs = \App\Models\Club::all();
         $personnes = \App\Models\Personne::all();
         $allDisciplines = Discipline::all();
-        return view('livewire.competitions.create', compact('allSources', 'lieux', 'clubs', 'personnes', 'allDisciplines'));
+        // Correction : discipline_ids doit toujours être un tableau
+        $this->discipline_ids = is_array($this->discipline_ids) ? $this->discipline_ids : collect($this->discipline_ids)->toArray();
+        $this->discipline_ids = array_filter((array)$this->discipline_ids, fn($v) => !is_null($v) && $v !== '');
+        $ids = $this->discipline_ids;
+        $selectedDisciplines = [];
+        if (!empty($ids)) {
+            $selectedDisciplines = \App\Models\Discipline::whereIn('discipline_id', $ids)->get();
+        }
+        return view('livewire.competitions.create', compact('allSources', 'lieux', 'clubs', 'personnes', 'allDisciplines', 'selectedDisciplines'));
     }
 
     public function save()
@@ -149,7 +161,6 @@ class Create extends Component
         foreach ((array)$this->participant_personne_ids as $personneId) {
             if ($personneId) $this->participants[] = 'personne_' . $personneId;
         }
-        $this->sources = (array)$this->selected_source_id;
 
         $competition = Competition::create([
             'nom' => $this->nom,

@@ -42,8 +42,9 @@ class LieuModal extends Component
             'departement' => $this->departement,
             'pays' => $this->pays,
         ]);
-        $this->dispatch('lieuCreated', id: $lieu->id);
+        $this->dispatch('lieuCreated', id: $lieu->lieu_id);
         $this->show = false;
+        $this->dispatch('$refresh');
     }
 
     public function render()
