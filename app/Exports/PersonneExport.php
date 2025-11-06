@@ -26,12 +26,26 @@ class PersonneExport extends BaseExport
         return 'personne_id';
     }
 
+    protected function formatLieu($lieu)
+    {
+        if (!$lieu) return ', , , , , ';
+        $fields = [
+            $lieu->nom ?? '',
+            $lieu->adresse ?? '',
+            $lieu->commune ?? '',
+            $lieu->code_postal ?? '',
+            $lieu->departement ?? '',
+            $lieu->pays ?? ''
+        ];
+        return implode(', ', $fields);
+    }
+
     protected function transform($personne)
     {
         $clubs = $this->formatListe($personne->clubs);
-        $adresse = $this->formatAdresse($personne->adresse);
-        $lieu_naissance = $this->formatAdresse($personne->lieu_naissance);
-        $lieu_deces = $this->formatAdresse($personne->lieu_deces);
+        $adresse = $this->formatLieu($personne->adresse);
+        $lieu_naissance = $this->formatLieu($personne->lieu_naissance);
+        $lieu_deces = $this->formatLieu($personne->lieu_deces);
         return [
             'nom' => $personne->nom,
             'prenom' => $personne->prenom,

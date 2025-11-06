@@ -27,9 +27,23 @@ class ClubExport extends BaseExport
         return 'club_id';
     }
 
+    protected function formatLieu($lieu)
+    {
+        if (!$lieu) return ', , , , , ';
+        $fields = [
+            $lieu->nom ?? '',
+            $lieu->adresse ?? '',
+            $lieu->commune ?? '',
+            $lieu->code_postal ?? '',
+            $lieu->departement ?? '',
+            $lieu->pays ?? ''
+        ];
+        return implode(', ', $fields);
+    }
+
     protected function transform($club)
     {
-        $adresse = $this->formatAdresse($club->siege);
+        $adresse = $this->formatLieu($club->siege);
         $personnes = $club->personnes->map(function($p) {
             return trim($p->nom . ' ' . $p->prenom);
         })->implode(', ');

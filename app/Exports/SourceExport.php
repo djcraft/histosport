@@ -26,6 +26,20 @@ class SourceExport extends BaseExport
         return 'source_id';
     }
 
+    protected function formatLieu($lieu)
+    {
+        if (!$lieu) return ', , , , , ';
+        $fields = [
+            $lieu->nom ?? '',
+            $lieu->adresse ?? '',
+            $lieu->commune ?? '',
+            $lieu->code_postal ?? '',
+            $lieu->departement ?? '',
+            $lieu->pays ?? ''
+        ];
+        return implode(', ', $fields);
+    }
+
     protected function transform($source)
     {
         return [
@@ -34,9 +48,9 @@ class SourceExport extends BaseExport
             'annee_reference' => $source->annee_reference,
             'type' => $source->type,
             'cote' => $source->cote,
-            'lieu_edition' => $this->formatAdresse($source->lieuEdition),
-            'lieu_conservation' => $this->formatAdresse($source->lieuConservation),
-            'lieu_couverture' => $this->formatAdresse($source->lieuCouverture),
+            'lieu_edition' => $this->formatLieu($source->lieuEdition),
+            'lieu_conservation' => $this->formatLieu($source->lieuConservation),
+            'lieu_couverture' => $this->formatLieu($source->lieuCouverture),
             'url' => $source->url,
         ];
     }

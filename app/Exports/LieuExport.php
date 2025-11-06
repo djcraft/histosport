@@ -17,14 +17,25 @@ class LieuExport extends BaseExport
         return 'lieu_id';
     }
 
+    protected function formatLieu($lieu)
+    {
+        if (!$lieu) return ', , , , , ';
+        $fields = [
+            $lieu->nom ?? '',
+            $lieu->adresse ?? '',
+            $lieu->commune ?? '',
+            $lieu->code_postal ?? '',
+            $lieu->departement ?? '',
+            $lieu->pays ?? ''
+        ];
+        return implode(', ', $fields);
+    }
+
     protected function transform($lieu)
     {
+        $adresse = $this->formatLieu($lieu);
         return [
-            'adresse' => $lieu->adresse,
-            'code_postal' => $lieu->code_postal,
-            'commune' => $lieu->commune,
-            'departement' => $lieu->departement,
-            'pays' => $lieu->pays,
+            'adresse' => $adresse,
         ];
     }
 
@@ -32,10 +43,6 @@ class LieuExport extends BaseExport
     {
         return [
             'adresse',
-            'code_postal',
-            'commune',
-            'departement',
-            'pays',
         ];
     }
 }
