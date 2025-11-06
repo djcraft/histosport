@@ -3,37 +3,45 @@
 namespace App\Imports;
 
 use App\Models\Lieu;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use App\Imports\BaseImport;
 use Maatwebsite\Excel\Concerns\Importable;
 
-class LieuImport implements ToModel, WithHeadingRow
+class LieuImport extends BaseImport
 {
     use Importable;
 
-    public $created = [];
-    public $updated = [];
-    public $errors = [];
-
     public function model(array $row)
     {
+        $data = [
+            'nom' => $row['nom'] ?? null,
+            'adresse' => $row['adresse'] ?? null,
+            'commune' => $row['commune'] ?? null,
+            'code_postal' => $row['code_postal'] ?? null,
+            'departement' => $row['departement'] ?? null,
+            'pays' => $row['pays'] ?? null,
+        ];
         try {
-            $data = [
-                'adresse' => $row['adresse'] ?? null,
-                'code_postal' => $row['code_postal'] ?? null,
-                'commune' => $row['commune'] ?? null,
-            ];
-            $lieu = Lieu::where('adresse', $data['adresse'])
-                ->where('code_postal', $data['code_postal'])
-                ->where('commune', $data['commune'])
-                ->first();
+            $lieuFieldsCreate = Lieu::normalizeFields([
+                $row['nom'] ?? null,
+                $row['adresse'] ?? null,
+                $row['commune'] ?? null,
+                $row['code_postal'] ?? null,
+                $row['departement'] ?? null,
+                $row['pays'] ?? null,
+            ], false);
+            $lieu = Lieu::findNormalized($lieuFieldsCreate);
             if ($lieu) {
-                $lieu->update($data);
-                $this->updated[] = $data['adresse'];
+                $lieu->update($lieuFieldsCreate);
+                $this->updated[] = $lieuFieldsCreate['nom'] ?? $lieuFieldsCreate['adresse'];
             } else {
-                $lieu = Lieu::create($data);
-                $this->created[] = $data['adresse'];
+                $lieu = Lieu::create($lieuFieldsCreate);
+                $this->created[] = $lieuFieldsCreate['nom'] ?? $lieuFieldsCreate['adresse'];
             }
+        } catch (\Exception $e) {
+            $this->errors[] = $row['adresse'] ?? '';
+            return null;
+        }
+        try {
             // Synchronisation des liens (sources, clubs, personnes, compétitions)
             // Sources
             $sourceIds = [];
@@ -89,11 +97,9 @@ class LieuImport implements ToModel, WithHeadingRow
                 }
             }
             $lieu->competitions()->sync($competitionIds);
-
-            return $lieu;
         } catch (\Exception $e) {
-            $this->errors[] = $row['adresse'] ?? '';
-            return null;
+            \Log::error('Erreur association lieu (sources/clubs/personnes/compétitions) : ' . ($row['adresse'] ?? '') . ' - ' . $e->getMessage());
         }
+        return $lieu;
     }
 }

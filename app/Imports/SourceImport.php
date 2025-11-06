@@ -4,55 +4,47 @@ namespace App\Imports;
 
 use App\Models\Source;
 use App\Models\Lieu;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use App\Imports\BaseImport;
 use Maatwebsite\Excel\Concerns\Importable;
 
-class SourceImport implements ToModel, WithHeadingRow
+class SourceImport extends BaseImport
 {
     use Importable;
 
-    public $created = [];
-    public $updated = [];
-    public $errors = [];
-
     public function model(array $row)
     {
+        $data = [
+            'titre' => $row['titre'] ?? null,
+            'auteur' => $row['auteur'] ?? null,
+            'annee_reference' => $row['annee_reference'] ?? null,
+            'type' => $row['type'] ?? null,
+            'cote' => $row['cote'] ?? null,
+            'url' => $row['url'] ?? null,
+        ];
         try {
-            $data = [
-                'titre' => $row['titre'] ?? null,
-                'auteur' => $row['auteur'] ?? null,
-                'annee_reference' => $row['annee_reference'] ?? null,
-                'type' => $row['type'] ?? null,
-                'cote' => $row['cote'] ?? null,
-                'url' => $row['url'] ?? null,
-            ];
             // Lieux liés
             if (!empty($row['lieu_edition'])) {
-                $lieuParts = explode(',', $row['lieu_edition']);
-                $lieuEdition = Lieu::firstOrCreate([
-                    'adresse' => trim($lieuParts[0] ?? ''),
-                    'code_postal' => trim($lieuParts[1] ?? ''),
-                    'commune' => trim($lieuParts[2] ?? ''),
-                ]);
+                $lieuFieldsCreate = Lieu::normalizeFields(explode(',', $row['lieu_edition']), false);
+                $lieuEdition = Lieu::findNormalized($lieuFieldsCreate);
+                if (!$lieuEdition) {
+                    $lieuEdition = Lieu::create($lieuFieldsCreate);
+                }
                 $data['lieu_edition_id'] = $lieuEdition->lieu_id;
             }
             if (!empty($row['lieu_conservation'])) {
-                $lieuParts = explode(',', $row['lieu_conservation']);
-                $lieuConservation = Lieu::firstOrCreate([
-                    'adresse' => trim($lieuParts[0] ?? ''),
-                    'code_postal' => trim($lieuParts[1] ?? ''),
-                    'commune' => trim($lieuParts[2] ?? ''),
-                ]);
+                $lieuFieldsCreate = Lieu::normalizeFields(explode(',', $row['lieu_conservation']), false);
+                $lieuConservation = Lieu::findNormalized($lieuFieldsCreate);
+                if (!$lieuConservation) {
+                    $lieuConservation = Lieu::create($lieuFieldsCreate);
+                }
                 $data['lieu_conservation_id'] = $lieuConservation->lieu_id;
             }
             if (!empty($row['lieu_couverture'])) {
-                $lieuParts = explode(',', $row['lieu_couverture']);
-                $lieuCouverture = Lieu::firstOrCreate([
-                    'adresse' => trim($lieuParts[0] ?? ''),
-                    'code_postal' => trim($lieuParts[1] ?? ''),
-                    'commune' => trim($lieuParts[2] ?? ''),
-                ]);
+                $lieuFieldsCreate = Lieu::normalizeFields(explode(',', $row['lieu_couverture']), false);
+                $lieuCouverture = Lieu::findNormalized($lieuFieldsCreate);
+                if (!$lieuCouverture) {
+                    $lieuCouverture = Lieu::create($lieuFieldsCreate);
+                }
                 $data['lieu_couverture_id'] = $lieuCouverture->lieu_id;
             }
             $source = Source::where('titre', $data['titre'])->first();
@@ -75,6 +67,11 @@ class SourceImport implements ToModel, WithHeadingRow
                 }
             }
             $source->save();
+        } catch (\Exception $e) {
+            $this->errors[] = $row['titre'] ?? '';
+            return null;
+        }
+        try {
             // Synchronisation des entités liées (entity_source)
             // Clubs
             $clubIds = [];
@@ -130,11 +127,9 @@ class SourceImport implements ToModel, WithHeadingRow
                 }
             }
             $source->lieux()->sync($lieuIds);
-
-            return $source;
         } catch (\Exception $e) {
-            $this->errors[] = $row['titre'] ?? '';
-            return null;
+            \Log::error('Erreur association source (clubs/personnes/compétitions/lieux) : ' . ($row['titre'] ?? '') . ' - ' . $e->getMessage());
         }
+        return $source;
     }
 }

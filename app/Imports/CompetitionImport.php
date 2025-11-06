@@ -6,37 +6,32 @@ use App\Models\Competition;
 use App\Models\Club;
 use App\Models\Discipline;
 use App\Models\Lieu;
-use Maatwebsite\Excel\Concerns\ToModel;
-use Maatwebsite\Excel\Concerns\WithHeadingRow;
+use App\Imports\BaseImport;
 use Maatwebsite\Excel\Concerns\Importable;
 
-class CompetitionImport implements ToModel, WithHeadingRow
+class CompetitionImport extends BaseImport
 {
     use Importable;
 
-    public $created = [];
-    public $updated = [];
-    public $errors = [];
-
     public function model(array $row)
     {
+        // ...existing code...
+        $data = [
+            'nom' => $row['nom'] ?? null,
+            'date' => $row['date'] ?? null,
+            'date_precision' => $row['date_precision'] ?? null,
+            'type' => $row['type'] ?? null,
+            'duree' => $row['duree'] ?? null,
+            'niveau' => $row['niveau'] ?? null,
+        ];
         try {
-            $data = [
-                'nom' => $row['nom'] ?? null,
-                'date' => $row['date'] ?? null,
-                'date_precision' => $row['date_precision'] ?? null,
-                'type' => $row['type'] ?? null,
-                'duree' => $row['duree'] ?? null,
-                'niveau' => $row['niveau'] ?? null,
-            ];
-            // Lieu
+            // Lieu principal
             if (!empty($row['lieu'])) {
-                $lieuParts = explode(',', $row['lieu']);
-                $lieu = Lieu::firstOrCreate([
-                    'adresse' => trim($lieuParts[0] ?? ''),
-                    'code_postal' => trim($lieuParts[1] ?? ''),
-                    'commune' => trim($lieuParts[2] ?? ''),
-                ]);
+                $lieuFieldsCreate = Lieu::normalizeFields(explode(',', $row['lieu']), false);
+                $lieu = Lieu::findNormalized($lieuFieldsCreate);
+                if (!$lieu) {
+                    $lieu = Lieu::create($lieuFieldsCreate);
+                }
                 $data['lieu_id'] = $lieu->lieu_id;
             }
             // Organisateur club
@@ -63,6 +58,29 @@ class CompetitionImport implements ToModel, WithHeadingRow
                 $competition = Competition::create($data);
                 $this->created[] = $data['nom'];
             }
+        } catch (\Exception $e) {
+            $this->errors[] = $row['nom'] ?? '';
+            return null;
+        }
+        try {
+            // Association des sites (lieux multiples)
+            if (!empty($row['sites'])) {
+                $siteStrs = array_map('trim', explode(';', $row['sites']));
+                $siteIds = [];
+                foreach ($siteStrs as $siteStr) {
+                    $lieuFieldsCreate = Lieu::normalizeFields(explode(',', $siteStr), false);
+                    $lieu = Lieu::findNormalized($lieuFieldsCreate);
+                    if (!$lieu) {
+                        $lieu = Lieu::create($lieuFieldsCreate);
+                    }
+                    $siteIds[] = $lieu->lieu_id;
+                }
+                $competition->sites()->sync($siteIds);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Erreur association compétition (sites) : ' . ($row['nom'] ?? '') . ' - ' . $e->getMessage());
+        }
+        try {
             // Disciplines
             if (!empty($row['disciplines'])) {
                 $disciplineNames = array_map('trim', explode(',', $row['disciplines']));
@@ -74,21 +92,25 @@ class CompetitionImport implements ToModel, WithHeadingRow
                 $competition->disciplines()->sync($disciplineIds);
             }
 
-            // Clubs et personnes via CompetitionParticipant
+            // Clubs et personnes avec résultats
             // Clubs
-            $clubNames = !empty($row['clubs']) ? array_map('trim', explode(',', $row['clubs'])) : [];
+            $clubResults = !empty($row['resultats_clubs']) ? array_map('trim', explode('|', $row['resultats_clubs'])) : [];
             $clubIds = [];
-            foreach ($clubNames as $clubName) {
+            foreach ($clubResults as $clubResult) {
+                [$clubName, $resultat] = array_map('trim', explode(':', $clubResult, 2));
                 $club = Club::firstOrCreate(['nom' => $clubName]);
                 $clubIds[] = $club->club_id;
-                $exists = \App\Models\CompetitionParticipant::where('competition_id', $competition->competition_id)
+                $participant = \App\Models\CompetitionParticipant::where('competition_id', $competition->competition_id)
                     ->where('club_id', $club->club_id)
                     ->whereNull('personne_id')
-                    ->exists();
-                if (!$exists) {
+                    ->first();
+                if ($participant) {
+                    $participant->update(['resultat' => $resultat]);
+                } else {
                     \App\Models\CompetitionParticipant::create([
                         'competition_id' => $competition->competition_id,
                         'club_id' => $club->club_id,
+                        'resultat' => $resultat,
                     ]);
                 }
             }
@@ -99,9 +121,10 @@ class CompetitionImport implements ToModel, WithHeadingRow
                 ->delete();
 
             // Personnes
-            $personnesList = !empty($row['personnes']) ? array_map('trim', explode(',', $row['personnes'])) : [];
+            $personneResults = !empty($row['resultats_personnes']) ? array_map('trim', explode('|', $row['resultats_personnes'])) : [];
             $personneIds = [];
-            foreach ($personnesList as $personneFullName) {
+            foreach ($personneResults as $personneResult) {
+                [$personneFullName, $resultat] = array_map('trim', explode(':', $personneResult, 2));
                 $personneParts = explode(' ', $personneFullName);
                 $prenom = array_shift($personneParts);
                 $nom = implode(' ', $personneParts);
@@ -110,14 +133,17 @@ class CompetitionImport implements ToModel, WithHeadingRow
                     'nom' => $nom,
                 ]);
                 $personneIds[] = $personne->personne_id;
-                $exists = \App\Models\CompetitionParticipant::where('competition_id', $competition->competition_id)
+                $participant = \App\Models\CompetitionParticipant::where('competition_id', $competition->competition_id)
                     ->where('personne_id', $personne->personne_id)
                     ->whereNull('club_id')
-                    ->exists();
-                if (!$exists) {
+                    ->first();
+                if ($participant) {
+                    $participant->update(['resultat' => $resultat]);
+                } else {
                     \App\Models\CompetitionParticipant::create([
                         'competition_id' => $competition->competition_id,
                         'personne_id' => $personne->personne_id,
+                        'resultat' => $resultat,
                     ]);
                 }
             }
@@ -127,10 +153,23 @@ class CompetitionImport implements ToModel, WithHeadingRow
                 ->whereNull('club_id')
                 ->delete();
 
-            return $competition;
+            // Association des sites (lieux multiples) avec formatage
+            if (!empty($row['sites'])) {
+                $siteStrs = array_map('trim', explode(';', $row['sites']));
+                $siteIds = [];
+                foreach ($siteStrs as $siteStr) {
+                    $lieuFieldsCreate = Lieu::normalizeFields(explode(',', $siteStr), false);
+                    $lieu = Lieu::findNormalized($lieuFieldsCreate);
+                    if (!$lieu) {
+                        $lieu = Lieu::create($lieuFieldsCreate);
+                    }
+                    $siteIds[] = $lieu->lieu_id;
+                }
+                $competition->sites()->sync($siteIds);
+            }
         } catch (\Exception $e) {
-            $this->errors[] = $row['nom'] ?? '';
-            return null;
+            \Log::error('Erreur association compétition (disciplines/clubs/personnes/sites) : ' . ($row['nom'] ?? '') . ' - ' . $e->getMessage());
         }
+        return $competition;
     }
 }
