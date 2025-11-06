@@ -8,8 +8,112 @@ use App\Models\Competition;
 use App\Models\Discipline;
 
 class Create extends Component
-
 {
+    // Suppression d’un participant (avec ou sans résultat)
+    public function supprimerParticipant($index)
+    {
+        if (isset($this->participants[$index])) {
+            array_splice($this->participants, $index, 1);
+        }
+    }
+    // Règles de validation Livewire pour le formulaire
+    protected $rules = [
+        'nom' => 'required|string|max:255',
+        'discipline_ids' => 'nullable|array',
+        'discipline_ids.*' => 'exists:disciplines,discipline_id',
+        'site_ids' => 'nullable|array',
+        'site_ids.*' => 'exists:lieu,lieu_id',
+        'participant_club_ids' => 'nullable|array',
+        'participant_club_ids.*' => 'exists:clubs,club_id',
+        'participant_personne_ids' => 'nullable|array',
+        'participant_personne_ids.*' => 'exists:personnes,personne_id',
+    ];
+    // Multi sélection pour participants sans résultat
+    // (doublon supprimé)
+
+    // La liste des participants (sans résultat) est générée dynamiquement à partir des IDs sélectionnés
+    public function getParticipantsProperty()
+    {
+        $clubs = \App\Models\Club::whereIn('club_id', (array)$this->participant_club_ids)->get();
+        $personnes = \App\Models\Personne::whereIn('personne_id', (array)$this->participant_personne_ids)->get();
+        $participants = [];
+        foreach ($clubs as $club) {
+            $participants[] = [
+                'type' => 'club',
+                'club_id' => $club->club_id,
+                'nom' => $club->nom,
+            ];
+        }
+        foreach ($personnes as $personne) {
+            $participants[] = [
+                'type' => 'personne',
+                'personne_id' => $personne->personne_id,
+                'nom' => $personne->nom,
+                'prenom' => $personne->prenom,
+            ];
+        }
+        // Ajout des participants avec résultat (issus du workflow formulaire)
+        foreach ($this->participants as $p) {
+            if (!empty($p['resultat'])) {
+                $participants[] = $p;
+            }
+        }
+        return $participants;
+    }
+    // (doublon supprimé)
+    // $showForm géré pour le formulaire résultat participant
+    public $selectedClubId = null;
+    public $resultatClub = '';
+    public $selectedPersonneId = null;
+    public $resultatPersonne = '';
+
+    public function toggleForm($type)
+    {
+        $this->showForm = $this->showForm === $type ? null : $type;
+        $this->selectedClubId = null;
+        $this->resultatClub = '';
+        $this->selectedPersonneId = null;
+        $this->resultatPersonne = '';
+    }
+
+    public function addParticipantClub()
+    {
+        if ($this->selectedClubId) {
+            $club = \App\Models\Club::where('club_id', $this->selectedClubId)->first();
+            if ($club) {
+                $this->participants[] = [
+                    'type' => 'club',
+                    'club_id' => $club->club_id,
+                    'nom' => $club->nom,
+                    'resultat' => $this->resultatClub,
+                ];
+                $this->participant_club_ids[] = $club->club_id;
+            }
+        }
+        $this->showForm = null;
+        $this->selectedClubId = null;
+        $this->resultatClub = '';
+    }
+
+    public function addParticipantPersonne()
+    {
+        if ($this->selectedPersonneId) {
+            $personne = \App\Models\Personne::where('personne_id', $this->selectedPersonneId)->first();
+            if ($personne) {
+                $this->participants[] = [
+                    'type' => 'personne',
+                    'personne_id' => $personne->personne_id,
+                    'nom' => $personne->nom,
+                    'prenom' => $personne->prenom,
+                    'resultat' => $this->resultatPersonne,
+                ];
+                $this->participant_personne_ids[] = $personne->personne_id;
+            }
+        }
+        $this->showForm = null;
+        $this->selectedPersonneId = null;
+        $this->resultatPersonne = '';
+    }
     public $nom;
     public $date;
     public $lieu_id;
@@ -28,6 +132,12 @@ class Create extends Component
     public $resetKeyClub = 0;
     public $resetKeyPersonne = 0;
     public $resetKeyLieu = 0;
+    // Ajout pour le formulaire résultat participant
+    public $showForm = false;
+    public $typeParticipant = 'club';
+    public $selectedParticipantId = null;
+    public $resultatParticipant = '';
+
 
     protected $listeners = [
         'reset-organisateur-club' => 'forceResetOrganisateurClub',
@@ -153,14 +263,7 @@ class Create extends Component
         $organisateur_club_id = is_array($this->organisateur_club_id) ? (count($this->organisateur_club_id) ? $this->organisateur_club_id[count($this->organisateur_club_id)-1] : null) : $this->organisateur_club_id;
         $organisateur_personne_id = is_array($this->organisateur_personne_id) ? (count($this->organisateur_personne_id) ? $this->organisateur_personne_id[count($this->organisateur_personne_id)-1] : null) : $this->organisateur_personne_id;
 
-        // Synchronisation des participants et sources sélectionnés
-        $this->participants = [];
-        foreach ((array)$this->participant_club_ids as $clubId) {
-            if ($clubId) $this->participants[] = 'club_' . $clubId;
-        }
-        foreach ((array)$this->participant_personne_ids as $personneId) {
-            if ($personneId) $this->participants[] = 'personne_' . $personneId;
-        }
+        // Les participants sont déjà dans $this->participants sous forme de tableau associatif
 
         $competition = Competition::create([
             'nom' => $this->nom,
@@ -191,26 +294,156 @@ class Create extends Component
             }
         }
 
-        // Gestion des participants (clubs et personnes)
+        // Gestion des participants (clubs et personnes) avec ou sans résultat
+        // 1. Clubs sélectionnés dans la barre multi
+        foreach ((array)$this->participant_club_ids as $clubId) {
+            \App\Models\CompetitionParticipant::create([
+                'competition_id' => $competition->competition_id,
+                'club_id' => $clubId,
+                'resultat' => null,
+            ]);
+        }
+        // 2. Personnes sélectionnées dans la barre multi
+        foreach ((array)$this->participant_personne_ids as $personneId) {
+            \App\Models\CompetitionParticipant::create([
+                'competition_id' => $competition->competition_id,
+                'personne_id' => $personneId,
+                'resultat' => null,
+            ]);
+        }
+        // 3. Participants ajoutés via le formulaire résultat
         if (!empty($this->participants)) {
             foreach ($this->participants as $participant) {
-                if (str_starts_with($participant, 'club_')) {
-                    $clubId = (int)str_replace('club_', '', $participant);
-                    \App\Models\CompetitionParticipant::create([
-                        'competition_id' => $competition->competition_id,
-                        'club_id' => $clubId,
-                    ]);
-                } elseif (str_starts_with($participant, 'personne_')) {
-                    $personneId = (int)str_replace('personne_', '', $participant);
-                    \App\Models\CompetitionParticipant::create([
-                        'competition_id' => $competition->competition_id,
-                        'personne_id' => $personneId,
-                    ]);
+                if (!empty($participant['resultat'])) {
+                    if ($participant['type'] === 'club') {
+                        \App\Models\CompetitionParticipant::create([
+                            'competition_id' => $competition->competition_id,
+                            'club_id' => $participant['club_id'],
+                            'resultat' => $participant['resultat'],
+                        ]);
+                    } elseif ($participant['type'] === 'personne') {
+                        \App\Models\CompetitionParticipant::create([
+                            'competition_id' => $competition->competition_id,
+                            'personne_id' => $participant['personne_id'],
+                            'resultat' => $participant['resultat'],
+                        ]);
+                    }
                 }
             }
         }
 
         session()->flash('success', 'Compétition créée avec succès.');
         return redirect()->route('competitions.index');
+    }
+
+    public function addResultat()
+    {
+        if ($this->typeParticipant === 'club' && $this->selectedParticipantId) {
+            $club = \App\Models\Club::where('club_id', $this->selectedParticipantId)->first();
+            if ($club) {
+                $this->participants[] = [
+                    'type' => 'club',
+                    'club_id' => $club->club_id,
+                    'nom' => $club->nom,
+                    'resultat' => $this->resultatParticipant,
+                ];
+            }
+        } elseif ($this->typeParticipant === 'personne' && $this->selectedParticipantId) {
+            $personne = \App\Models\Personne::where('personne_id', $this->selectedParticipantId)->first();
+            if ($personne) {
+                $this->participants[] = [
+                    'type' => 'personne',
+                    'personne_id' => $personne->personne_id,
+                    'nom' => $personne->nom,
+                    'prenom' => $personne->prenom,
+                    'resultat' => $this->resultatParticipant,
+                ];
+            }
+        }
+        $this->showForm = false;
+        $this->typeParticipant = 'club';
+        $this->selectedParticipantId = null;
+        $this->resultatParticipant = '';
+    }
+
+    public function ouvrirFormulaireClub()
+    {
+        $this->showForm = 'club';
+        $this->selectedParticipantId = null;
+        $this->resultatParticipant = '';
+    }
+
+    public function ouvrirFormulairePersonne()
+    {
+        $this->showForm = 'personne';
+        $this->selectedParticipantId = null;
+        $this->resultatParticipant = '';
+    }
+
+    public function addResultatClub()
+    {
+        if ($this->selectedParticipantId) {
+            $club = \App\Models\Club::where('club_id', $this->selectedParticipantId)->first();
+            if ($club) {
+                $this->participants[] = [
+                    'type' => 'club',
+                    'club_id' => $club->club_id,
+                    'nom' => $club->nom,
+                    'resultat' => $this->resultatParticipant,
+                ];
+            }
+        }
+        $this->fermerFormulaire();
+    }
+
+    public function addResultatPersonne()
+    {
+        if ($this->selectedParticipantId) {
+            $personne = \App\Models\Personne::where('personne_id', $this->selectedParticipantId)->first();
+            if ($personne) {
+                $this->participants[] = [
+                    'type' => 'personne',
+                    'personne_id' => $personne->personne_id,
+                    'nom' => $personne->nom,
+                    'prenom' => $personne->prenom,
+                    'resultat' => $this->resultatParticipant,
+                ];
+            }
+        }
+        $this->fermerFormulaire();
+    }
+
+    public function fermerFormulaire()
+    {
+        $this->showForm = false;
+        $this->selectedParticipantId = null;
+        $this->resultatParticipant = '';
+    }
+    public $typeRecherche = 'club';
+    public $selectedRechercheId = null;
+
+    public function associerParticipant()
+    {
+        if ($this->typeRecherche === 'club' && $this->selectedRechercheId) {
+            $club = \App\Models\Club::where('club_id', $this->selectedRechercheId)->first();
+            if ($club) {
+                $this->participants[] = [
+                    'type' => 'club',
+                    'club_id' => $club->club_id,
+                    'nom' => $club->nom,
+                ];
+            }
+        } elseif ($this->typeRecherche === 'personne' && $this->selectedRechercheId) {
+            $personne = \App\Models\Personne::where('personne_id', $this->selectedRechercheId)->first();
+            if ($personne) {
+                $this->participants[] = [
+                    'type' => 'personne',
+                    'personne_id' => $personne->personne_id,
+                    'nom' => $personne->nom,
+                    'prenom' => $personne->prenom,
+                ];
+            }
+        }
+        $this->selectedRechercheId = null;
     }
 }

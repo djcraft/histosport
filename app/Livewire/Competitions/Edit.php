@@ -22,6 +22,9 @@ class Edit extends Component
     public $discipline_ids = [];
     public $sources = [];
     public $participants = [];
+    public $showForm = false;
+    public $selectedParticipantId = null;
+    public $resultatParticipant = '';
     public $participant_club_ids = [];
     public $participant_personne_ids = [];
 
@@ -77,14 +80,104 @@ class Edit extends Component
         $this->discipline_ids = $competition->disciplines->pluck('discipline_id')->toArray();
         $this->sources = $competition->sources->pluck('source_id')->toArray();
         $this->participants = collect($competition->participants)->map(function($p) {
-            if ($p->club_id) return 'club_' . $p->club_id;
-            if ($p->personne_id) return 'personne_' . $p->personne_id;
+            if ($p->club_id) {
+                return [
+                    'type' => 'club',
+                    'club_id' => $p->club_id,
+                    'nom' => optional($p->club)->nom,
+                    'resultat' => $p->resultat,
+                ];
+            }
+            if ($p->personne_id) {
+                return [
+                    'type' => 'personne',
+                    'personne_id' => $p->personne_id,
+                    'nom' => optional($p->personne)->nom,
+                    'prenom' => optional($p->personne)->prenom,
+                    'resultat' => $p->resultat,
+                ];
+            }
             return null;
-        })->filter()->toArray();
+        })->filter()->values()->toArray();
 
         // Initialisation des participants clubs/personnes pour le formulaire
-        $this->participant_club_ids = collect($competition->participants)->pluck('club_id')->filter()->unique()->values()->toArray();
-        $this->participant_personne_ids = collect($competition->participants)->pluck('personne_id')->filter()->unique()->values()->toArray();
+        // Initialisation uniquement si les propriétés sont vides (évite la réinitialisation après action utilisateur)
+        if (empty($this->participant_club_ids)) {
+            $this->participant_club_ids = collect($competition->participants)->pluck('club_id')->filter()->unique()->values()->toArray();
+        }
+        if (empty($this->participant_personne_ids)) {
+            $this->participant_personne_ids = collect($competition->participants)->pluck('personne_id')->filter()->unique()->values()->toArray();
+        }
+    }
+    // Ouvre le formulaire d'ajout de résultat club
+    public function ouvrirFormulaireClub()
+    {
+        $this->showForm = 'club';
+        $this->selectedParticipantId = null;
+        $this->resultatParticipant = '';
+    }
+
+    // Ouvre le formulaire d'ajout de résultat personne
+    public function ouvrirFormulairePersonne()
+    {
+        $this->showForm = 'personne';
+        $this->selectedParticipantId = null;
+        $this->resultatParticipant = '';
+    }
+
+    // Ferme le formulaire d'ajout de résultat
+    public function fermerFormulaire()
+    {
+        $this->showForm = false;
+        $this->selectedParticipantId = null;
+        $this->resultatParticipant = '';
+    }
+
+    // Ajoute un résultat club
+    public function addResultatClub()
+    {
+        if ($this->selectedParticipantId) {
+            $club = \App\Models\Club::find($this->selectedParticipantId);
+            if ($club) {
+                // Retirer le club de la barre multi
+                $this->participant_club_ids = array_values(array_diff($this->participant_club_ids, [$club->club_id]));
+                // Ajouter le participant avec résultat
+                $this->participants[] = [
+                    'type' => 'club',
+                    'club_id' => $club->club_id,
+                    'nom' => $club->nom,
+                    'resultat' => $this->resultatParticipant,
+                ];
+            }
+            $this->fermerFormulaire();
+        } else {
+            // Si aucun participant sélectionné, simplement ouvrir le formulaire
+            $this->showForm = 'club';
+        }
+    }
+
+    // Ajoute un résultat personne
+    public function addResultatPersonne()
+    {
+        if ($this->selectedParticipantId) {
+            $personne = \App\Models\Personne::find($this->selectedParticipantId);
+            if ($personne) {
+                // Retirer la personne de la barre multi
+                $this->participant_personne_ids = array_values(array_diff($this->participant_personne_ids, [$personne->personne_id]));
+                // Ajouter le participant avec résultat
+                $this->participants[] = [
+                    'type' => 'personne',
+                    'personne_id' => $personne->personne_id,
+                    'nom' => $personne->nom,
+                    'prenom' => $personne->prenom,
+                    'resultat' => $this->resultatParticipant,
+                ];
+            }
+            $this->fermerFormulaire();
+        } else {
+            // Si aucun participant sélectionné, simplement ouvrir le formulaire
+            $this->showForm = 'personne';
+        }
     }
 
     public function render()
@@ -165,20 +258,58 @@ class Edit extends Component
 
         // Gestion des participants
         $this->competition->participants()->delete();
+        // 1. Clubs sélectionnés dans la barre multi (sans résultat)
+        foreach ((array)$this->participant_club_ids as $clubId) {
+            // Vérifier que le club n'est pas déjà dans $participants avec un résultat
+            $existe = false;
+            foreach ($this->participants as $p) {
+                if ($p['type'] === 'club' && $p['club_id'] == $clubId && !empty($p['resultat'])) {
+                    $existe = true;
+                    break;
+                }
+            }
+            if (!$existe) {
+                \App\Models\CompetitionParticipant::create([
+                    'competition_id' => $this->competition->competition_id,
+                    'club_id' => $clubId,
+                    'resultat' => null,
+                ]);
+            }
+        }
+        // 2. Personnes sélectionnées dans la barre multi (sans résultat)
+        foreach ((array)$this->participant_personne_ids as $personneId) {
+            $existe = false;
+            foreach ($this->participants as $p) {
+                if ($p['type'] === 'personne' && $p['personne_id'] == $personneId && !empty($p['resultat'])) {
+                    $existe = true;
+                    break;
+                }
+            }
+            if (!$existe) {
+                \App\Models\CompetitionParticipant::create([
+                    'competition_id' => $this->competition->competition_id,
+                    'personne_id' => $personneId,
+                    'resultat' => null,
+                ]);
+            }
+        }
+        // 3. Participants ajoutés via le formulaire résultat
         if (!empty($this->participants)) {
             foreach ($this->participants as $participant) {
-                if (str_starts_with($participant, 'club_')) {
-                    $clubId = (int)str_replace('club_', '', $participant);
-                    \App\Models\CompetitionParticipant::create([
-                        'competition_id' => $this->competition->competition_id,
-                        'club_id' => $clubId,
-                    ]);
-                } elseif (str_starts_with($participant, 'personne_')) {
-                    $personneId = (int)str_replace('personne_', '', $participant);
-                    \App\Models\CompetitionParticipant::create([
-                        'competition_id' => $this->competition->competition_id,
-                        'personne_id' => $personneId,
-                    ]);
+                if (!empty($participant['resultat'])) {
+                    if ($participant['type'] === 'club') {
+                        \App\Models\CompetitionParticipant::create([
+                            'competition_id' => $this->competition->competition_id,
+                            'club_id' => $participant['club_id'],
+                            'resultat' => $participant['resultat'],
+                        ]);
+                    } elseif ($participant['type'] === 'personne') {
+                        \App\Models\CompetitionParticipant::create([
+                            'competition_id' => $this->competition->competition_id,
+                            'personne_id' => $participant['personne_id'],
+                            'resultat' => $participant['resultat'],
+                        ]);
+                    }
                 }
             }
         }
@@ -200,5 +331,101 @@ class Edit extends Component
     public function onSourceCreated($id)
     {
         $this->sources[] = $id;
+    }
+    public $editIndex = null;
+    public $editResultat = '';
+
+        // Supprime un club sans résultat (pour suppression persistante via multi-select)
+        public function supprimerClubSansResultat($clubId)
+        {
+            $this->participant_club_ids = array_values(array_diff($this->participant_club_ids, [$clubId]));
+            // Supprimer le participant du tableau $participants dans tous les cas (avec ou sans résultat)
+            $this->participants = array_values(array_filter($this->participants, function($p) use ($clubId) {
+                return !($p['type'] === 'club' && $p['club_id'] == $clubId);
+            }));
+        }
+
+        // Supprime une personne sans résultat (pour suppression persistante via multi-select)
+        public function supprimerPersonneSansResultat($personneId)
+        {
+            $this->participant_personne_ids = array_values(array_diff($this->participant_personne_ids, [$personneId]));
+            // Supprimer le participant du tableau $participants dans tous les cas (avec ou sans résultat)
+            $this->participants = array_values(array_filter($this->participants, function($p) use ($personneId) {
+                return !($p['type'] === 'personne' && $p['personne_id'] == $personneId);
+            }));
+        }
+
+    // Lance la modification d'un participant (résultat)
+    public function modifierParticipant($index)
+    {
+        $participant = $this->participants[$index] ?? null;
+        if ($participant) {
+            $this->editIndex = $index;
+            // Pré-remplir le formulaire avec les données du participant
+            if ($participant['type'] === 'club') {
+                $this->showForm = 'club';
+                $this->selectedParticipantId = $participant['club_id'] ?? null;
+            } elseif ($participant['type'] === 'personne') {
+                $this->showForm = 'personne';
+                $this->selectedParticipantId = $participant['personne_id'] ?? null;
+            }
+            $this->resultatParticipant = $participant['resultat'] ?? '';
+        }
+    }
+
+    // Valide la modification du résultat
+    public function validerModificationParticipant($index)
+    {
+        if (isset($this->participants[$index])) {
+            // Mettre à jour l'entité et le résultat avec les valeurs du formulaire
+            if ($this->showForm === 'club') {
+                $club = \App\Models\Club::find($this->selectedParticipantId);
+                if ($club) {
+                    $this->participants[$index] = [
+                        'type' => 'club',
+                        'club_id' => $club->club_id,
+                        'nom' => $club->nom,
+                        'resultat' => $this->resultatParticipant,
+                    ];
+                }
+            } elseif ($this->showForm === 'personne') {
+                $personne = \App\Models\Personne::find($this->selectedParticipantId);
+                if ($personne) {
+                    $this->participants[$index] = [
+                        'type' => 'personne',
+                        'personne_id' => $personne->personne_id,
+                        'nom' => $personne->nom,
+                        'prenom' => $personne->prenom,
+                        'resultat' => $this->resultatParticipant,
+                    ];
+                }
+            }
+            // Si le résultat devient null, supprimer simplement le participant
+            if (is_null($this->resultatParticipant) || $this->resultatParticipant === '') {
+                array_splice($this->participants, $index, 1);
+            }
+        }
+        $this->editIndex = null;
+        $this->resultatParticipant = '';
+        $this->selectedParticipantId = null;
+        $this->showForm = false;
+    }
+
+    // Annule la modification
+    public function annulerModificationParticipant()
+    {
+    $this->editIndex = null;
+    $this->editResultat = '';
+    $this->showForm = false;
+    $this->selectedParticipantId = null;
+    $this->resultatParticipant = '';
+    }
+
+    // Supprime un participant par son index
+    public function supprimerParticipant($index)
+    {
+        if (isset($this->participants[$index])) {
+            array_splice($this->participants, $index, 1);
+        }
     }
 }
