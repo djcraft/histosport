@@ -1,58 +1,55 @@
 <?php
 
+
 namespace App\Exports;
 
 use App\Models\Club;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class ClubExport implements FromCollection, WithHeadings
+class ClubExport extends BaseExport
 {
-    protected $clubs;
 
-    public function __construct($clubs = null)
+    protected function getEntities()
     {
-        $this->clubs = $clubs;
+        $query = Club::with(['siege', 'personnes', 'disciplines']);
+        if ($this->ids) {
+            $query = $query->whereIn('club_id', $this->ids);
+        }
+        return $query->get();
     }
 
-    public function collection()
+    protected function getModelClass()
     {
-        $clubs = $this->clubs;
-        if (!$clubs || $clubs->isEmpty()) {
-            $clubs = Club::with(['disciplines', 'personnes'])->get();
-        }
-        return $clubs->map(function ($club) {
-            $adresse = '';
-            if ($club->siege) {
-                $adresse = $club->siege->adresse;
-                if ($club->siege->code_postal) {
-                    $adresse .= ', ' . $club->siege->code_postal;
-                }
-                if ($club->siege->commune) {
-                    $adresse .= ', ' . $club->siege->commune;
-                }
-            }
-            $personnes = $club->personnes->map(function($p) {
-                return trim($p->nom . ' ' . $p->prenom);
-            })->implode(', ');
-            return [
-                'nom' => $club->nom,
-                'nom_origine' => $club->nom_origine,
-                'surnoms' => $club->surnoms,
-                'date_fondation' => $club->date_fondation,
-                'date_fondation_precision' => $club->date_fondation_precision,
-                'date_disparition' => $club->date_disparition,
-                'date_disparition_precision' => $club->date_disparition_precision,
-                'date_declaration' => $club->date_declaration,
-                'date_declaration_precision' => $club->date_declaration_precision,
-                'acronyme' => $club->acronyme,
-                'couleurs' => $club->couleurs,
-                'adresse' => $adresse,
-                'notes' => $club->notes,
-                'disciplines' => $club->disciplines->pluck('nom')->implode(', '),
-                'personnes' => $personnes,
-            ];
-        });
+        return Club::class;
+    }
+
+    protected function getPrimaryKey()
+    {
+        return 'club_id';
+    }
+
+    protected function transform($club)
+    {
+        $adresse = $this->formatAdresse($club->siege);
+        $personnes = $club->personnes->map(function($p) {
+            return trim($p->nom . ' ' . $p->prenom);
+        })->implode(', ');
+        return [
+            'nom' => $club->nom,
+            'nom_origine' => $club->nom_origine,
+            'surnoms' => $club->surnoms,
+            'date_fondation' => $club->date_fondation,
+            'date_fondation_precision' => $club->date_fondation_precision,
+            'date_disparition' => $club->date_disparition,
+            'date_disparition_precision' => $club->date_disparition_precision,
+            'date_declaration' => $club->date_declaration,
+            'date_declaration_precision' => $club->date_declaration_precision,
+            'acronyme' => $club->acronyme,
+            'couleurs' => $club->couleurs,
+            'adresse' => $adresse,
+            'notes' => $club->notes,
+            'disciplines' => $this->formatListe($club->disciplines),
+            'personnes' => $personnes,
+        ];
     }
 
     public function headings(): array

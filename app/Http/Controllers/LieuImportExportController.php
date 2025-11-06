@@ -24,7 +24,8 @@ class LieuImportExportController extends Controller
 
     public function export(Request $request)
     {
-        $ids = $request->input('ids', null);
-        return Excel::download(new LieuExport($ids), 'lieux_export.xlsx');
+    $selected = $request->input('ids');
+    $ids = array_filter($selected ? explode(',', $selected) : []);
+    return Excel::download(new LieuExport($ids ?: null), 'lieux_export.xlsx');
     }
 }

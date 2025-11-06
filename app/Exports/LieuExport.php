@@ -1,36 +1,31 @@
 <?php
 
+
 namespace App\Exports;
 
 use App\Models\Lieu;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 
-class LieuExport implements FromCollection, WithHeadings
+class LieuExport extends BaseExport
 {
-    protected $ids;
-
-    public function __construct($ids = null)
+    protected function getModelClass()
     {
-        $this->ids = $ids;
+        return Lieu::class;
     }
 
-    public function collection()
+    protected function getPrimaryKey()
     {
-        $lieux = Lieu::query();
-        if ($this->ids) {
-            $lieux = $lieux->whereIn('lieu_id', $this->ids);
-        }
-        $lieux = $lieux->get();
-        return $lieux->map(function ($lieu) {
-            return [
-                'adresse' => $lieu->adresse,
-                'code_postal' => $lieu->code_postal,
-                'commune' => $lieu->commune,
-                'departement' => $lieu->departement,
-                'pays' => $lieu->pays,
-            ];
-        });
+        return 'lieu_id';
+    }
+
+    protected function transform($lieu)
+    {
+        return [
+            'adresse' => $lieu->adresse,
+            'code_postal' => $lieu->code_postal,
+            'commune' => $lieu->commune,
+            'departement' => $lieu->departement,
+            'pays' => $lieu->pays,
+        ];
     }
 
     public function headings(): array

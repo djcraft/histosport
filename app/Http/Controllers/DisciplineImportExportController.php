@@ -26,8 +26,8 @@ class DisciplineImportExportController extends Controller
 
     public function export(Request $request)
     {
-        $selected = $request->input('ids');
-        $ids = $selected ? explode(',', $selected) : [];
-        return Excel::download(new DisciplineExport($ids), 'disciplines.xlsx');
+    $selected = $request->input('ids');
+    $ids = array_filter($selected ? explode(',', $selected) : []);
+    return Excel::download(new DisciplineExport($ids ?: null), 'disciplines.xlsx');
     }
 }

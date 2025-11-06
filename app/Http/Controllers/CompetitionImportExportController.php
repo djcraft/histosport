@@ -27,8 +27,8 @@ class CompetitionImportExportController extends Controller
 
     public function export(Request $request)
     {
-        $selected = $request->input('ids');
-        $ids = $selected ? explode(',', $selected) : [];
-        return Excel::download(new CompetitionExport($ids), 'competitions.xlsx');
+    $selected = $request->input('ids');
+    $ids = array_filter($selected ? explode(',', $selected) : []);
+    return Excel::download(new CompetitionExport($ids ?: null), 'competitions.xlsx');
     }
 }

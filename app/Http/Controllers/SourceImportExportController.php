@@ -24,7 +24,8 @@ class SourceImportExportController extends Controller
 
     public function export(Request $request)
     {
-        $ids = $request->input('ids', null);
-        return Excel::download(new SourceExport($ids), 'sources_export.xlsx');
+    $selected = $request->input('ids');
+    $ids = array_filter($selected ? explode(',', $selected) : []);
+    return Excel::download(new SourceExport($ids ?: null), 'sources_export.xlsx');
     }
 }

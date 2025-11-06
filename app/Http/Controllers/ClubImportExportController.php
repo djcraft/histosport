@@ -27,11 +27,8 @@ class ClubImportExportController extends Controller
 
     public function export(Request $request)
     {
-        $selected = $request->input('selected');
-        $ids = $selected ? explode(',', $selected) : [];
-        $clubs = count($ids)
-            ? Club::with(['disciplines', 'personnes'])->whereIn('club_id', $ids)->get()
-            : Club::with(['disciplines', 'personnes'])->get();
-        return Excel::download(new ClubExport($clubs), 'clubs.xlsx');
+    $selected = $request->input('selected');
+    $ids = array_filter($selected ? explode(',', $selected) : []);
+    return Excel::download(new ClubExport($ids ?: null), 'clubs.xlsx');
     }
 }

@@ -28,10 +28,7 @@ class PersonneImportExportController extends Controller
     public function export(Request $request)
     {
         $selected = $request->input('selected');
-        $ids = $selected ? explode(',', $selected) : [];
-        $personnes = count($ids)
-            ? Personne::with(['clubs'])->whereIn('id', $ids)->get()
-            : Personne::with(['clubs'])->get();
-        return Excel::download(new PersonneExport($personnes), 'personnes.xlsx');
+        $ids = array_filter($selected ? explode(',', $selected) : []);
+        return Excel::download(new PersonneExport($ids ?: null), 'personnes.xlsx');
     }
 }
