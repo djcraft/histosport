@@ -1,10 +1,9 @@
 <?php
-
 namespace App\Livewire\Sources;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
 
-class Edit extends Component
+class Edit extends BaseCrudComponent
 {
     public $source;
     public $titre;
@@ -16,6 +15,18 @@ class Edit extends Component
     public $lieu_edition_id;
     public $lieu_conservation_id;
     public $lieu_couverture_id;
+
+    protected $rules = [
+        'titre' => 'required|string|max:255',
+        'auteur' => 'nullable|string|max:255',
+        'annee_reference' => 'nullable|string|max:255',
+        'type' => 'nullable|string|max:255',
+        'cote' => 'nullable|string|max:255',
+        'url' => 'nullable|string|max:255',
+        'lieu_edition_id' => 'nullable|integer|exists:lieu,lieu_id',
+        'lieu_conservation_id' => 'nullable|integer|exists:lieu,lieu_id',
+        'lieu_couverture_id' => 'nullable|integer|exists:lieu,lieu_id',
+    ];
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',
@@ -44,17 +55,7 @@ class Edit extends Component
         } else {
             $this->lieu_couverture_id = is_numeric($this->lieu_couverture_id) ? intval($this->lieu_couverture_id) : null;
         }
-        $this->validate([
-            'titre' => 'required|string|max:255',
-            'auteur' => 'nullable|string|max:255',
-            'annee_reference' => 'nullable|string|max:255',
-            'type' => 'nullable|string|max:255',
-            'cote' => 'nullable|string|max:255',
-            'url' => 'nullable|string|max:255',
-            'lieu_edition_id' => 'nullable|integer|exists:lieu,lieu_id',
-            'lieu_conservation_id' => 'nullable|integer|exists:lieu,lieu_id',
-            'lieu_couverture_id' => 'nullable|integer|exists:lieu,lieu_id',
-        ]);
+        $this->validate($this->rules);
 
         // Détection automatique de la précision de l'année de référence
         $anneeReferencePrecision = null;
@@ -85,17 +86,16 @@ class Edit extends Component
 
     public function mount(\App\Models\Source $source)
     {
-    $this->source = $source;
-    $this->titre = $source->titre;
-    $this->auteur = $source->auteur;
-    $this->annee_reference = $source->annee_reference;
-    $this->type = $source->type;
-    $this->cote = $source->cote;
-    $this->url = $source->url;
-    // Conversion pour gérer le cas où la SearchBar transmet un tableau
-    $this->lieu_edition_id = is_array($source->lieu_edition_id) ? (count($source->lieu_edition_id) ? intval($source->lieu_edition_id[0]) : null) : $source->lieu_edition_id;
-    $this->lieu_conservation_id = is_array($source->lieu_conservation_id) ? (count($source->lieu_conservation_id) ? intval($source->lieu_conservation_id[0]) : null) : $source->lieu_conservation_id;
-    $this->lieu_couverture_id = is_array($source->lieu_couverture_id) ? (count($source->lieu_couverture_id) ? intval($source->lieu_couverture_id[0]) : null) : $source->lieu_couverture_id;
+        $this->source = $source;
+        $this->titre = $source->titre;
+        $this->auteur = $source->auteur;
+        $this->annee_reference = $source->annee_reference;
+        $this->type = $source->type;
+        $this->cote = $source->cote;
+        $this->url = $source->url;
+        $this->lieu_edition_id = is_array($source->lieu_edition_id) ? (count($source->lieu_edition_id) ? intval($source->lieu_edition_id[0]) : null) : $source->lieu_edition_id;
+        $this->lieu_conservation_id = is_array($source->lieu_conservation_id) ? (count($source->lieu_conservation_id) ? intval($source->lieu_conservation_id[0]) : null) : $source->lieu_conservation_id;
+        $this->lieu_couverture_id = is_array($source->lieu_couverture_id) ? (count($source->lieu_couverture_id) ? intval($source->lieu_couverture_id[0]) : null) : $source->lieu_couverture_id;
     }
 
     public function render()

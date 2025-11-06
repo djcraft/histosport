@@ -1,14 +1,24 @@
 <?php
-
 namespace App\Livewire\Competitions;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
 
 use App\Models\Competition;
 use App\Models\Discipline;
 
-class Edit extends Component
+class Edit extends BaseCrudComponent
 {
+    protected $rules = [
+        'nom' => 'required|string|max:255',
+        'discipline_ids' => 'nullable|array',
+        'discipline_ids.*' => 'exists:disciplines,discipline_id',
+        'site_ids' => 'nullable|array',
+        'site_ids.*' => 'exists:lieu,lieu_id',
+        'participant_club_ids' => 'nullable|array',
+        'participant_club_ids.*' => 'exists:clubs,club_id',
+        'participant_personne_ids' => 'nullable|array',
+        'participant_personne_ids.*' => 'exists:personnes,personne_id',
+    ];
     public $competition;
     public $nom;
     public $date;
@@ -192,14 +202,7 @@ class Edit extends Component
 
     public function update()
     {
-        $this->validate([
-            'nom' => 'required|string|max:255',
-            'discipline_ids' => 'array',
-            'discipline_ids.*' => 'exists:disciplines,discipline_id',
-            'site_ids' => 'nullable|array',
-            'site_ids.*' => 'exists:lieu,lieu_id',
-            // ... autres règles de validation
-        ]);
+        $this->validate($this->rules);
 
         // Empêcher la sélection simultanée d'un club et d'une personne comme organisateur
         if (!empty($this->organisateur_club_id) && !empty($this->organisateur_personne_id)) {
@@ -314,8 +317,8 @@ class Edit extends Component
             }
         }
 
-        session()->flash('success', 'Compétition modifiée avec succès.');
-        return redirect()->route('competitions.index');
+    $this->notify('Compétition modifiée avec succès.');
+    return redirect()->route('competitions.index');
     }
 
     public function onLieuCreated($id)

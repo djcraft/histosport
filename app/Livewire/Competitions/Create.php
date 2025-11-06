@@ -1,13 +1,12 @@
 <?php
-
 namespace App\Livewire\Competitions;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
 
 use App\Models\Competition;
 use App\Models\Discipline;
 
-class Create extends Component
+class Create extends BaseCrudComponent
 {
     // Suppression d’un participant (avec ou sans résultat)
     public function supprimerParticipant($index)
@@ -233,13 +232,7 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate([
-            'nom' => 'required|string|max:255',
-            'discipline_ids' => 'nullable|array',
-            'discipline_ids.*' => 'exists:disciplines,discipline_id',
-            'site_ids' => 'nullable|array',
-            'site_ids.*' => 'exists:lieu,lieu_id',
-        ]);
+        $this->validate($this->rules);
 
         // Empêcher la sélection simultanée d'un club et d'une personne comme organisateur
         if (!empty($this->organisateur_club_id) && !empty($this->organisateur_personne_id)) {
@@ -332,8 +325,8 @@ class Create extends Component
             }
         }
 
-        session()->flash('success', 'Compétition créée avec succès.');
-        return redirect()->route('competitions.index');
+    $this->notify('Compétition créée avec succès.');
+    return redirect()->route('competitions.index');
     }
 
     public function addResultat()

@@ -2,45 +2,45 @@
 
 namespace App\Livewire\Disciplines;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
+use App\Livewire\Actions\ValidateForm;
+use App\Livewire\Actions\Notify;
 
-class Edit extends Component
+class Edit extends BaseCrudComponent
 {
     public $nom;
     public $description;
-    public $disciplineId;
+    public $discipline;
     public $confirmingDelete = false;
+    protected $rules = [
+        'nom' => 'required|string|max:255',
+        'description' => 'nullable|string',
+    ];
 
-    public function mount($discipline = null)
+    public function mount()
     {
-        if ($discipline) {
-            $discipline = \App\Models\Discipline::findOrFail($discipline);
-            $this->disciplineId = $discipline->id;
+        if ($this->discipline) {
+            $discipline = \App\Models\Discipline::findOrFail($this->discipline);
             $this->nom = $discipline->nom;
             $this->description = $discipline->description;
         }
     }
 
-        public function update()
-        {
-            $this->validate([
-                'nom' => 'required|string|max:255',
-                'description' => 'nullable|string',
-            ]);
-
-            $discipline = \App\Models\Discipline::where('nom', $this->nom)->first();
-            if (!$discipline) {
-                // Si la discipline n'existe pas, on peut lever une erreur ou simplement retourner
-                session()->flash('error', 'Discipline non trouvée.');
-                return;
-            }
-            $discipline->nom = $this->nom;
-            $discipline->description = $this->description;
-            $discipline->save();
-
-            session()->flash('success', 'Discipline modifiée avec succès.');
-            return redirect()->route('disciplines.index');
+    public function update()
+    {
+        $this->validate($this->rules);
+        $discipline = \App\Models\Discipline::find($this->discipline);
+        if (!$discipline) {
+            Notify::run('Discipline non trouvée.', 'error');
+            return;
         }
+        $discipline->update([
+            'nom' => $this->nom,
+            'description' => $this->description,
+        ]);
+        Notify::run('Discipline modifiée avec succès.');
+        return redirect()->route('disciplines.index');
+    }
 
     public function render()
     {

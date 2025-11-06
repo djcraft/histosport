@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Sources;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
+use App\Livewire\Actions\Notify;
 
-class Create extends Component
+class Create extends BaseCrudComponent
 {
     public $titre;
     public $auteur;
@@ -15,6 +16,17 @@ class Create extends Component
     public $lieu_edition_id;
     public $lieu_conservation_id;
     public $lieu_couverture_id;
+    protected $rules = [
+        'titre' => 'required|string|max:255',
+        'auteur' => 'nullable|string|max:255',
+        'annee_reference' => 'nullable|string|max:255',
+        'type' => 'nullable|string|max:255',
+        'cote' => 'nullable|string|max:255',
+        'url' => 'nullable|string|max:255',
+        'lieu_edition_id' => 'nullable|integer|exists:lieu,lieu_id',
+        'lieu_conservation_id' => 'nullable|integer|exists:lieu,lieu_id',
+        'lieu_couverture_id' => 'nullable|integer|exists:lieu,lieu_id',
+    ];
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',
@@ -27,20 +39,22 @@ class Create extends Component
 
     public function save()
     {
-        $this->lieu_edition_id = is_numeric($this->lieu_edition_id) ? intval($this->lieu_edition_id) : null;
-        $this->lieu_conservation_id = is_numeric($this->lieu_conservation_id) ? intval($this->lieu_conservation_id) : null;
-        $this->lieu_couverture_id = is_numeric($this->lieu_couverture_id) ? intval($this->lieu_couverture_id) : null;
-        $this->validate([
-            'titre' => 'required|string|max:255',
-            'auteur' => 'nullable|string|max:255',
-            'annee_reference' => 'nullable|string|max:255',
-            'type' => 'nullable|string|max:255',
-            'cote' => 'nullable|string|max:255',
-            'url' => 'nullable|string|max:255',
-            'lieu_edition_id' => 'nullable|integer|exists:lieu,lieu_id',
-            'lieu_conservation_id' => 'nullable|integer|exists:lieu,lieu_id',
-            'lieu_couverture_id' => 'nullable|integer|exists:lieu,lieu_id',
-        ]);
+        if (is_array($this->lieu_edition_id)) {
+            $this->lieu_edition_id = count($this->lieu_edition_id) ? intval($this->lieu_edition_id[0]) : null;
+        } else {
+            $this->lieu_edition_id = is_numeric($this->lieu_edition_id) ? intval($this->lieu_edition_id) : null;
+        }
+        if (is_array($this->lieu_conservation_id)) {
+            $this->lieu_conservation_id = count($this->lieu_conservation_id) ? intval($this->lieu_conservation_id[0]) : null;
+        } else {
+            $this->lieu_conservation_id = is_numeric($this->lieu_conservation_id) ? intval($this->lieu_conservation_id) : null;
+        }
+        if (is_array($this->lieu_couverture_id)) {
+            $this->lieu_couverture_id = count($this->lieu_couverture_id) ? intval($this->lieu_couverture_id[0]) : null;
+        } else {
+            $this->lieu_couverture_id = is_numeric($this->lieu_couverture_id) ? intval($this->lieu_couverture_id) : null;
+        }
+        $this->validate($this->rules);
 
         // Détection automatique de la précision de l'année de référence
         $anneeReferencePrecision = null;
@@ -65,7 +79,7 @@ class Create extends Component
             'lieu_couverture_id' => $this->lieu_couverture_id,
         ]);
 
-        session()->flash('success', 'Source créée avec succès.');
+        Notify::run('Source créée avec succès.');
         return redirect()->route('sources.index');
     }
 

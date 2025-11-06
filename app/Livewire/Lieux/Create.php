@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Lieux;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
+use App\Livewire\Actions\Notify;
 
-class Create extends Component
+class Create extends BaseCrudComponent
 {
     public $nom;
     public $adresse;
@@ -12,18 +13,18 @@ class Create extends Component
     public $commune;
     public $departement;
     public $pays;
+    protected $rules = [
+        'nom' => 'nullable|string|max:255',
+        'adresse' => 'nullable|string|max:255',
+        'code_postal' => 'nullable|string|max:20',
+        'commune' => 'nullable|string|max:100',
+        'departement' => 'nullable|string|max:100',
+        'pays' => 'nullable|string|max:100',
+    ];
 
     public function save()
     {
-        $this->validate([
-            'nom' => 'nullable|string|max:255',
-            'adresse' => 'nullable|string|max:255',
-            'code_postal' => 'nullable|string|max:20',
-            'commune' => 'nullable|string|max:100',
-            'departement' => 'nullable|string|max:100',
-            'pays' => 'nullable|string|max:100',
-        ]);
-
+        $this->validate($this->rules);
         \App\Models\Lieu::create([
             'nom' => $this->nom,
             'adresse' => $this->adresse,
@@ -32,8 +33,7 @@ class Create extends Component
             'departement' => $this->departement,
             'pays' => $this->pays,
         ]);
-
-        session()->flash('success', 'Lieu créé avec succès.');
+        Notify::run('Lieu créé avec succès.');
         return redirect()->route('lieux.index');
     }
 

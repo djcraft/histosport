@@ -2,14 +2,17 @@
 
 namespace App\Livewire\Clubs;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
 use App\Models\Club;
 use App\Models\Personne;
 use App\Models\Discipline;
 use App\Models\Lieu;
 use App\Models\Source;
+use App\Livewire\Actions\ValidateForm;
+use App\Livewire\Actions\Notify;
+use App\Livewire\Actions\SyncRelations;
 
-class Create extends Component
+class Create extends BaseCrudComponent
 {
     public $nom;
     public $nom_origine;
@@ -31,6 +34,22 @@ class Create extends Component
     public $selected_source_id = [];
     // Mandats datés
     public $clubPersonnes = [];
+
+    protected $rules = [
+        'nom' => 'required|string|max:255',
+        'nom_origine' => 'nullable|string|max:255',
+        'surnoms' => 'nullable|string|max:255',
+        'date_fondation' => 'nullable|string|max:255',
+        'date_fondation_precision' => 'nullable|string|max:20',
+        'date_disparition' => 'nullable|string|max:255',
+        'date_disparition_precision' => 'nullable|string|max:20',
+        'date_declaration' => 'nullable|string|max:255',
+        'date_declaration_precision' => 'nullable|string|max:20',
+        'acronyme' => 'nullable|string|max:255',
+        'couleurs' => 'nullable|string|max:255',
+        'siege_id' => 'nullable|integer|exists:lieu,lieu_id',
+        'notes' => 'nullable|string|max:1000',
+    ];
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',
@@ -76,13 +95,8 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate([
-            'nom' => 'required|string|max:255',
-            'selected_lieu_id' => 'nullable|exists:lieu,lieu_id',
-        ]);
+        // Préparation des données du formulaire
         $siege_id = is_array($this->selected_lieu_id) ? (count($this->selected_lieu_id) ? $this->selected_lieu_id[count($this->selected_lieu_id)-1] : null) : $this->selected_lieu_id;
-
-        // Détection automatique de la précision des dates
         $dateFondationPrecision = null;
         $dateDisparitionPrecision = null;
         $dateDeclarationPrecision = null;
@@ -108,7 +122,8 @@ class Create extends Component
             $dateDeclarationPrecision = 'jour';
         }
 
-        $club = Club::create([
+
+        $this->form = [
             'nom' => $this->nom,
             'nom_origine' => $this->nom_origine,
             'surnoms' => $this->surnoms,
@@ -122,15 +137,18 @@ class Create extends Component
             'couleurs' => $this->couleurs,
             'notes' => $this->notes,
             'siege_id' => $siege_id,
+        ];
+        // Validation mutualisée
+        $validated = ValidateForm::run($this->form, $this->rules);
+        $club = Club::create($validated);
+
+        // Synchronisation des relations mutualisée
+        SyncRelations::run($club, [
+            'sources' => $this->selected_source_id,
+            'disciplines' => $this->selected_discipline_id,
         ]);
 
-        // Sources (morphToMany)
-        $club->sources()->syncWithPivotValues(
-            array_map('intval', (array) $this->selected_source_id),
-            ['entity_type' => 'club']
-        );
-
-        // Mandats datés + présence simple fusionnés
+        // Gestion des mandats datés (spécifique)
         $mandatsToInsert = [];
         $mandatPersonneIds = [];
         foreach ($this->clubPersonnes as $mandat) {
@@ -188,14 +206,8 @@ class Create extends Component
             }
         }
 
-        // Disciplines (many-to-many)
-        if (!empty($this->selected_discipline_id)) {
-            $club->disciplines()->sync($this->selected_discipline_id);
-        } else {
-            $club->disciplines()->sync([]);
-        }
-
-        session()->flash('success', 'Club créé avec succès.');
+        // Notification mutualisée
+        Notify::run('Club créé avec succès.');
         return redirect()->route('clubs.index');
     }
 

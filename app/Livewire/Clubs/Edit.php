@@ -2,16 +2,18 @@
 
 namespace App\Livewire\Clubs;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
 use Illuminate\Support\Facades\DB;
-
 use App\Models\Club;
 use App\Models\Personne;
 use App\Models\Discipline;
 use App\Models\Lieu;
 use App\Models\Source;
+use App\Livewire\Actions\ValidateForm;
+use App\Livewire\Actions\Notify;
+use App\Livewire\Actions\SyncRelations;
 
-class Edit extends Component
+class Edit extends BaseCrudComponent
 {
     public $club;
     public $nom;
@@ -37,6 +39,22 @@ class Edit extends Component
     public $selected_lieu_id = null;
     // Pour la gestion de la présence simple (multi-select)
     public $selected_personne_id = [];
+
+    protected $rules = [
+        'nom' => 'required|string|max:255',
+        'nom_origine' => 'nullable|string|max:255',
+        'surnoms' => 'nullable|string|max:255',
+        'date_fondation' => 'nullable|string|max:255',
+        'date_fondation_precision' => 'nullable|string|max:20',
+        'date_disparition' => 'nullable|string|max:255',
+        'date_disparition_precision' => 'nullable|string|max:20',
+        'date_declaration' => 'nullable|string|max:255',
+        'date_declaration_precision' => 'nullable|string|max:20',
+        'acronyme' => 'nullable|string|max:255',
+        'couleurs' => 'nullable|string|max:255',
+        'siege_id' => 'nullable|integer|exists:lieu,lieu_id',
+        'notes' => 'nullable|string|max:1000',
+    ];
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',
@@ -124,12 +142,7 @@ class Edit extends Component
 
     public function update()
     {
-        $this->validate([
-            'nom' => 'required|string|max:255',
-            'selected_lieu_id' => 'nullable|exists:lieu,lieu_id',
-        ]);
-
-        // Détection automatique de la précision des dates
+        // Préparation des données du formulaire
         $dateFondationPrecision = null;
         $dateDisparitionPrecision = null;
         $dateDeclarationPrecision = null;
@@ -156,7 +169,7 @@ class Edit extends Component
         }
 
         $siege_id = is_array($this->selected_lieu_id) ? (count($this->selected_lieu_id) ? intval($this->selected_lieu_id[0]) : null) : $this->selected_lieu_id;
-        $this->club->update([
+        $this->form = [
             'nom' => $this->nom,
             'nom_origine' => $this->nom_origine,
             'surnoms' => $this->surnoms,
@@ -170,20 +183,21 @@ class Edit extends Component
             'couleurs' => $this->couleurs,
             'notes' => $this->notes,
             'siege_id' => $siege_id,
+        ];
+
+        // Validation mutualisée
+        $validated = ValidateForm::run($this->form, $this->rules);
+        $this->club->update($validated);
+
+        // Synchronisation des relations mutualisée
+        SyncRelations::run($this->club, [
+            'sources' => $this->selected_source_id,
+            'disciplines' => $this->selected_discipline_id,
         ]);
 
-        // Sources (morphToMany)
-        $this->club->sources()->syncWithPivotValues(
-            array_map('intval', (array) $this->selected_source_id),
-            ['entity_type' => 'club']
-        );
-        $this->club->refresh();
-        $this->club->load('sources');
-
-        // Mandats datés (clubPersonnes) + présence simple fusionnés
+        // Gestion des mandats datés (spécifique)
         $mandatsToInsert = [];
         $mandatPersonneIds = [];
-        // Mandats datés : chaque mandat est une ligne
         foreach ($this->clubPersonnes as $mandat) {
             $personneId = null;
             if (is_array($mandat) && isset($mandat['personne_id'])) {
@@ -204,7 +218,6 @@ class Edit extends Component
                 $mandatPersonneIds[] = $personneId;
             }
         }
-        // Présence simple : une ligne par personne non déjà présente dans les mandats datés
         $ids = array_map(function($item) {
             if (is_array($item) && isset($item['personne_id'])) {
                 return (int)$item['personne_id'];
@@ -217,9 +230,8 @@ class Edit extends Component
             }
             return null;
         }, $this->selected_personne_id);
-        $ids = array_filter($ids); // retire les 0 ou null
+        $ids = array_filter($ids);
         foreach ($ids as $id) {
-            // Toujours ajouter une ligne de présence simple, même si la personne a déjà un mandat daté
             $mandatsToInsert[] = [
                 'club_id' => $this->club->club_id,
                 'personne_id' => $id,
@@ -230,21 +242,13 @@ class Edit extends Component
                 'date_fin_precision' => null,
             ];
         }
-        // On supprime tous les mandats existants pour ce club
         DB::table('club_personne')->where('club_id', $this->club->club_id)->delete();
-        // On ajoute chaque mandat individuellement (plusieurs lignes par personne/club possible)
         foreach ($mandatsToInsert as $pivot) {
             DB::table('club_personne')->insert($pivot);
         }
 
-        // Disciplines (many-to-many)
-        if (!empty($this->selected_discipline_id)) {
-            $this->club->disciplines()->sync($this->selected_discipline_id);
-        } else {
-            $this->club->disciplines()->sync([]);
-        }
-
-        session()->flash('success', 'Club mis à jour avec succès.');
+        // Notification mutualisée
+        Notify::run('Club mis à jour avec succès.');
         return redirect()->route('clubs.index');
     }
 

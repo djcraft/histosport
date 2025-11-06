@@ -2,9 +2,10 @@
 
 namespace App\Livewire\Lieux;
 
-use Livewire\Component;
+use App\Livewire\BaseCrudComponent;
+use App\Livewire\Actions\Notify;
 
-class Edit extends Component
+class Edit extends BaseCrudComponent
 {
     public $lieu;
     public $nom;
@@ -13,29 +14,29 @@ class Edit extends Component
     public $commune;
     public $departement;
     public $pays;
+    protected $rules = [
+        'nom' => 'nullable|string|max:255',
+        'adresse' => 'nullable|string|max:255',
+        'code_postal' => 'nullable|string|max:20',
+        'commune' => 'nullable|string|max:100',
+        'departement' => 'nullable|string|max:100',
+        'pays' => 'nullable|string|max:100',
+    ];
 
     public function mount($lieu)
     {
-    $this->lieu = \App\Models\Lieu::findOrFail($lieu);
-    $this->nom = $this->lieu->nom;
-    $this->adresse = $this->lieu->adresse;
-    $this->code_postal = $this->lieu->code_postal;
-    $this->commune = $this->lieu->commune;
-    $this->departement = $this->lieu->departement;
-    $this->pays = $this->lieu->pays;
+        $this->lieu = \App\Models\Lieu::findOrFail($lieu);
+        $this->nom = $this->lieu->nom;
+        $this->adresse = $this->lieu->adresse;
+        $this->code_postal = $this->lieu->code_postal;
+        $this->commune = $this->lieu->commune;
+        $this->departement = $this->lieu->departement;
+        $this->pays = $this->lieu->pays;
     }
 
     public function update()
     {
-        $this->validate([
-            'nom' => 'nullable|string|max:255',
-            'adresse' => 'nullable|string|max:255',
-            'code_postal' => 'nullable|string|max:20',
-            'commune' => 'nullable|string|max:100',
-            'departement' => 'nullable|string|max:100',
-            'pays' => 'nullable|string|max:100',
-        ]);
-
+        $this->validate($this->rules);
         $this->lieu->update([
             'nom' => $this->nom,
             'adresse' => $this->adresse,
@@ -44,8 +45,7 @@ class Edit extends Component
             'departement' => $this->departement,
             'pays' => $this->pays,
         ]);
-
-        session()->flash('success', 'Lieu mis à jour avec succès.');
+        Notify::run('Lieu mis à jour avec succès.');
         return redirect()->route('lieux.index');
     }
 

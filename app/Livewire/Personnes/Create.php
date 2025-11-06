@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Personnes;
 
-use Livewire\Component;
-
+use App\Livewire\BaseCrudComponent;
 use App\Models\Personne;
 use App\Models\Club;
 use App\Models\Lieu;
+use App\Livewire\Actions\ValidateForm;
+use App\Livewire\Actions\Notify;
+use App\Livewire\Actions\SyncRelations;
 
-class Create extends Component
+class Create extends BaseCrudComponent
 {
     public $nom;
     public $prenom;
@@ -27,6 +29,20 @@ class Create extends Component
     public $allDisciplines = [];
     public $sources = [];
     public $allSources = [];
+    
+    protected $rules = [
+        'nom' => 'nullable|string|max:255',
+        'prenom' => 'nullable|string|max:255',
+        'date_naissance' => 'nullable|string|max:10',
+        'date_naissance_precision' => 'nullable|string|max:20',
+        'lieu_naissance_id' => 'nullable|exists:lieu,lieu_id',
+        'date_deces' => 'nullable|string|max:10',
+        'date_deces_precision' => 'nullable|string|max:20',
+        'lieu_deces_id' => 'nullable|exists:lieu,lieu_id',
+        'sexe' => 'nullable|string|max:10',
+        'titre' => 'nullable|string|max:100',
+        'adresse_id' => 'nullable|exists:lieu,lieu_id',
+    ];
 
     public function mount()
     {
@@ -50,18 +66,6 @@ class Create extends Component
 
     public function save()
     {
-        $this->validate([
-            'nom' => 'nullable|string|max:255',
-            'prenom' => 'nullable|string|max:255',
-            'date_naissance' => 'nullable|string|max:10',
-            'lieu_naissance_id' => 'nullable|exists:lieu,lieu_id',
-            'date_deces' => 'nullable|string|max:10',
-            'lieu_deces_id' => 'nullable|exists:lieu,lieu_id',
-            'sexe' => 'nullable|string|max:10',
-            'titre' => 'nullable|string|max:100',
-            'adresse_id' => 'nullable|exists:lieu,lieu_id',
-        ]);
-
         // Détection automatique de la précision des dates
         $dateNaissancePrecision = null;
         $dateDecesPrecision = null;
@@ -91,7 +95,7 @@ class Create extends Component
             ? (count($this->adresse_id) ? (int)$this->adresse_id[0] : null)
             : (is_object($this->adresse_id) && isset($this->adresse_id->lieu_id) ? (int)$this->adresse_id->lieu_id : (is_scalar($this->adresse_id) ? (int)$this->adresse_id : null));
 
-        $personne = Personne::create([
+        $this->form = [
             'nom' => $this->nom,
             'prenom' => $this->prenom,
             'date_naissance' => $this->date_naissance,
@@ -103,27 +107,21 @@ class Create extends Component
             'sexe' => $this->sexe,
             'titre' => $this->titre,
             'adresse_id' => $adresse_id,
+        ];
+
+        // Validation mutualisée
+        $validated = ValidateForm::run($this->form, $this->rules);
+        $personne = Personne::create($validated);
+
+        // Synchronisation des relations mutualisée
+        SyncRelations::run($personne, [
+            'clubs' => $this->clubs,
+            'disciplines' => $this->disciplines,
+            'sources' => $this->sources,
         ]);
 
-        // Clubs (many-to-many)
-        if (!empty($this->clubs)) {
-            $personne->clubs()->sync($this->clubs);
-        }
-
-        // Disciplines (many-to-many)
-        if (!empty($this->disciplines)) {
-            $personne->disciplines()->sync($this->disciplines);
-        }
-
-        // Sources (many-to-many polymorphique)
-        if (!empty($this->sources)) {
-            $personne->sources()->syncWithPivotValues(
-                array_map('intval', (array) $this->sources),
-                ['entity_type' => 'personne']
-            );
-        }
-
-        session()->flash('success', 'Personne créée avec succès.');
+        // Notification mutualisée
+        Notify::run('Personne créée avec succès.');
         return redirect()->route('personnes.index');
     }
 }

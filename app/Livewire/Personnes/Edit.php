@@ -2,13 +2,15 @@
 
 namespace App\Livewire\Personnes;
 
-use Livewire\Component;
-
+use App\Livewire\BaseCrudComponent;
 use App\Models\Personne;
 use App\Models\Club;
 use App\Models\Lieu;
+use App\Livewire\Actions\ValidateForm;
+use App\Livewire\Actions\Notify;
+use App\Livewire\Actions\SyncRelations;
 
-class Edit extends Component
+class Edit extends BaseCrudComponent
 {
     public $personne;
     public $nom;
@@ -28,6 +30,20 @@ class Edit extends Component
     public $allDisciplines = [];
     public $sources = [];
     public $allSources = [];
+    
+    protected $rules = [
+        'nom' => 'required|string|max:255',
+        'prenom' => 'nullable|string|max:255',
+        'date_naissance' => 'nullable|string|max:10',
+        'date_naissance_precision' => 'nullable|string|max:20',
+        'lieu_naissance_id' => 'nullable|exists:lieu,lieu_id',
+        'date_deces' => 'nullable|string|max:10',
+        'date_deces_precision' => 'nullable|string|max:20',
+        'lieu_deces_id' => 'nullable|exists:lieu,lieu_id',
+        'sexe' => 'nullable|string|max:10',
+        'titre' => 'nullable|string|max:100',
+        'adresse_id' => 'nullable|exists:lieu,lieu_id',
+    ];
 
     public function mount(Personne $personne)
     {
@@ -64,18 +80,6 @@ class Edit extends Component
 
     public function update()
     {
-        $this->validate([
-            'nom' => 'required|string|max:255',
-            'prenom' => 'nullable|string|max:255',
-            'date_naissance' => 'nullable|string|max:10',
-            'lieu_naissance_id' => 'nullable|exists:lieu,lieu_id',
-            'date_deces' => 'nullable|string|max:10',
-            'lieu_deces_id' => 'nullable|exists:lieu,lieu_id',
-            'sexe' => 'nullable|string|max:10',
-            'titre' => 'nullable|string|max:100',
-            'adresse_id' => 'nullable|exists:lieu,lieu_id',
-        ]);
-
         // Détection automatique de la précision des dates
         $dateNaissancePrecision = null;
         $dateDecesPrecision = null;
@@ -96,14 +100,15 @@ class Edit extends Component
 
         $lieuNaissanceId = is_array($this->lieu_naissance_id)
             ? (count($this->lieu_naissance_id) ? $this->lieu_naissance_id[0] : null)
-            : $this->lieu_naissance_id;
+            : (is_object($this->lieu_naissance_id) && isset($this->lieu_naissance_id->lieu_id) ? (int)$this->lieu_naissance_id->lieu_id : (is_scalar($this->lieu_naissance_id) ? (int)$this->lieu_naissance_id : null));
         $lieuDecesId = is_array($this->lieu_deces_id)
             ? (count($this->lieu_deces_id) ? $this->lieu_deces_id[0] : null)
-            : $this->lieu_deces_id;
+            : (is_object($this->lieu_deces_id) && isset($this->lieu_deces_id->lieu_id) ? (int)$this->lieu_deces_id->lieu_id : (is_scalar($this->lieu_deces_id) ? (int)$this->lieu_deces_id : null));
         $adresseId = is_array($this->adresse_id)
             ? (count($this->adresse_id) ? $this->adresse_id[0] : null)
-            : $this->adresse_id;
-        $this->personne->update([
+            : (is_object($this->adresse_id) && isset($this->adresse_id->lieu_id) ? (int)$this->adresse_id->lieu_id : (is_scalar($this->adresse_id) ? (int)$this->adresse_id : null));
+
+        $this->form = [
             'nom' => $this->nom,
             'prenom' => $this->prenom,
             'date_naissance' => $this->date_naissance,
@@ -115,21 +120,21 @@ class Edit extends Component
             'sexe' => $this->sexe,
             'titre' => $this->titre,
             'adresse_id' => $adresseId,
+        ];
+
+        // Validation mutualisée
+        $validated = ValidateForm::run($this->form, $this->rules);
+        $this->personne->update($validated);
+
+        // Synchronisation des relations mutualisée
+        SyncRelations::run($this->personne, [
+            'clubs' => $this->clubs,
+            'disciplines' => $this->disciplines,
+            'sources' => $this->sources,
         ]);
 
-        // Clubs (many-to-many)
-        $this->personne->clubs()->sync($this->clubs);
-
-        // Disciplines (many-to-many)
-        $this->personne->disciplines()->sync($this->disciplines);
-
-        // Sources (many-to-many polymorphique)
-        $this->personne->sources()->syncWithPivotValues(
-            array_map('intval', (array) $this->sources),
-            ['entity_type' => 'personne']
-        );
-
-    session()->flash('success', 'Personne modifiée avec succès.');
-    return redirect()->route('personnes.index');
+        // Notification mutualisée
+        Notify::run('Personne modifiée avec succès.');
+        return redirect()->route('personnes.index');
     }
 }
