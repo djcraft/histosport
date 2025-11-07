@@ -13,14 +13,14 @@
             <form method="POST" action="{{ route('lieux.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Importer XLSX</button>
+                <x-button type="submit" variant="success">Importer XLSX</x-button>
             </form>
             <form method="POST" action="{{ route('lieux.export') }}" id="exportForm">
                 @csrf
                 <input type="hidden" name="ids" id="exportIds">
-                <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Exporter la sélection</button>
+                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
             </form>
-            <a href="{{ route('lieux.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter un lieu</a>
+            <x-button as="a" href="{{ route('lieux.create') }}" variant="primary">Ajouter un lieu</x-button>
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
@@ -52,9 +52,9 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->departement }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $lieu->pays }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('lieux.show', $lieu) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
-                            <a href="{{ route('lieux.edit', $lieu) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
-                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-lieu-modal', {detail: {lieuId: {{ $lieu->lieu_id }}, lieuName: '{{ addslashes($lieu->nom) }}'}}))">Supprimer</button>
+                            <x-button as="a" href="{{ route('lieux.show', $lieu) }}" variant="link-primary" class="mr-2">Voir</x-button>
+                            <x-button as="a" href="{{ route('lieux.edit', $lieu) }}" variant="link-orange" class="mr-2">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-lieu-modal', {detail: {lieuId: {{ $lieu->lieu_id }}, lieuName: '{{ addslashes($lieu->nom) }}'}}))">Supprimer</x-button>
                         </td>
                     </tr>
                 @endforeach
@@ -74,11 +74,11 @@
                 <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (clubs, personnes, compétitions, sources) associées à ce lieu.</span>
             </div>
             <div class="flex justify-end gap-2">
-                <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600" onclick="closeDeleteLieuModal()">Annuler</button>
+                <x-button type="button" variant="secondary" onclick="closeDeleteLieuModal()">Annuler</x-button>
                 <form id="deleteLieuForm" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+                    <x-button type="submit" variant="danger">Confirmer</x-button>
                 </form>
             </div>
         </div>

@@ -13,14 +13,14 @@
             <form method="POST" action="{{ route('disciplines.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Importer XLSX</button>
+                <x-button type="submit" variant="success">Importer XLSX</x-button>
             </form>
             <form method="POST" action="{{ route('disciplines.export') }}" id="exportFormDisciplines">
                 @csrf
                 <input type="hidden" name="ids" id="exportIds">
-                <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Exporter la sélection</button>
+                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
             </form>
-            <a href="{{ route('disciplines.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter une discipline</a>
+            <x-button as="a" href="{{ route('disciplines.create') }}" variant="primary">Ajouter une discipline</x-button>
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
@@ -40,9 +40,9 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $discipline->nom }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $discipline->description }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('disciplines.show', $discipline) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
-                            <a href="{{ route('disciplines.edit', $discipline) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
-                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-discipline-modal', {detail: {disciplineId: {{ $discipline->discipline_id }}, disciplineName: '{{ addslashes($discipline->nom) }}'}}))">Supprimer</button>
+                            <x-button as="a" href="{{ route('disciplines.show', $discipline) }}" variant="link-primary" class="mr-2">Voir</x-button>
+                            <x-button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange" class="mr-2">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-discipline-modal', {detail: {disciplineId: {{ $discipline->discipline_id }}, disciplineName: '{{ addslashes($discipline->nom) }}'}}))">Supprimer</x-button>
                         </td>
                     </tr>
                 @endforeach

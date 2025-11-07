@@ -49,13 +49,7 @@
                         wire:key="search-bar-lieu-create"
                         class="w-full"
                     />
-                    <button type="button"
-                        wire:click="$dispatch('openLieuModal')"
-                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-                        style="align-self:flex-start;"
-                    >
-                        Créer un lieu
-                    </button>
+                    <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
                 </div>
             </div>
             <div class="mb-4">
@@ -112,12 +106,12 @@
                                 </div>
                             </div>
                             <div class="flex justify-end mt-2">
-                                <button type="button" wire:click="removeClubPersonne({{ $index }})" class="px-2 py-1 bg-red-600 text-white rounded hover:bg-red-700">Supprimer</button>
+                                <x-button type="button" variant="danger" wire:click="removeClubPersonne({{ $index }})">Supprimer</x-button>
                             </div>
                         </div>
                     @endforeach
                     <div class="flex justify-end">
-                        <button type="button" wire:click="addClubPersonne" class="px-3 py-1 bg-blue-600 text-white rounded hover:bg-blue-700">Ajouter une personne</button>
+                        <x-button type="button" variant="primary" wire:click="addClubPersonne">Ajouter une personne</x-button>
                     </div>
                 </div>
             </div>
@@ -134,13 +128,7 @@
                         wire:key="search-bar-disciplines-create"
                         class="w-full"
                     />
-                    <button type="button"
-                        wire:click="$dispatch('openDisciplineModal')"
-                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-                        style="align-self:flex-start;"
-                    >
-                        Créer une discipline
-                    </button>
+                    <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openDisciplineModal')">Créer une discipline</x-button>
                 </div>
             </div>
             <div class="mb-4">
@@ -156,13 +144,7 @@
                         wire:key="search-bar-sources-create"
                         class="w-full"
                     />
-                    <button type="button"
-                        wire:click="$dispatch('openSourceModal')"
-                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-                        style="align-self:flex-start;"
-                    >
-                        Créer une source
-                    </button>
+                    <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openSourceModal')">Créer une source</x-button>
                 </div>
             </div>
             <div class="mb-4">
@@ -170,7 +152,7 @@
                 <textarea wire:model="notes" rows="3" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"></textarea>
             </div>
             <div class="flex justify-end">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Enregistrer</button>
+                <x-button type="submit" variant="primary">Enregistrer</x-button>
             </div>
         </form>
     </div>

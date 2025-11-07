@@ -5,14 +5,14 @@
             <form method="POST" action="{{ route('sources.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Importer XLSX</button>
+                <x-button type="submit" variant="success">Importer XLSX</x-button>
             </form>
             <form method="POST" action="{{ route('sources.export') }}" id="exportForm">
                 @csrf
                 <input type="hidden" name="ids" id="exportIds">
-                <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Exporter la sélection</button>
+                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
             </form>
-            <a href="{{ route('sources.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter une source</a>
+            <x-button as="a" href="{{ route('sources.create') }}" variant="primary">Ajouter une source</x-button>
         </div>
     </div>
     @if(session('import_report'))
@@ -55,36 +55,42 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->cote }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($source->lieuEdition)
-                                <a href="{{ route('lieux.show', $source->lieuEdition) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                    {{ $source->lieuEdition->nom ?? '' }} {{ $source->lieuEdition->adresse ?? '' }} {{ $source->lieuEdition->commune ?? '' }} {{ $source->lieuEdition->code_postal ?? '' }}
-                                </a>
+                                    <a href="{{ route('lieux.show', $source->lieuEdition) }}">
+                                        <x-badge class="mr-1">
+                                            {{ $source->lieuEdition->nom ?? '' }} {{ $source->lieuEdition->adresse ?? '' }} {{ $source->lieuEdition->commune ?? '' }} {{ $source->lieuEdition->code_postal ?? '' }}
+                                        </x-badge>
+                                    </a>
                             @else
                                 -
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($source->lieuConservation)
-                                <a href="{{ route('lieux.show', $source->lieuConservation) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                    {{ $source->lieuConservation->nom ?? '' }} {{ $source->lieuConservation->adresse ?? '' }} {{ $source->lieuConservation->commune ?? '' }} {{ $source->lieuConservation->code_postal ?? '' }}
-                                </a>
+                                    <a href="{{ route('lieux.show', $source->lieuConservation) }}">
+                                        <x-badge class="mr-1">
+                                            {{ $source->lieuConservation->nom ?? '' }} {{ $source->lieuConservation->adresse ?? '' }} {{ $source->lieuConservation->commune ?? '' }} {{ $source->lieuConservation->code_postal ?? '' }}
+                                        </x-badge>
+                                    </a>
                             @else
                                 -
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($source->lieuCouverture)
-                                <a href="{{ route('lieux.show', $source->lieuCouverture) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                    {{ $source->lieuCouverture->nom ?? '' }} {{ $source->lieuCouverture->adresse ?? '' }} {{ $source->lieuCouverture->commune ?? '' }} {{ $source->lieuCouverture->code_postal ?? '' }}
-                                </a>
+                                    <a href="{{ route('lieux.show', $source->lieuCouverture) }}">
+                                        <x-badge class="mr-1">
+                                            {{ $source->lieuCouverture->nom ?? '' }} {{ $source->lieuCouverture->adresse ?? '' }} {{ $source->lieuCouverture->commune ?? '' }} {{ $source->lieuCouverture->code_postal ?? '' }}
+                                        </x-badge>
+                                    </a>
                             @else
                                 -
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $source->url }}</td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('sources.show', $source) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
-                            <a href="{{ route('sources.edit', $source) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
-                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-source-modal', {detail: {sourceId: {{ $source->source_id }}, sourceName: '{{ addslashes($source->titre) }}'}}))">Supprimer</button>
+                            <x-button as="a" href="{{ route('sources.show', $source) }}" variant="link-primary" class="mr-2">Voir</x-button>
+                            <x-button as="a" href="{{ route('sources.edit', $source) }}" variant="link-orange" class="mr-2">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-source-modal', {detail: {sourceId: {{ $source->source_id }}, sourceName: '{{ addslashes($source->titre) }}'}}))">Supprimer</x-button>
                         </td>
                     </tr>
                 @endforeach
@@ -104,11 +110,11 @@
                 <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (clubs, disciplines, compétitions, personnes) associées à cette source.</span>
             </div>
             <div class="flex justify-end gap-2">
-                <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600" onclick="closeDeleteSourceModal()">Annuler</button>
+                <x-button type="button" variant="secondary" onclick="closeDeleteSourceModal()">Annuler</x-button>
                 <form id="deleteSourceForm" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+                    <x-button type="submit" variant="danger">Confirmer</x-button>
                 </form>
             </div>
         </div>

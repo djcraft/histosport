@@ -13,14 +13,14 @@
             <form method="POST" action="{{ route('clubs.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Importer XLSX</button>
+                <x-button type="submit" variant="success">Importer XLSX</x-button>
             </form>
             <form method="POST" action="{{ route('clubs.export') }}" id="exportForm">
                 @csrf
                 <input type="hidden" name="selected" id="selectedClubsInput">
-                <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Exporter la sélection</button>
+                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
             </form>
-            <a href="{{ route('clubs.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter un club</a>
+            <x-button as="a" href="{{ route('clubs.create') }}" variant="primary">Ajouter un club</x-button>
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
@@ -59,25 +59,29 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $club->couleurs }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($club->siege)
-                                <a href="{{ route('lieux.show', $club->siege) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
-                                    {{ $club->siege->nom ?? '' }}{{ $club->siege->nom ? ', ' : '' }}
-                                    {{ $club->siege->adresse ?? '' }}{{ $club->siege->adresse ? ', ' : '' }}
-                                    {{ $club->siege->commune ?? '' }}{{ $club->siege->commune ? ', ' : '' }}
-                                    {{ $club->siege->code_postal ?? '' }}
-                                </a>
+                                    <a href="{{ route('lieux.show', $club->siege) }}">
+                                        <x-badge>
+                                            {{ $club->siege->nom ?? '' }}{{ $club->siege->nom ? ', ' : '' }}
+                                            {{ $club->siege->adresse ?? '' }}{{ $club->siege->adresse ? ', ' : '' }}
+                                            {{ $club->siege->commune ?? '' }}{{ $club->siege->commune ? ', ' : '' }}
+                                            {{ $club->siege->code_postal ?? '' }}
+                                        </x-badge>
+                                    </a>
                             @else
                                 -
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @foreach($club->disciplines as $discipline)
-                                <a href="{{ route('disciplines.show', $discipline) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $discipline->nom }}</a>
-                            @endforeach
+                                @foreach($club->disciplines as $discipline)
+                                    <a href="{{ route('disciplines.show', $discipline) }}">
+                                        <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
+                                    </a>
+                                @endforeach
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('clubs.show', $club) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
-                            <a href="{{ route('clubs.edit', $club) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
-                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-modal', {detail: {clubId: {{ $club->club_id }}, clubName: '{{ addslashes($club->nom) }}'}}))">Supprimer</button>
+                            <x-button as="a" href="{{ route('clubs.show', $club) }}" variant="link-primary" class="mr-2">Voir</x-button>
+                            <x-button as="a" href="{{ route('clubs.edit', $club) }}" variant="link-orange" class="mr-2">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-modal', {detail: {clubId: {{ $club->club_id }}, clubName: '{{ addslashes($club->nom) }}'}}))">Supprimer</x-button>
                         </td>
                     </tr>
                 @endforeach
@@ -109,11 +113,11 @@
                 <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (disciplines, personnes, compétitions, sources) associées à ce club.</span>
             </div>
             <div class="flex justify-end gap-2">
-                <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600" onclick="closeDeleteClubModal()">Annuler</button>
+                <x-button type="button" variant="secondary" onclick="closeDeleteClubModal()">Annuler</x-button>
                 <form id="deleteClubForm" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+                    <x-button type="submit" variant="danger">Confirmer</x-button>
                 </form>
             </div>
         </div>

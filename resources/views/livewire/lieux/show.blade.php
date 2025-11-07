@@ -28,7 +28,7 @@
             </div>
         </div>
         <div class="flex justify-end">
-            <a href="{{ route('lieux.edit', $lieu) }}" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">Modifier</a>
+            <x-button as="a" href="{{ route('lieux.edit', $lieu) }}" variant="link-orange">Modifier</x-button>
         </div>
     </div>
 </div>

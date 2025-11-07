@@ -66,7 +66,9 @@
             <span class="font-semibold text-gray-700 dark:text-gray-300">Clubs associés :</span>
             <div class="mt-1">
                     @forelse($source->clubs as $club)
-                        <a href="{{ route('clubs.show', $club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $club->nom }}</a>
+                            <a href="{{ route('clubs.show', $club) }}">
+                                <x-badge class="mr-1">{{ $club->nom }}</x-badge>
+                            </a>
                     @empty
                         <span class="block text-gray-900 dark:text-gray-100">-</span>
                     @endforelse
@@ -76,7 +78,9 @@
             <span class="font-semibold text-gray-700 dark:text-gray-300">Compétitions associées :</span>
             <div class="mt-1">
                     @forelse($source->competitions as $competition)
-                        <a href="{{ route('competitions.show', $competition) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $competition->nom }}</a>
+                            <a href="{{ route('competitions.show', $competition) }}">
+                                <x-badge class="mr-1">{{ $competition->nom }}</x-badge>
+                            </a>
                     @empty
                         <span class="block text-gray-900 dark:text-gray-100">-</span>
                     @endforelse
@@ -93,7 +97,7 @@
             </div>
         </div>
         <div class="flex justify-end">
-            <a href="{{ route('sources.edit', $source) }}" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">Modifier</a>
+            <x-button as="a" href="{{ route('sources.edit', $source) }}" variant="link-orange">Modifier</x-button>
         </div>
     </div>
 </div>

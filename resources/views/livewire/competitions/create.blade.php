@@ -24,13 +24,7 @@
                             wire:key="search-bar-lieu-competition-edit"
                             class="w-full"
                         />
-                        <button type="button"
-                            wire:click="$dispatch('openLieuModal')"
-                            class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-                            style="align-self:flex-start;"
-                        >
-                            Créer un lieu
-                        </button>
+                        <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
                         <livewire:lieu-modal wire:key="'lieu-modal-' . $resetKeyLieu" />
                     </div>
                 </div>
@@ -107,13 +101,7 @@
                         wire:key="search-bar-disciplines-competition-edit"
                         class="w-full"
                     />
-                    <button type="button"
-                        wire:click="$dispatch('openDisciplineModal')"
-                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-                        style="align-self:flex-start;"
-                    >
-                        Créer une discipline
-                    </button>
+                    <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openDisciplineModal')">Créer une discipline</x-button>
                 </div>
             </div>
             <div class="mb-4">
@@ -150,28 +138,24 @@
                 <div class="space-y-2 mt-2">
                     <div class="flex flex-wrap gap-2">
                         @foreach($participants ?? [] as $index => $participant)
-                            @if(!is_null($participant['resultat']))
-                                <span class="inline-flex items-center bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-full px-3 py-1 text-xs shadow">
-                                    <span class="inline-block font-medium mr-2">
+                                @if(!is_null($participant['resultat']))
+                                    <x-badge class="inline-flex items-center px-3 py-1 text-xs shadow">
                                         @if($participant['type'] === 'club')
                                             {{ $participant['nom'] }}
                                         @else
                                             {{ $participant['nom'] }} {{ $participant['prenom'] }}
                                         @endif
-                                    </span>
-                                    <span class="inline-block font-semibold cursor-pointer mr-2 underline decoration-dotted" wire:click="modifierParticipant({{ $index }})">
-                                        {{ $participant['resultat'] }}
-                                    </span>
-                                    <button type="button" wire:click="supprimerParticipant({{ $index }})" class="ml-1 text-red-500 hover:text-red-700 font-bold text-base px-2 py-0.5 rounded-full focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50" style="background:transparent;border:none;">&times;</button>
-                                </span>
-                            @endif
+                                        ({{ $participant['resultat'] }})
+                                        <button type="button" wire:click="supprimerParticipant({{ $index }})" class="ml-1 text-red-500 hover:text-red-700 font-bold text-base px-2 py-0.5 rounded-full focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-opacity-50" style="background:transparent;border:none;">&times;</button>
+                                    </x-badge>
+                                @endif
                         @endforeach
                     </div>
                 </div>
                 <div class="mt-4">
                     @if(!$showForm)
-                        <button type="button" wire:click="ouvrirFormulaireClub" class="px-4 py-2 bg-blue-600 text-white rounded shadow hover:bg-blue-700 transition">Ajouter un résultat club</button>
-                        <button type="button" wire:click="ouvrirFormulairePersonne" class="px-4 py-2 bg-green-600 text-white rounded shadow hover:bg-green-700 transition ml-2">Ajouter un résultat personne</button>
+                        <x-button type="button" variant="primary" wire:click="ouvrirFormulaireClub">Ajouter un résultat club</x-button>
+                        <x-button type="button" variant="success" class="ml-2" wire:click="ouvrirFormulairePersonne">Ajouter un résultat personne</x-button>
                     @endif
                 </div>
                 @if($showForm === 'club')
@@ -186,8 +170,8 @@
                             wire:key="'search-bar-add-resultat-club'"
                         />
                         <input type="text" wire:model.defer="resultatParticipant" placeholder="Résultat" class="px-3 py-2 border rounded text-sm w-40 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" />
-                        <button type="button" wire:click="addResultatClub" class="px-4 py-2 bg-blue-500 text-white rounded shadow hover:bg-blue-600 transition">Valider</button>
-                        <button type="button" wire:click="fermerFormulaire" class="px-4 py-2 bg-gray-300 text-gray-700 rounded shadow hover:bg-gray-400 transition">Annuler</button>
+                        <x-button type="button" variant="primary" wire:click="addResultatClub">Valider</x-button>
+                        <x-button type="button" variant="secondary" wire:click="fermerFormulaire">Annuler</x-button>
                     </div>
                 @endif
                 @if($showForm === 'personne')
@@ -202,8 +186,8 @@
                             wire:key="'search-bar-add-resultat-personne'"
                         />
                         <input type="text" wire:model.defer="resultatParticipant" placeholder="Résultat" class="px-3 py-2 border rounded text-sm w-40 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" />
-                        <button type="button" wire:click="addResultatPersonne" class="px-4 py-2 bg-green-500 text-white rounded shadow hover:bg-green-600 transition">Valider</button>
-                        <button type="button" wire:click="fermerFormulaire" class="px-4 py-2 bg-gray-300 text-gray-700 rounded shadow hover:bg-gray-400 transition">Annuler</button>
+                        <x-button type="button" variant="success" wire:click="addResultatPersonne">Valider</x-button>
+                        <x-button type="button" variant="secondary" wire:click="fermerFormulaire">Annuler</x-button>
                     </div>
                 @endif
             </div>
@@ -220,17 +204,11 @@
                         wire:key="search-bar-sources-competition-edit"
                         class="w-full"
                     />
-                    <button type="button"
-                        wire:click="$dispatch('openSourceModal')"
-                        class="ml-2 px-3 py-0.5 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition shadow focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50"
-                        style="align-self:flex-start;"
-                    >
-                        Créer une source
-                    </button>
+                    <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openSourceModal')">Créer une source</x-button>
                 </div>
             </div>
             <div class="flex justify-end">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Enregistrer</button>
+                <x-button type="submit" variant="primary">Enregistrer</x-button>
             </div>
         </form>
     </div>

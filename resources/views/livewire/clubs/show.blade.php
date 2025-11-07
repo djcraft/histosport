@@ -8,9 +8,11 @@
                     $personnesAvecMandat = $club->clubPersonnes->pluck('personne_id')->toArray();
                 @endphp
                 @forelse($club->personnes as $personne)
-                    @if(!in_array($personne->personne_id, $personnesAvecMandat))
-                        <a href="{{ route('personnes.show', $personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $personne->nom }} {{ $personne->prenom }}</a>
-                    @endif
+                        @if(!in_array($personne->personne_id, $personnesAvecMandat))
+                            <a href="{{ route('personnes.show', $personne) }}">
+                                <x-badge class="mr-1">{{ $personne->nom }} {{ $personne->prenom }}</x-badge>
+                            </a>
+                        @endif
                 @empty
                     <span class="block text-gray-900 dark:text-gray-100">Aucune présence simple</span>
                 @endforelse
@@ -51,12 +53,14 @@
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu (siège) :</span>
             @if($club->siege)
-                <a href="{{ route('lieux.show', $club->siege) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
-                    {{ $club->siege->nom ?? '' }}{{ $club->siege->nom ? ', ' : '' }}
-                    {{ $club->siege->adresse ?? '' }}{{ $club->siege->adresse ? ', ' : '' }}
-                    {{ $club->siege->commune ?? '' }}{{ $club->siege->commune ? ', ' : '' }}
-                    {{ $club->siege->code_postal ?? '' }}
-                </a>
+                    <a href="{{ route('lieux.show', $club->siege) }}">
+                        <x-badge>
+                            {{ $club->siege->nom ?? '' }}{{ $club->siege->nom ? ', ' : '' }}
+                            {{ $club->siege->adresse ?? '' }}{{ $club->siege->adresse ? ', ' : '' }}
+                            {{ $club->siege->commune ?? '' }}{{ $club->siege->commune ? ', ' : '' }}
+                            {{ $club->siege->code_postal ?? '' }}
+                        </x-badge>
+                    </a>
             @else
                 <span class="block text-gray-900 dark:text-gray-100">-</span>
             @endif
@@ -64,43 +68,45 @@
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
             <div class="mt-1">
-                @foreach($club->disciplines as $discipline)
-                    <a href="{{ route('disciplines.show', $discipline) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $discipline->nom }}</a>
-                @endforeach
+                    @foreach($club->disciplines as $discipline)
+                        <a href="{{ route('disciplines.show', $discipline) }}">
+                            <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
+                        </a>
+                    @endforeach
             </div>
         </div>
         <div class="mb-4">
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Mandats dans le club :</span>
             <div class="mt-1 space-y-2">
                 @forelse($club->clubPersonnes as $mandat)
-                    <div class="flex items-center space-x-2">
-                        <a href="{{ route('personnes.show', $mandat->personne) }}" class="inline-block align-middle">
-                            <span class="inline-block bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs rounded px-2 py-1 mr-1 align-middle hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $mandat->personne->nom ?? '' }} {{ $mandat->personne->prenom ?? '' }}</span>
-                        </a>
-                        @if(!empty($mandat->role))
-                            <span class="inline-block bg-gray-200 dark:bg-gray-700 text-gray-900 dark:text-gray-100 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition font-semibold">{{ $mandat->role }}</span>
-                        @endif
-                        <span class="text-xs text-gray-700 dark:text-gray-300">
-                            @php
-                                $precisions = ['année','year','mois','month','jour','day'];
-                                $debut = $mandat->date_debut;
-                                $debutPrecision = $mandat->date_debut_precision;
-                                $fin = $mandat->date_fin;
-                                $finPrecision = $mandat->date_fin_precision;
-                                $debutAff = ($debut && in_array($debutPrecision, $precisions)) ? formatMandatDate($debut, $debutPrecision) : ($debut ?? null);
-                                $finAff = ($fin && in_array($finPrecision, $precisions)) ? formatMandatDate($fin, $finPrecision) : ($fin ?? null);
-                            @endphp
-                            @if($debutAff && $finAff)
-                                {{ $debutAff }} – {{ $finAff }}
-                            @elseif($debutAff)
-                                {{ $debutAff }}
-                            @elseif($finAff)
-                                Jusqu'à {{ $finAff }}
-                            @elseif(empty($debutAff) && empty($finAff))
-                                <span class="italic text-gray-400">Période inconnue</span>
+                        <div class="flex items-center space-x-2">
+                            <a href="{{ route('personnes.show', $mandat->personne) }}" class="inline-block align-middle">
+                                <x-badge class="mr-1">{{ $mandat->personne->nom ?? '' }} {{ $mandat->personne->prenom ?? '' }}</x-badge>
+                            </a>
+                            @if(!empty($mandat->role))
+                                <x-badge class="mr-1 font-semibold">{{ $mandat->role }}</x-badge>
                             @endif
-                        </span>
-                    </div>
+                            <span class="text-xs text-gray-700 dark:text-gray-300">
+                                @php
+                                    $precisions = ['année','year','mois','month','jour','day'];
+                                    $debut = $mandat->date_debut;
+                                    $debutPrecision = $mandat->date_debut_precision;
+                                    $fin = $mandat->date_fin;
+                                    $finPrecision = $mandat->date_fin_precision;
+                                    $debutAff = ($debut && in_array($debutPrecision, $precisions)) ? formatMandatDate($debut, $debutPrecision) : ($debut ?? null);
+                                    $finAff = ($fin && in_array($finPrecision, $precisions)) ? formatMandatDate($fin, $finPrecision) : ($fin ?? null);
+                                @endphp
+                                @if($debutAff && $finAff)
+                                    {{ $debutAff }} – {{ $finAff }}
+                                @elseif($debutAff)
+                                    {{ $debutAff }}
+                                @elseif($finAff)
+                                    Jusqu'à {{ $finAff }}
+                                @elseif(empty($debutAff) && empty($finAff))
+                                    <span class="italic text-gray-400">Période inconnue</span>
+                                @endif
+                            </span>
+                        </div>
                 @empty
                     <span class="block text-gray-900 dark:text-gray-100">Aucun mandat enregistré</span>
                 @endforelse
@@ -110,11 +116,13 @@
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
             <!-- Seules les sources associées au club via entity_type = 'club' sont affichées ici -->
             <div class="mt-1">
-                @forelse($club->sources as $source)
-                    <a href="{{ route('sources.show', $source) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $source->titre }}</a>
-                @empty
-                    <span class="block text-gray-900 dark:text-gray-100">-</span>
-                @endforelse
+                    @forelse($club->sources as $source)
+                        <a href="{{ route('sources.show', $source) }}">
+                            <x-badge class="mr-1">{{ $source->titre }}</x-badge>
+                        </a>
+                    @empty
+                        <span class="block text-gray-900 dark:text-gray-100">-</span>
+                    @endforelse
             </div>
         </div>
         <div class="mb-4">
@@ -122,7 +130,7 @@
             <span class="block text-gray-900 dark:text-gray-100">{{ $club->notes }}</span>
         </div>
         <div class="flex justify-end">
-            <a href="{{ route('clubs.edit', $club) }}" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">Modifier</a>
+            <x-button as="a" href="{{ route('clubs.edit', $club) }}" variant="link-orange">Modifier</x-button>
         </div>
     </div>
 </div>

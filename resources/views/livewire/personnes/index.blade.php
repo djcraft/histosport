@@ -13,14 +13,14 @@
             <form method="POST" action="{{ route('personnes.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <button type="submit" class="px-3 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition">Importer XLSX</button>
+                <x-button type="submit" variant="success">Importer XLSX</x-button>
             </form>
             <form method="POST" action="{{ route('personnes.export') }}" id="exportFormPersonnes">
                 @csrf
                 <input type="hidden" name="selected" id="selectedPersonnesInput">
-                <button type="submit" class="px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Exporter la sélection</button>
+                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
             </form>
-            <a href="{{ route('personnes.create') }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Ajouter une personne</a>
+            <x-button as="a" href="{{ route('personnes.create') }}" variant="primary">Ajouter une personne</x-button>
         </div>
     </div>
     <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
@@ -54,9 +54,11 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->date_naissance }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($personne->lieu_naissance)
-                                <a href="{{ route('lieux.show', $personne->lieu_naissance) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                    {{ $personne->lieu_naissance->nom ?? '' }} {{ $personne->lieu_naissance->adresse ?? '' }} {{ $personne->lieu_naissance->commune ?? '' }} {{ $personne->lieu_naissance->code_postal ?? '' }}
-                                </a>
+                                    <a href="{{ route('lieux.show', $personne->lieu_naissance) }}">
+                                        <x-badge class="mr-1">
+                                            {{ $personne->lieu_naissance->nom ?? '' }} {{ $personne->lieu_naissance->adresse ?? '' }} {{ $personne->lieu_naissance->commune ?? '' }} {{ $personne->lieu_naissance->code_postal ?? '' }}
+                                        </x-badge>
+                                    </a>
                             @else
                                 -
                             @endif
@@ -64,9 +66,11 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->date_deces }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($personne->lieu_deces)
-                                <a href="{{ route('lieux.show', $personne->lieu_deces) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                    {{ $personne->lieu_deces->nom ?? '' }} {{ $personne->lieu_deces->adresse ?? '' }} {{ $personne->lieu_deces->commune ?? '' }} {{ $personne->lieu_deces->code_postal ?? '' }}
-                                </a>
+                                    <a href="{{ route('lieux.show', $personne->lieu_deces) }}">
+                                        <x-badge class="mr-1">
+                                            {{ $personne->lieu_deces->nom ?? '' }} {{ $personne->lieu_deces->adresse ?? '' }} {{ $personne->lieu_deces->commune ?? '' }} {{ $personne->lieu_deces->code_postal ?? '' }}
+                                        </x-badge>
+                                    </a>
                             @else
                                 -
                             @endif
@@ -75,22 +79,26 @@
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->titre }}</td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @if($personne->adresse)
-                                <a href="{{ route('lieux.show', $personne->adresse) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                                    {{ $personne->adresse->nom ?? '' }} {{ $personne->adresse->adresse ?? '' }} {{ $personne->adresse->commune ?? '' }} {{ $personne->adresse->code_postal ?? '' }}
-                                </a>
+                                    <a href="{{ route('lieux.show', $personne->adresse) }}">
+                                        <x-badge class="mr-1">
+                                            {{ $personne->adresse->nom ?? '' }} {{ $personne->adresse->adresse ?? '' }} {{ $personne->adresse->commune ?? '' }} {{ $personne->adresse->code_postal ?? '' }}
+                                        </x-badge>
+                                    </a>
                             @else
                                 -
                             @endif
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
                             @foreach($personne->clubs as $club)
-                                <a href="{{ route('clubs.show', $club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $club->nom }}</a>
+                                    <a href="{{ route('clubs.show', $club) }}">
+                                        <x-badge class="mr-1">{{ $club->nom }}</x-badge>
+                                    </a>
                             @endforeach
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap">
-                            <a href="{{ route('personnes.show', $personne) }}" class="text-blue-600 hover:underline mr-2 cursor-pointer">Voir</a>
-                            <a href="{{ route('personnes.edit', $personne) }}" class="text-yellow-600 hover:underline mr-2 cursor-pointer">Modifier</a>
-                            <button type="button" class="text-red-600 hover:underline mr-2 cursor-pointer" onclick="window.dispatchEvent(new CustomEvent('open-delete-personne-modal', {detail: {personneId: {{ $personne->personne_id }}, personneName: '{{ addslashes($personne->nom) }}'}}))">Supprimer</button>
+                            <x-button as="a" href="{{ route('personnes.show', $personne) }}" variant="link-primary" class="mr-2">Voir</x-button>
+                            <x-button as="a" href="{{ route('personnes.edit', $personne) }}" variant="link-orange" class="mr-2">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-personne-modal', {detail: {personneId: {{ $personne->personne_id }}, personneName: '{{ addslashes($personne->nom) }}'}}))">Supprimer</x-button>
                         </td>
                     </tr>
                 @endforeach
@@ -122,11 +130,11 @@
                 <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (clubs, disciplines, compétitions, sources) associées à cette personne.</span>
             </div>
             <div class="flex justify-end gap-2">
-                <button type="button" class="px-4 py-2 bg-gray-300 dark:bg-gray-700 rounded hover:bg-gray-400 dark:hover:bg-gray-600" onclick="closeDeletePersonneModal()">Annuler</button>
+                <x-button type="button" variant="secondary" onclick="closeDeletePersonneModal()">Annuler</x-button>
                 <form id="deletePersonneForm" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <button type="submit" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Confirmer</button>
+                    <x-button type="submit" variant="danger">Confirmer</x-button>
                 </form>
             </div>
         </div>

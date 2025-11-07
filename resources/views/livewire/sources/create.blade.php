@@ -75,13 +75,8 @@
                 </div>
             </div>
             <div class="flex justify-end gap-2">
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition">Enregistrer</button>
-                <button type="button"
-                    wire:click="$dispatch('openLieuModal')"
-                    class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition shadow focus:outline-none focus:ring-2 focus:ring-green-400 focus:ring-opacity-50"
-                >
-                    Créer un lieu
-                </button>
+                <x-button type="submit" variant="primary">Enregistrer</x-button>
+                <x-button type="button" variant="success" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
             </div>
         </form>
     </div>

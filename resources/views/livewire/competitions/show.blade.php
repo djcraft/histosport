@@ -15,12 +15,14 @@
             <div>
                 <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu principal :</span>
                         @if($competition->lieu)
-                            <a href="{{ route('lieux.show', $competition->lieu) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
-                                {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
-                                {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
-                                {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
-                                {{ $competition->lieu->code_postal ?? '' }}
-                            </a>
+                                <a href="{{ route('lieux.show', $competition->lieu) }}">
+                                    <x-badge>
+                                        {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
+                                        {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
+                                        {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
+                                        {{ $competition->lieu->code_postal ?? '' }}
+                                    </x-badge>
+                                </a>
                         @else
                             <span class="block text-gray-900 dark:text-gray-100">-</span>
                         @endif
@@ -29,15 +31,17 @@
                 <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sites de la compétition :</span>
                     <div class="mt-1 flex flex-wrap gap-3">
                         @forelse($competition->sites as $site)
-                            <a href="{{ route('lieux.show', $site) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
-                                {{ $site->nom ?? '' }}{{ $site->nom ? ', ' : '' }}
-                                {{ $site->adresse ?? '' }}{{ $site->adresse ? ', ' : '' }}
-                                {{ $site->commune ?? '' }}{{ $site->commune ? ', ' : '' }}
-                                {{ $site->code_postal ?? '' }}
-                                @if($site->pivot->type)
-                                    <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $site->pivot->type }})</span>
-                                @endif
-                            </a>
+                                <a href="{{ route('lieux.show', $site) }}">
+                                    <x-badge>
+                                        {{ $site->nom ?? '' }}{{ $site->nom ? ', ' : '' }}
+                                        {{ $site->adresse ?? '' }}{{ $site->adresse ? ', ' : '' }}
+                                        {{ $site->commune ?? '' }}{{ $site->commune ? ', ' : '' }}
+                                        {{ $site->code_postal ?? '' }}
+                                    </x-badge>
+                                    @if($site->pivot->type)
+                                        <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $site->pivot->type }})</span>
+                                    @endif
+                                </a>
                         @empty
                             <span class="block text-gray-900 dark:text-gray-100">-</span>
                         @endforelse
@@ -48,14 +52,13 @@
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Organisateur :</span>
             <div class="mt-1">
                 @if($competition->organisateur_club)
-                    <a href="{{ route('clubs.show', $competition->organisateur_club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                        {{ $competition->organisateur_club->nom }}
-                    </a>
+                        <a href="{{ route('clubs.show', $competition->organisateur_club) }}">
+                            <x-badge class="mr-1">{{ $competition->organisateur_club->nom }}</x-badge>
+                        </a>
                 @elseif($competition->organisateur_personne)
-                    <a href="{{ route('personnes.show', $competition->organisateur_personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                        {{ $competition->organisateur_personne->nom }}
-                        {{ $competition->organisateur_personne->prenom }}
-                    </a>
+                        <a href="{{ route('personnes.show', $competition->organisateur_personne) }}">
+                            <x-badge class="mr-1">{{ $competition->organisateur_personne->nom }} {{ $competition->organisateur_personne->prenom }}</x-badge>
+                        </a>
                 @else
                     <span class="block text-gray-900 dark:text-gray-100">-</span>
                 @endif
@@ -79,7 +82,9 @@
             <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
             <div class="mt-1">
                 @forelse($competition->disciplines as $discipline)
-                    <a href="{{ route('disciplines.show', $discipline) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $discipline->nom }}</a>
+                        <a href="{{ route('disciplines.show', $discipline) }}">
+                            <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
+                        </a>
                 @empty
                     <span class="block text-gray-900 dark:text-gray-100">-</span>
                 @endforelse
@@ -90,20 +95,17 @@
             <div class="mt-1">
                 @foreach($competition->participants as $participant)
                     @if($participant->club)
-                        <a href="{{ route('clubs.show', $participant->club) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                            {{ $participant->club->nom }}
-                            @if($participant->resultat)
-                                <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $participant->resultat }})</span>
-                            @endif
-                        </a>
+                                <a href="{{ route('clubs.show', $participant->club) }}">
+                                    <x-badge class="mr-1">
+                                        {{ $participant->club->nom }}@if($participant->resultat) ({{ $participant->resultat }})@endif
+                                    </x-badge>
+                                </a>
                     @elseif($participant->personne)
-                        <a href="{{ route('personnes.show', $participant->personne) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">
-                            {{ $participant->personne->nom }}
-                            {{ $participant->personne->prenom }}
-                            @if($participant->resultat)
-                                <span class="ml-1 text-blue-600 dark:text-blue-300">({{ $participant->resultat }})</span>
-                            @endif
-                        </a>
+                                <a href="{{ route('personnes.show', $participant->personne) }}">
+                                    <x-badge class="mr-1">
+                                        {{ $participant->personne->nom }} {{ $participant->personne->prenom }}@if($participant->resultat) ({{ $participant->resultat }})@endif
+                                    </x-badge>
+                                </a>
                     @endif
                 @endforeach
             </div>
@@ -112,7 +114,9 @@
                 <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
                 <div class="mt-1">
                     @forelse($competition->sources as $source)
-                        <a href="{{ route('sources.show', $source) }}" class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition">{{ $source->titre }}</a>
+                            <a href="{{ route('sources.show', $source) }}">
+                                <x-badge class="mr-1">{{ $source->titre }}</x-badge>
+                            </a>
                     @empty
                         <span class="block text-gray-900 dark:text-gray-100">-</span>
                     @endforelse
@@ -129,6 +133,6 @@
             </div>
         </div>
         <div class="flex justify-end">
-            <a href="{{ route('competitions.edit', $competition) }}" class="px-4 py-2 bg-yellow-600 text-white rounded hover:bg-yellow-700 transition">Modifier</a>
+            <x-button as="a" href="{{ route('competitions.edit', $competition) }}" variant="link-orange">Modifier</x-button>
         </div>
 </div>
