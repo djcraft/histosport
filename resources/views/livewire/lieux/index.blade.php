@@ -19,24 +19,7 @@
     <div class="overflow-x-auto w-full">
         <x-table class="w-full" :headers="['', 'Nom', 'Adresse', 'Code postal', 'Commune', 'Département', 'Pays', 'Actions']">
             @foreach($lieux as $lieu)
-                <tr>
-                    <td class="px-4 py-4 text-center whitespace-nowrap">
-                        <input type="checkbox" class="lieu-checkbox" value="{{ $lieu->lieu_id }}">
-                    </td>
-                    <td class="whitespace-nowrap text-center">{{ $lieu->nom }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $lieu->adresse }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $lieu->code_postal }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $lieu->commune }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $lieu->departement }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $lieu->pays }}</td>
-                    <td class="whitespace-nowrap text-center">
-                        <div class="flex flex-row gap-2 justify-center">
-                            <x-button as="a" href="{{ route('lieux.show', $lieu) }}" variant="link-primary">Voir</x-button>
-                            <x-button as="a" href="{{ route('lieux.edit', $lieu) }}" variant="link-orange">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-lieu-modal', {detail: {lieuId: {{ $lieu->lieu_id }}, lieuName: '{{ addslashes($lieu->nom) }}'}}))">Supprimer</x-button>
-                        </div>
-                    </td>
-                </tr>
+                @component('components.lieu-table-row', ['lieu' => $lieu]) @endcomponent
             @endforeach
         </x-table>
         <div class="p-4">

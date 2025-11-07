@@ -19,57 +19,7 @@
     <div class="overflow-x-auto w-full">
         <x-table class="w-full" :headers="['', 'Titre', 'Auteur', 'Année référence', 'Type', 'Cote', 'Lieu édition', 'Lieu conservation', 'Lieu couverture', 'URL', 'Actions']">
             @foreach($sources as $source)
-                <tr>
-                    <td class="px-4 py-4 text-center whitespace-nowrap">
-                        <input type="checkbox" class="source-checkbox" value="{{ $source->source_id }}">
-                    </td>
-                    <td class="whitespace-nowrap text-center">{{ $source->titre }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $source->auteur }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $source->annee_reference }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $source->type }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $source->cote }}</td>
-                    <td class="whitespace-nowrap text-center">
-                        @if($source->lieuEdition)
-                            <a href="{{ route('lieux.show', $source->lieuEdition) }}">
-                                <x-badge class="mr-1">
-                                    {{ $source->lieuEdition->nom ?? '' }} {{ $source->lieuEdition->adresse ?? '' }} {{ $source->lieuEdition->commune ?? '' }} {{ $source->lieuEdition->code_postal ?? '' }}
-                                </x-badge>
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="whitespace-nowrap text-center">
-                        @if($source->lieuConservation)
-                            <a href="{{ route('lieux.show', $source->lieuConservation) }}">
-                                <x-badge class="mr-1">
-                                    {{ $source->lieuConservation->nom ?? '' }} {{ $source->lieuConservation->adresse ?? '' }} {{ $source->lieuConservation->commune ?? '' }} {{ $source->lieuConservation->code_postal ?? '' }}
-                                </x-badge>
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="whitespace-nowrap text-center">
-                        @if($source->lieuCouverture)
-                            <a href="{{ route('lieux.show', $source->lieuCouverture) }}">
-                                <x-badge class="mr-1">
-                                    {{ $source->lieuCouverture->nom ?? '' }} {{ $source->lieuCouverture->adresse ?? '' }} {{ $source->lieuCouverture->commune ?? '' }} {{ $source->lieuCouverture->code_postal ?? '' }}
-                                </x-badge>
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="whitespace-nowrap text-center">{{ $source->url }}</td>
-                    <td class="whitespace-nowrap text-center">
-                        <div class="flex flex-row gap-2 justify-center">
-                            <x-button as="a" href="{{ route('sources.show', $source) }}" variant="link-primary">Voir</x-button>
-                            <x-button as="a" href="{{ route('sources.edit', $source) }}" variant="link-orange">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-source-modal', {detail: {sourceId: {{ $source->source_id }}, sourceName: '{{ addslashes($source->titre) }}'}}))">Supprimer</x-button>
-                        </div>
-                    </td>
-                </tr>
+                @component('components.source-table-row', ['source' => $source]) @endcomponent
             @endforeach
         </x-table>
         <div class="p-4">

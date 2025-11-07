@@ -19,18 +19,7 @@
     <div class="overflow-x-auto w-full">
         <x-table class="w-full" :headers="['', 'Nom', 'Description', 'Actions']">
             @foreach($disciplines as $discipline)
-                <tr>
-                    <td class="px-4 py-4 text-center whitespace-nowrap"><input type="checkbox" class="discipline-checkbox" value="{{ $discipline->discipline_id }}"></td>
-                    <td class="whitespace-nowrap text-center">{{ $discipline->nom }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $discipline->description }}</td>
-                    <td class="whitespace-nowrap text-center">
-                        <div class="flex flex-row gap-2 justify-center">
-                            <x-button as="a" href="{{ route('disciplines.show', $discipline) }}" variant="link-primary">Voir</x-button>
-                            <x-button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-discipline-modal', {detail: {disciplineId: {{ $discipline->discipline_id }}, disciplineName: '{{ addslashes($discipline->nom) }}'}}))">Supprimer</x-button>
-                        </div>
-                    </td>
-                </tr>
+                @component('components.discipline-table-row', ['discipline' => $discipline]) @endcomponent
             @endforeach
         </x-table>
         <div class="p-4">

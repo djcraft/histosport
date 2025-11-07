@@ -19,64 +19,7 @@
     <div class="overflow-x-auto w-full">
     <x-table class="w-full" :headers="['', 'Nom', 'Prénom', 'Date naissance', 'Lieu naissance', 'Date décès', 'Lieu décès', 'Sexe', 'Titre', 'Adresse', 'Clubs', 'Actions']">
             @foreach($personnes as $personne)
-                <tr>
-                    <td class="px-4 py-4 text-center whitespace-nowrap">
-                        <input type="checkbox" class="personne-checkbox" value="{{ $personne->id }}">
-                    </td>
-                    <td class="whitespace-nowrap text-center">{{ $personne->nom }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $personne->prenom }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $personne->date_naissance }}</td>
-                    <td class="whitespace-nowrap text-center">
-                        @if($personne->lieu_naissance)
-                            <a href="{{ route('lieux.show', $personne->lieu_naissance) }}">
-                                <x-badge class="mr-1">
-                                    {{ $personne->lieu_naissance->nom ?? '' }} {{ $personne->lieu_naissance->adresse ?? '' }} {{ $personne->lieu_naissance->commune ?? '' }} {{ $personne->lieu_naissance->code_postal ?? '' }}
-                                </x-badge>
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="whitespace-nowrap text-center">{{ $personne->date_deces }}</td>
-                    <td class="whitespace-nowrap text-center">
-                        @if($personne->lieu_deces)
-                            <a href="{{ route('lieux.show', $personne->lieu_deces) }}">
-                                <x-badge class="mr-1">
-                                    {{ $personne->lieu_deces->nom ?? '' }} {{ $personne->lieu_deces->adresse ?? '' }} {{ $personne->lieu_deces->commune ?? '' }} {{ $personne->lieu_deces->code_postal ?? '' }}
-                                </x-badge>
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="whitespace-nowrap text-center">{{ $personne->sexe }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $personne->titre }}</td>
-                    <td class="whitespace-nowrap text-center">
-                        @if($personne->adresse)
-                            <a href="{{ route('lieux.show', $personne->adresse) }}">
-                                <x-badge class="mr-1">
-                                    {{ $personne->adresse->nom ?? '' }} {{ $personne->adresse->adresse ?? '' }} {{ $personne->adresse->commune ?? '' }} {{ $personne->adresse->code_postal ?? '' }}
-                                </x-badge>
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="whitespace-nowrap text-center">
-                        @foreach($personne->clubs as $club)
-                            <a href="{{ route('clubs.show', $club) }}">
-                                <x-badge class="mr-1">{{ $club->nom }}</x-badge>
-                            </a>
-                        @endforeach
-                    </td>
-                    <td class="whitespace-nowrap text-center">
-                        <div class="flex flex-row gap-2 justify-center">
-                            <x-button as="a" href="{{ route('personnes.show', $personne) }}" variant="link-primary">Voir</x-button>
-                            <x-button as="a" href="{{ route('personnes.edit', $personne) }}" variant="link-orange">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-personne-modal', {detail: {personneId: {{ $personne->personne_id }}, personneName: '{{ addslashes($personne->nom) }}'}}))">Supprimer</x-button>
-                        </div>
-                    </td>
-                </tr>
+                @component('components.personne-table-row', ['personne' => $personne]) @endcomponent
             @endforeach
         </x-table>
         <div class="p-4">

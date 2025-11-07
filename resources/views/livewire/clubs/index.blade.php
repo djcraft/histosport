@@ -17,49 +17,9 @@
         </div>
     </div>
     <div class="overflow-x-auto w-full">
-    <x-table class="w-full" :headers="['', 'Nom', 'Nom origine', 'Surnoms', 'Date fondation', 'Date disparition', 'Date déclaration', 'Acronyme', 'Couleurs', 'Siège', 'Disciplines', 'Actions']">
+        <x-table class="w-full" :headers="['', 'Nom', 'Nom origine', 'Surnoms', 'Date fondation', 'Date disparition', 'Date déclaration', 'Acronyme', 'Couleurs', 'Siège', 'Disciplines', 'Actions']">
             @foreach($clubs as $club)
-                <tr>
-                    <td class="px-4 py-4 text-center whitespace-nowrap">
-                        <input type="checkbox" class="club-checkbox" value="{{ $club->id }}">
-                    </td>
-                    <td class="whitespace-nowrap text-center">{{ $club->nom }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $club->nom_origine }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $club->surnoms }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $club->date_fondation }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $club->date_disparition }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $club->date_declaration }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $club->acronyme }}</td>
-                    <td class="whitespace-nowrap text-center">{{ $club->couleurs }}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100 text-center">
-                        @if($club->siege)
-                            <a href="{{ route('lieux.show', $club->siege) }}">
-                                <x-badge>
-                                    {{ $club->siege->nom ?? '' }}{{ $club->siege->nom ? ', ' : '' }}
-                                    {{ $club->siege->adresse ?? '' }}{{ $club->siege->adresse ? ', ' : '' }}
-                                    {{ $club->siege->commune ?? '' }}{{ $club->siege->commune ? ', ' : '' }}
-                                    {{ $club->siege->code_postal ?? '' }}
-                                </x-badge>
-                            </a>
-                        @else
-                            -
-                        @endif
-                    </td>
-                    <td class="whitespace-nowrap text-center">
-                        @foreach($club->disciplines as $discipline)
-                            <a href="{{ route('disciplines.show', $discipline) }}">
-                                <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
-                            </a>
-                        @endforeach
-                    </td>
-                    <td class="whitespace-nowrap ml-4 text-center">
-                        <div class="flex flex-row gap-2 justify-center">
-                            <x-button as="a" href="{{ route('clubs.show', $club) }}" variant="link-primary">Voir</x-button>
-                            <x-button as="a" href="{{ route('clubs.edit', $club) }}" variant="link-orange">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-modal', {detail: {clubId: {{ $club->club_id }}, clubName: '{{ addslashes($club->nom) }}'}}))">Supprimer</x-button>
-                        </div>
-                    </td>
-                </tr>
+                @component('components.club-table-row', ['club' => $club]) @endcomponent
             @endforeach
         </x-table>
     </div>
