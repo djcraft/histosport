@@ -5,7 +5,7 @@ namespace App\Livewire\Actions;
 use Lorisleiva\Actions\Action;
 use Illuminate\Support\Facades\Validator;
 
-class ValidateForm extends Action
+class ValidateForm extends Action implements ActionInterface
 {
     /**
      * Valide les données du formulaire selon les règles passées.
@@ -14,9 +14,10 @@ class ValidateForm extends Action
      * @return array Données validées
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function handle(array $form, array $rules)
+    public function handle(...$params)
     {
-        $validated = Validator::make($form, $rules)->validate();
-        return $validated;
+        $form = $params[0] ?? [];
+        $rules = $params[1] ?? [];
+        return Validator::make($form, $rules)->validate();
     }
 }

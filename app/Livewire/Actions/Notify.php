@@ -5,7 +5,7 @@ namespace App\Livewire\Actions;
 use Lorisleiva\Actions\Action;
 use Illuminate\Support\Facades\Session;
 
-class Notify extends Action
+class Notify extends Action implements ActionInterface
 {
     /**
      * Envoie une notification à la session Livewire.
@@ -13,8 +13,10 @@ class Notify extends Action
      * @param string $type
      * @return void
      */
-    public function handle(string $message, string $type = 'success')
+    public function handle(...$params)
     {
+        $message = $params[0] ?? '';
+        $type = $params[1] ?? 'success';
         Session::flash('notification', ['message' => $message, 'type' => $type]);
     }
 }
