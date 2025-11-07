@@ -34,22 +34,10 @@ class Create extends BaseCrudComponent
     public $selected_source_id = [];
     // Mandats datés
     public $clubPersonnes = [];
-
-    protected $rules = [
-        'nom' => 'required|string|max:255',
-        'nom_origine' => 'nullable|string|max:255',
-        'surnoms' => 'nullable|string|max:255',
-        'date_fondation' => 'nullable|string|max:255',
-        'date_fondation_precision' => 'nullable|string|max:20',
-        'date_disparition' => 'nullable|string|max:255',
-        'date_disparition_precision' => 'nullable|string|max:20',
-        'date_declaration' => 'nullable|string|max:255',
-        'date_declaration_precision' => 'nullable|string|max:20',
-        'acronyme' => 'nullable|string|max:255',
-        'couleurs' => 'nullable|string|max:255',
-        'siege_id' => 'nullable|integer|exists:lieu,lieu_id',
-        'notes' => 'nullable|string|max:1000',
-    ];
+    protected function rules()
+    {
+        return \App\Rules\ClubRules::rules();
+    }
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',

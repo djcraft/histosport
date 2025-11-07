@@ -22,16 +22,23 @@ class SourceController extends BaseCrudController
         return view('livewire.sources.create', compact('lieux'));
     }
 
-    public function store(StoreSourceRequest $request)
+    public function store(\Illuminate\Http\Request $request)
     {
-        $source = Source::create($request->validated());
+        if ($request instanceof \App\Http\Requests\StoreSourceRequest) {
+            $validated = $request->validated();
+        } else {
+            $validated = $request->validate(\App\Rules\SourceRules::rules());
+        }
+        $source = Source::create($validated);
         return redirect()->route('sources.show', $source)->with('success', 'Source créée avec succès');
     }
 
-    public function update(UpdateSourceRequest $request, $id)
+    public function update(\Illuminate\Http\Request $request, $id)
     {
         $source = Source::findOrFail($id);
-        $source->update($request->validated());
+        $validated = (new UpdateSourceRequest())->rules();
+        $request->validate($validated);
+        $source->update($request->all());
         return redirect()->route('sources.show', $source)->with('success', 'Source modifiée avec succès');
     }
 

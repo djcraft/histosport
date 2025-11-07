@@ -17,9 +17,14 @@ class CompetitionController extends BaseCrudController
     protected string $viewCreate = 'livewire.competitions.create';
     protected string $viewEdit = 'livewire.competitions.edit';
 
-    public function store(StoreCompetitionRequest $request)
+    public function store(\Illuminate\Http\Request $request)
     {
-        $competition = Competition::create($request->validated());
+        if ($request instanceof \App\Http\Requests\StoreCompetitionRequest) {
+            $validated = $request->validated();
+        } else {
+            $validated = $request->validate(\App\Rules\CompetitionRules::rules());
+        }
+        $competition = Competition::create($validated);
         // Ajout des clubs participants
         foreach ($request->participant_club_ids ?? [] as $club_id) {
             CompetitionParticipant::create([
@@ -39,10 +44,12 @@ class CompetitionController extends BaseCrudController
         return redirect()->route('competitions.show', $competition)->with('success', 'Compétition créée avec succès');
     }
 
-    public function update(UpdateCompetitionRequest $request, $id)
+    public function update(\Illuminate\Http\Request $request, $id)
     {
         $competition = Competition::findOrFail($id);
-        $competition->update($request->validated());
+            $validated = (new UpdateCompetitionRequest())->rules();
+            $request->validate($validated);
+            $competition->update($request->all());
         // Suppression des anciens participants
         CompetitionParticipant::where('competition_id', $competition->competition_id)->delete();
         // Ajout des clubs participants

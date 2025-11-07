@@ -16,16 +16,23 @@ class LieuController extends BaseCrudController
     protected string $viewCreate = 'livewire.lieux.create';
     protected string $viewEdit = 'livewire.lieux.edit';
 
-    public function store(StoreLieuRequest $request)
+    public function store(\Illuminate\Http\Request $request)
     {
-        $lieu = Lieu::create($request->validated());
+        if ($request instanceof \App\Http\Requests\StoreLieuRequest) {
+            $validated = $request->validated();
+        } else {
+            $validated = $request->validate(\App\Rules\LieuRules::rules());
+        }
+        $lieu = Lieu::create($validated);
         return redirect()->route('lieux.show', $lieu)->with('success', 'Lieu créé avec succès');
     }
 
-    public function update(UpdateLieuRequest $request, $id)
+    public function update(\Illuminate\Http\Request $request, $id)
     {
         $lieu = Lieu::findOrFail($id);
-        $lieu->update($request->validated());
+        $validated = (new UpdateLieuRequest())->rules();
+        $request->validate($validated);
+        $lieu->update($request->all());
         return redirect()->route('lieux.show', $lieu)->with('success', 'Lieu modifié avec succès');
     }
 

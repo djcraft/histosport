@@ -16,16 +16,23 @@ class DisciplineController extends BaseCrudController
     protected string $viewCreate = 'livewire.disciplines.create';
     protected string $viewEdit = 'livewire.disciplines.edit';
 
-    public function store(StoreDisciplineRequest $request)
+    public function store(\Illuminate\Http\Request $request)
     {
-        $discipline = Discipline::create($request->validated());
+        if ($request instanceof \App\Http\Requests\StoreDisciplineRequest) {
+            $validated = $request->validated();
+        } else {
+            $validated = $request->validate(\App\Rules\DisciplineRules::rules());
+        }
+        $discipline = Discipline::create($validated);
         return redirect()->route('disciplines.show', $discipline)->with('success', 'Discipline créée avec succès');
     }
 
-    public function update(UpdateDisciplineRequest $request, $id)
+    public function update(\Illuminate\Http\Request $request, $id)
     {
         $discipline = Discipline::findOrFail($id);
-        $discipline->update($request->validated());
+        $validated = (new UpdateDisciplineRequest())->rules();
+        $request->validate($validated);
+        $discipline->update($request->all());
         return redirect()->route('disciplines.show', $discipline)->with('success', 'Discipline modifiée avec succès');
     }
 

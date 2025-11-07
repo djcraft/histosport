@@ -30,19 +30,10 @@ class Create extends BaseCrudComponent
     public $sources = [];
     public $allSources = [];
     
-    protected $rules = [
-        'nom' => 'nullable|string|max:255',
-        'prenom' => 'nullable|string|max:255',
-        'date_naissance' => 'nullable|string|max:10',
-        'date_naissance_precision' => 'nullable|string|max:20',
-        'lieu_naissance_id' => 'nullable|exists:lieu,lieu_id',
-        'date_deces' => 'nullable|string|max:10',
-        'date_deces_precision' => 'nullable|string|max:20',
-        'lieu_deces_id' => 'nullable|exists:lieu,lieu_id',
-        'sexe' => 'nullable|string|max:10',
-        'titre' => 'nullable|string|max:100',
-        'adresse_id' => 'nullable|exists:lieu,lieu_id',
-    ];
+        protected function rules()
+        {
+            return \App\Rules\PersonneRules::rules();
+        }
 
     public function mount()
     {

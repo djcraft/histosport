@@ -19,16 +19,24 @@ class ClubController extends BaseCrudController
     /**
      * Surcharge pour utiliser les FormRequest Laravel
      */
-    public function store(StoreClubRequest $request)
+    public function store(\Illuminate\Http\Request $request)
     {
-        $entity = Club::create($request->validated());
+        // Si le request est une instance de StoreClubRequest, on valide
+        if ($request instanceof \App\Http\Requests\StoreClubRequest) {
+            $validated = $request->validated();
+        } else {
+            $validated = $request->validate(\App\Rules\ClubRules::rules());
+        }
+        $entity = Club::create($validated);
         return redirect()->route('clubs.show', $entity)->with('success', 'Club créé avec succès');
     }
 
-    public function update(UpdateClubRequest $request, $id)
+    public function update(\Illuminate\Http\Request $request, $id)
     {
         $entity = Club::findOrFail($id);
-        $entity->update($request->validated());
+        $validated = (new UpdateClubRequest())->rules();
+        $request->validate($validated);
+        $entity->update($request->all());
         return redirect()->route('clubs.show', $entity)->with('success', 'Club modifié avec succès');
     }
 

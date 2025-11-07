@@ -16,17 +16,10 @@ class Create extends BaseCrudComponent
     public $lieu_edition_id;
     public $lieu_conservation_id;
     public $lieu_couverture_id;
-    protected $rules = [
-        'titre' => 'required|string|max:255',
-        'auteur' => 'nullable|string|max:255',
-        'annee_reference' => 'nullable|string|max:255',
-        'type' => 'nullable|string|max:255',
-        'cote' => 'nullable|string|max:255',
-        'url' => 'nullable|string|max:255',
-        'lieu_edition_id' => 'nullable|integer|exists:lieu,lieu_id',
-        'lieu_conservation_id' => 'nullable|integer|exists:lieu,lieu_id',
-        'lieu_couverture_id' => 'nullable|integer|exists:lieu,lieu_id',
-    ];
+    protected function rules()
+    {
+        return \App\Rules\SourceRules::rules();
+    }
 
     protected $listeners = [
         'lieuCreated' => 'onLieuCreated',

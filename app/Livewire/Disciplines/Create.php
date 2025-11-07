@@ -10,10 +10,10 @@ class Create extends BaseCrudComponent
 {
     public $nom;
     public $description;
-    protected $rules = [
-        'nom' => 'required|string|max:255',
-        'description' => 'nullable|string',
-    ];
+    protected function rules()
+    {
+        return \App\Rules\DisciplineRules::rules();
+    }
 
     public function save()
     {

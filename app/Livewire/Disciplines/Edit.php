@@ -12,10 +12,10 @@ class Edit extends BaseCrudComponent
     public $description;
     public $discipline;
     public $confirmingDelete = false;
-    protected $rules = [
-        'nom' => 'required|string|max:255',
-        'description' => 'nullable|string',
-    ];
+    protected function rules()
+    {
+        return \App\Rules\DisciplineRules::rules();
+    }
 
     public function mount()
     {

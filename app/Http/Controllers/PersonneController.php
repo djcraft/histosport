@@ -16,16 +16,23 @@ class PersonneController extends BaseCrudController
     protected string $viewCreate = 'livewire.personnes.create';
     protected string $viewEdit = 'livewire.personnes.edit';
 
-    public function store(StorePersonneRequest $request)
+    public function store(\Illuminate\Http\Request $request)
     {
-        $personne = Personne::create($request->validated());
+        if ($request instanceof \App\Http\Requests\StorePersonneRequest) {
+            $validated = $request->validated();
+        } else {
+            $validated = $request->validate(\App\Rules\PersonneRules::rules());
+        }
+        $personne = Personne::create($validated);
         return redirect()->route('personnes.show', $personne)->with('success', 'Personne créée avec succès');
     }
 
-    public function update(UpdatePersonneRequest $request, $id)
+    public function update(\Illuminate\Http\Request $request, $id)
     {
         $personne = Personne::findOrFail($id);
-        $personne->update($request->validated());
+            $validated = (new UpdatePersonneRequest())->rules();
+            $request->validate($validated);
+            $personne->update($request->all());
         return redirect()->route('personnes.show', $personne)->with('success', 'Personne modifiée avec succès');
     }
 
