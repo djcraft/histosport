@@ -1,82 +1,47 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreClubRequest;
 use App\Http\Requests\UpdateClubRequest;
 use App\Models\Club;
 
-class ClubController extends Controller
+class ClubController extends BaseCrudController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    /**
-     * Liste tous les clubs avec leurs relations principales.
-     */
-    public function index()
-    {
-        $clubs = Club::with(['siege', 'personnes', 'disciplines', 'competitions', 'sources', 'lieuxUtilises', 'sections'])->paginate(15);
-        return view('livewire.clubs.index', compact('clubs'));
-    }
+    protected string $model = Club::class;
+    protected array $relations = ['siege', 'personnes', 'disciplines', 'competitions', 'sources', 'lieuxUtilises', 'sections'];
+    protected string $viewIndex = 'livewire.clubs.index';
+    protected string $viewShow = 'livewire.clubs.show';
+    protected string $viewCreate = 'livewire.clubs.create';
+    protected string $viewEdit = 'livewire.clubs.edit';
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('livewire.clubs.create');
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    /**
-     * Crée un nouveau club et historise l'action.
+     * Surcharge pour utiliser les FormRequest Laravel
      */
     public function store(StoreClubRequest $request)
     {
-        $club = Club::create($request->validated());
-        return redirect()->route('clubs.show', $club)->with('success', 'Club créé avec succès');
+        $entity = Club::create($request->validated());
+        return redirect()->route('clubs.show', $entity)->with('success', 'Club créé avec succès');
+    }
+
+    public function update(UpdateClubRequest $request, $id)
+    {
+        $entity = Club::findOrFail($id);
+        $entity->update($request->validated());
+        return redirect()->route('clubs.show', $entity)->with('success', 'Club modifié avec succès');
     }
 
     /**
-     * Display the specified resource.
+     * Nettoyage des relations pivots et suppression des participations
      */
-    /**
-     * Affiche un club avec ses relations.
-     */
-    public function destroy(Club $club)
+    protected function detachRelations($entity)
     {
-    // Nettoyage des relations pivots
-    $club->personnes()->detach();
-    $club->disciplines()->detach();
-    // Suppression des participations du club à des compétitions
-    \App\Models\CompetitionParticipant::where('club_id', $club->club_id)->delete();
-    $club->sources()->detach();
-    $club->lieuxUtilises()->detach();
-    $club->sections()->detach();
-    // Suppression du club
-    $club->delete();
-    return redirect()->route('clubs.index')->with('success', 'Club supprimé avec succès');
+        $entity->personnes()->detach();
+        $entity->disciplines()->detach();
+        \App\Models\CompetitionParticipant::where('club_id', $entity->club_id)->delete();
+        $entity->sources()->detach();
+        $entity->lieuxUtilises()->detach();
+        $entity->sections()->detach();
     }
-    /**
-     * Update the specified resource in storage.
-     */
-    /**
-     * Met à jour un club et historise l'action.
-     */
-    public function update(UpdateClubRequest $request, Club $club)
-    {
-        $club->update($request->validated());
-        return redirect()->route('clubs.show', $club)->with('success', 'Club modifié avec succès');
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    /**
-     * Supprime un club et historise l'action.
-     */
-    // (Méthode destroy déjà adaptée plus haut, duplication supprimée)
 }

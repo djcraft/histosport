@@ -1,5 +1,6 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCompetitionRequest;
@@ -7,38 +8,18 @@ use App\Http\Requests\UpdateCompetitionRequest;
 use App\Models\Competition;
 use App\Models\CompetitionParticipant;
 
-class CompetitionController extends Controller
+class CompetitionController extends BaseCrudController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    /**
-     * Liste toutes les compétitions avec leurs relations principales.
-     */
-    public function index()
-    {
-        $competitions = Competition::with(['participants', 'sources'])->paginate(15);
-        return view('livewire.competitions.index', compact('competitions'));
-    }
+    protected string $model = Competition::class;
+    protected array $relations = ['participants', 'sources'];
+    protected string $viewIndex = 'livewire.competitions.index';
+    protected string $viewShow = 'livewire.competitions.show';
+    protected string $viewCreate = 'livewire.competitions.create';
+    protected string $viewEdit = 'livewire.competitions.edit';
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    /**
-     * Crée une nouvelle compétition et historise l'action.
-     */
     public function store(StoreCompetitionRequest $request)
     {
         $competition = Competition::create($request->validated());
-
         // Ajout des clubs participants
         foreach ($request->participant_club_ids ?? [] as $club_id) {
             CompetitionParticipant::create([
@@ -58,34 +39,9 @@ class CompetitionController extends Controller
         return redirect()->route('competitions.show', $competition)->with('success', 'Compétition créée avec succès');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    /**
-     * Affiche une compétition avec ses relations.
-     */
-    public function show(Competition $competition)
+    public function update(UpdateCompetitionRequest $request, $id)
     {
-        $competition->load(['participants', 'sources']);
-    return view('livewire.competitions.show', compact('competition'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Competition $competition)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    /**
-     * Met à jour une compétition et historise l'action.
-     */
-    public function update(UpdateCompetitionRequest $request, Competition $competition)
-    {
+        $competition = Competition::findOrFail($id);
         $competition->update($request->validated());
         // Suppression des anciens participants
         CompetitionParticipant::where('competition_id', $competition->competition_id)->delete();
@@ -108,20 +64,10 @@ class CompetitionController extends Controller
         return redirect()->route('competitions.show', $competition)->with('success', 'Compétition modifiée avec succès');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    /**
-     * Supprime une compétition et historise l'action.
-     */
-    public function destroy(Competition $competition)
+    protected function detachRelations($entity)
     {
-        // Nettoyage des relations pivots
-        $competition->disciplines()->detach();
-        $competition->sources()->detach();
-        $competition->participants()->delete();
-        // Suppression de la compétition
-        $competition->delete();
-        return redirect()->route('competitions.index')->with('success', 'Compétition supprimée avec succès');
+        $entity->disciplines()->detach();
+        $entity->sources()->detach();
+        $entity->participants()->delete();
     }
 }

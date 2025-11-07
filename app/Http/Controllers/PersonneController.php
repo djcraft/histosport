@@ -1,92 +1,37 @@
 <?php
 
+
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StorePersonneRequest;
 use App\Http\Requests\UpdatePersonneRequest;
 use App\Models\Personne;
 
-class PersonneController extends Controller
+class PersonneController extends BaseCrudController
 {
-    /**
-     * Display a listing of the resource.
-     */
-    /**
-     * Liste toutes les personnes avec leurs relations principales.
-     */
-    public function index()
-    {
-        $personnes = Personne::with(['clubs', 'disciplines', 'sources'])->paginate(15);
-        return view('livewire.personnes.index', compact('personnes'));
-    }
+    protected string $model = Personne::class;
+    protected array $relations = ['clubs', 'disciplines', 'sources'];
+    protected string $viewIndex = 'livewire.personnes.index';
+    protected string $viewShow = 'livewire.personnes.show';
+    protected string $viewCreate = 'livewire.personnes.create';
+    protected string $viewEdit = 'livewire.personnes.edit';
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     */
-    /**
-     * Crée une nouvelle personne et historise l'action.
-     */
     public function store(StorePersonneRequest $request)
     {
         $personne = Personne::create($request->validated());
-    return redirect()->route('personnes.show', $personne)->with('success', 'Personne créée avec succès');
+        return redirect()->route('personnes.show', $personne)->with('success', 'Personne créée avec succès');
     }
 
-    /**
-     * Display the specified resource.
-     */
-    /**
-     * Affiche une personne avec ses relations.
-     */
-    public function show(Personne $personne)
+    public function update(UpdatePersonneRequest $request, $id)
     {
-        $personne->load(['clubs', 'disciplines', 'sources']);
-    return view('livewire.personnes.show', compact('personne'));
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Personne $personne)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    /**
-     * Met à jour une personne et historise l'action.
-     */
-    public function update(UpdatePersonneRequest $request, Personne $personne)
-    {
-        $donnees_avant = $personne->toArray();
+        $personne = Personne::findOrFail($id);
         $personne->update($request->validated());
-        $donnees_apres = $personne->toArray();
-    return redirect()->route('personnes.show', $personne)->with('success', 'Personne modifiée avec succès');
+        return redirect()->route('personnes.show', $personne)->with('success', 'Personne modifiée avec succès');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    /**
-     * Supprime une personne et historise l'action.
-     */
-    public function destroy(Personne $personne)
+    protected function detachRelations($entity)
     {
-        // Nettoyage des relations pivots
-        $personne->clubs()->detach();
-        $personne->disciplines()->detach();
-        // Suppression de la personne
-        $personne->delete();
-        return redirect()->route('personnes.index')->with('success', 'Personne supprimée avec succès');
+        $entity->clubs()->detach();
+        $entity->disciplines()->detach();
     }
 }
