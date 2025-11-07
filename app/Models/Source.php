@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Source extends Model
+class Source extends BaseModel
 {
     public static string $entityType = 'source';
     /**
@@ -24,8 +23,7 @@ class Source extends Model
         'lieu_conservation_id',
         'lieu_couverture_id',
     ];
-    /** @use HasFactory<\Database\Factories\SourceFactory> */
-    use HasFactory;
+    // ...existing code...
 
     /**
      * The table with the model.

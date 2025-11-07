@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Discipline extends Model
+class Discipline extends BaseModel
 {
     public static string $entityType = 'discipline';
-    /** @use HasFactory<\Database\Factories\DisciplineFactory> */
-    use HasFactory;
+    // ...existing code...
     protected $fillable = ['nom', 'description'];
     /**
      * The table with the model.

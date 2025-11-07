@@ -23,7 +23,7 @@ class SyncRelations extends Action implements ActionInterface
                 if ($relation === 'sources' && property_exists($model, 'entityType')) {
                     $model->$relation()->syncWithPivotValues(
                         array_map('intval', (array) $ids),
-                        ['entity_type' => $model->entityType]
+                        ['entity_type' => $model::$entityType]
                     );
                 } else {
                     $model->$relation()->sync($ids);

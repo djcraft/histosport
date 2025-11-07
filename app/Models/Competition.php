@@ -2,14 +2,12 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Competition extends Model
+class Competition extends BaseModel
 {
     public static string $entityType = 'competition';
-    /** @use HasFactory<\Database\Factories\CompetitionFactory> */
-    use HasFactory;
+    // ...existing code...
 
     protected $table = 'competitions';
     protected $primaryKey = 'competition_id';

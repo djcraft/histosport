@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Lieu extends Model
+class Lieu extends BaseModel
 {
     public static string $entityType = 'lieu';
     protected $fillable = [
@@ -16,8 +15,7 @@ class Lieu extends Model
         'departement',
         'pays',
     ];
-    /** @use HasFactory<\Database\Factories\LieuFactory> */
-    use HasFactory;
+    // ...existing code...
 
     /**
      * Recherche un lieu avec gestion des nulls et casse (null-safe, insensible à la casse).

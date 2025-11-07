@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Personne extends Model
+class Personne extends BaseModel
 {
     /**
      * Les mandats datés (pivot club_personne).
@@ -46,8 +45,7 @@ class Personne extends Model
         'titre',
         'adresse_id',
     ];
-    /** @use HasFactory<\Database\Factories\PersonneFactory> */
-    use HasFactory;
+    // ...existing code...
 
     /**
      * The table with the model.

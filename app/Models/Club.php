@@ -2,10 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\BaseModel;
 
-class Club extends Model
+class Club extends BaseModel
 {
     /**
      * Les mandats datés (pivot club_personne).
@@ -34,8 +33,7 @@ class Club extends Model
         // Ajouté pour permettre l'enregistrement de toutes les colonnes
         // Si d'autres colonnes sont ajoutées à la table clubs, les ajouter ici
     ];
-    /** @use HasFactory<\Database\Factories\ClubFactory> */
-    use HasFactory;
+    // ...existing code...
 
     /**
      * The table with the model.
