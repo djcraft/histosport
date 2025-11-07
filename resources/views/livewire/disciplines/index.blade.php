@@ -1,12 +1,5 @@
 <div>
-    @if(session('import_report'))
-        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
-            <strong>Rapport d'import :</strong><br>
-            @foreach(session('import_report') as $key => $value)
-                <div>{{ ucfirst($key) }} : {{ $value }}</div>
-            @endforeach
-        </div>
-    @endif
+    <x-notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Disciplines</h1>
         <div class="flex gap-2">
@@ -23,31 +16,23 @@
             <x-button as="a" href="{{ route('disciplines.create') }}" variant="primary">Ajouter une discipline</x-button>
         </div>
     </div>
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
+    <div class="overflow-x-auto w-full">
+        <x-table class="w-full" :headers="['', 'Nom', 'Description', 'Actions']">
+            @foreach($disciplines as $discipline)
                 <tr>
-                    <th class="px-4 py-3"><input type="checkbox" id="selectAllDisciplines" onclick="toggleAllDisciplines()"></th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Description</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    <td class="px-4 py-4 text-center whitespace-nowrap"><input type="checkbox" class="discipline-checkbox" value="{{ $discipline->discipline_id }}"></td>
+                    <td class="whitespace-nowrap text-center">{{ $discipline->nom }}</td>
+                    <td class="whitespace-nowrap text-center">{{ $discipline->description }}</td>
+                    <td class="whitespace-nowrap text-center">
+                        <div class="flex flex-row gap-2 justify-center">
+                            <x-button as="a" href="{{ route('disciplines.show', $discipline) }}" variant="link-primary">Voir</x-button>
+                            <x-button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-discipline-modal', {detail: {disciplineId: {{ $discipline->discipline_id }}, disciplineName: '{{ addslashes($discipline->nom) }}'}}))">Supprimer</x-button>
+                        </div>
+                    </td>
                 </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($disciplines as $discipline)
-                    <tr>
-                        <td class="px-4 py-4 text-center"><input type="checkbox" class="discipline-checkbox" value="{{ $discipline->discipline_id }}"></td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $discipline->nom }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $discipline->description }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <x-button as="a" href="{{ route('disciplines.show', $discipline) }}" variant="link-primary" class="mr-2">Voir</x-button>
-                            <x-button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange" class="mr-2">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-discipline-modal', {detail: {disciplineId: {{ $discipline->discipline_id }}, disciplineName: '{{ addslashes($discipline->nom) }}'}}))">Supprimer</x-button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </x-table>
         <div class="p-4">
             {{ $disciplines->links() }}
         </div>

@@ -1,12 +1,5 @@
 <div>
-    @if(session('import_report'))
-        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
-            <strong>Rapport d'import :</strong><br>
-            @foreach(session('import_report') as $key => $value)
-                <div>{{ ucfirst($key) }} : {{ $value }}</div>
-            @endforeach
-        </div>
-    @endif
+    <x-notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Compétitions</h1>
         <div class="flex gap-2">
@@ -23,92 +16,61 @@
             <x-button as="a" href="{{ route('competitions.create') }}" variant="primary">Ajouter une compétition</x-button>
         </div>
     </div>
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
+    <div class="overflow-x-auto w-full">
+        <x-table class="w-full" :headers="['', 'Nom', 'Date', 'Lieu', 'Organisateur', 'Type', 'Durée', 'Niveau', 'Discipline', 'Actions']">
+            @foreach($competitions as $competition)
                 <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        <input type="checkbox" id="selectAllCompetitions" onclick="toggleAllCompetitions(this)">
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lieu</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Organisateur</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Type</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Durée</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Niveau</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Discipline</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    <td class="px-4 py-4 text-center whitespace-nowrap">
+                        <input type="checkbox" class="competition-checkbox" value="{{ $competition->competition_id }}">
+                    </td>
+                    <td class="whitespace-nowrap text-center">{{ $competition->nom }}</td>
+                    <td class="whitespace-nowrap text-center">{{ $competition->date }}</td>
+                    <td class="whitespace-nowrap text-center">
+                        @if($competition->lieu)
+                            <a href="{{ route('lieux.show', $competition->lieu) }}">
+                                <x-badge>
+                                    {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
+                                    {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
+                                    {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
+                                    {{ $competition->lieu->code_postal ?? '' }}
+                                </x-badge>
+                            </a>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="whitespace-nowrap text-center">
+                        @if($competition->organisateur_club)
+                            {{ $competition->organisateur_club->nom }}
+                        @elseif($competition->organisateur_personne)
+                            {{ $competition->organisateur_personne->nom }}
+                            {{ $competition->organisateur_personne->prenom }}
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="whitespace-nowrap text-center">{{ $competition->type }}</td>
+                    <td class="whitespace-nowrap text-center">{{ $competition->duree }}</td>
+                    <td class="whitespace-nowrap text-center">{{ $competition->niveau }}</td>
+                    <td class="whitespace-nowrap text-center">
+                        @forelse($competition->disciplines as $discipline)
+                            <a href="{{ route('disciplines.show', $discipline) }}">
+                                <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
+                            </a>
+                        @empty
+                            -
+                        @endforelse
+                    </td>
+                    <td class="whitespace-nowrap text-center">
+                        <div class="flex flex-row gap-2 justify-center">
+                            <x-button as="a" href="{{ route('competitions.show', $competition) }}" variant="link-primary">Voir</x-button>
+                            <x-button as="a" href="{{ route('competitions.edit', $competition) }}" variant="link-orange">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-competition-modal', {detail: {competitionId: {{ $competition->competition_id }}, competitionName: '{{ addslashes($competition->nom) }}'}}))">Supprimer</x-button>
+                        </div>
+                    </td>
                 </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($competitions as $competition)
-                    <tr>
-                        <td class="px-4 py-4 text-center">
-                            <input type="checkbox" class="competition-checkbox" value="{{ $competition->competition_id }}">
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->nom }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->date }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                                @if($competition->lieu)
-                                        <a href="{{ route('lieux.show', $competition->lieu) }}">
-                                            <x-badge>
-                                                {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
-                                                {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
-                                                {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
-                                                {{ $competition->lieu->code_postal ?? '' }}
-                                            </x-badge>
-                                        </a>
-                                @else
-                                    -
-                                @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @if($competition->organisateur_club)
-                                {{ $competition->organisateur_club->nom }}
-                            @elseif($competition->organisateur_personne)
-                                {{ $competition->organisateur_personne->nom }}
-                                {{ $competition->organisateur_personne->prenom }}
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->type }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->duree }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $competition->niveau }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @forelse($competition->disciplines as $discipline)
-                                    <a href="{{ route('disciplines.show', $discipline) }}">
-                                        <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
-                                    </a>
-                            @empty
-                                -
-                            @endforelse
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <x-button as="a" href="{{ route('competitions.show', $competition) }}" variant="link-primary" class="mr-2">Voir</x-button>
-                            <x-button as="a" href="{{ route('competitions.edit', $competition) }}" variant="link-orange" class="mr-2">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-competition-modal', {detail: {competitionId: {{ $competition->competition_id }}, competitionName: '{{ addslashes($competition->nom) }}'}}))">Supprimer</x-button>
-                        </td>
-                    </tr>
-                @endforeach
-<script>
-function toggleAllCompetitions(cb) {
-    document.querySelectorAll('.competition-checkbox').forEach(function(box) {
-        box.checked = cb.checked;
-    });
-    updateSelectedCompetitions();
-}
-document.querySelectorAll('.competition-checkbox').forEach(function(box) {
-    box.addEventListener('change', updateSelectedCompetitions);
-});
-function updateSelectedCompetitions() {
-    const ids = Array.from(document.querySelectorAll('.competition-checkbox:checked')).map(cb => cb.value);
-    document.getElementById('selectedCompetitionsInput').value = ids.join(',');
-}
-</script>
-            </tbody>
-        </table>
+            @endforeach
+        </x-table>
         <div class="p-4">
             {{ $competitions->links() }}
         </div>

@@ -1,18 +1,13 @@
+
 <div>
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Modifier la compétition</h2>
         <form wire:submit.prevent="update">
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Nom</label>
-                <input type="text" wire:model.defer="nom" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" required>
-            </div>
-            <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Date</label>
-                    <input type="text" wire:model.defer="date" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu principal</label>
+            <x-form-input name="nom" label="Nom" wire:model.defer="nom" required />
+            <x-form-group class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <x-form-input name="date" label="Date" wire:model.defer="date" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                <x-form-group>
+                    <x-label>Lieu principal</x-label>
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
@@ -26,10 +21,10 @@
                         />
                         <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
                     </div>
-                </div>
-            </div>
-            <div>
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Sites de la compétition</label>
+                </x-form-group>
+            </x-form-group>
+            <x-form-group class="md:col-span-2">
+                <x-label>Sites de la compétition</x-label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Lieu"
                     :display-fields="['nom','adresse','commune','code_postal']"
@@ -40,15 +35,15 @@
                     wire:key="search-bar-sites-competition-edit"
                     class="w-full lg:w-[700px]"
                 />
-            </div>
+            </x-form-group>
             <div class="mb-2">
                 <div class="bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200 rounded px-3 py-2 mb-2 text-sm">
                     Un seul organisateur peut être sélectionné : soit un club, soit une personne. Si vous choisissez les deux, l’enregistrement sera refusé.
                 </div>
             </div>
-            <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Organisateur (club)</label>
+            <x-form-group class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <x-form-group>
+                    <x-label>Organisateur (club)</x-label>
                     <livewire:search-bar
                         entity-class="App\\Models\\Club"
                         display-field="nom"
@@ -58,9 +53,9 @@
                         wire:model="organisateur_club_id"
                         wire:key="'search-bar-organisateur-club-competition-edit-' . ($organisateur_personne_id ?? 'none')"
                     />
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Organisateur (personne)</label>
+                </x-form-group>
+                <x-form-group>
+                    <x-label>Organisateur (personne)</x-label>
                     <livewire:search-bar
                         entity-class="App\\Models\\Personne"
                         :display-fields="['nom','prenom']"
@@ -70,24 +65,15 @@
                         wire:model="organisateur_personne_id"
                         wire:key="'search-bar-organisateur-personne-competition-edit-' . ($organisateur_club_id ?? 'none')"
                     />
-                </div>
-            </div>
-            <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Type</label>
-                    <input type="text" wire:model.defer="type" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Durée</label>
-                    <input type="text" wire:model.defer="duree" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Niveau</label>
-                    <input type="text" wire:model.defer="niveau" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines</label>
+                </x-form-group>
+            </x-form-group>
+            <x-form-group class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <x-form-input name="type" label="Type" wire:model.defer="type" />
+                <x-form-input name="duree" label="Durée" wire:model.defer="duree" />
+                <x-form-input name="niveau" label="Niveau" wire:model.defer="niveau" />
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Disciplines</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Discipline"
@@ -101,9 +87,9 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openDisciplineModal')">Créer une discipline</x-button>
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Participants (clubs)</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Participants (clubs)</x-label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Club"
                     display-field="nom"
@@ -113,7 +99,7 @@
                     wire:model="participant_club_ids"
                     wire:key="search-bar-participants-club-competition-edit"
                 />
-                <label class="block text-gray-700 dark:text-gray-300 mb-2 mt-4">Participants (personnes)</label>
+                <x-label class="mt-4">Participants (personnes)</x-label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Personne"
                     :display-fields="['nom','prenom']"
@@ -179,9 +165,9 @@
                         </div>
                     @endif
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Sources</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Source"
@@ -195,7 +181,7 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openSourceModal')">Créer une source</x-button>
                 </div>
-            </div>
+            </x-form-group>
             <div class="flex justify-end">
                 <x-button type="submit" variant="primary">Enregistrer</x-button>
             </div>

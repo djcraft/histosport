@@ -2,10 +2,7 @@
 <div>
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">{{ $discipline->nom }}</h2>
-        <div class="mb-4">
-            <span class="font-semibold text-gray-700 dark:text-gray-300">Description :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $discipline->description }}</span>
-        </div>
+        <x-field label="Description" :value="$discipline->description" />
 
     <!-- Références à personnes, sources et clubs supprimées -->
         <div class="mb-4">

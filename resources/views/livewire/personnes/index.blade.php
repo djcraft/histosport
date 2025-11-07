@@ -1,12 +1,5 @@
 <div>
-    @if(session('import_report'))
-        <div class="mb-4 p-4 bg-green-100 text-green-800 rounded">
-            <strong>Rapport d'import :</strong><br>
-            @foreach(session('import_report') as $key => $value)
-                <div>{{ ucfirst($key) }} : {{ $value }}</div>
-            @endforeach
-        </div>
-    @endif
+    <x-notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Personnes</h1>
         <div class="flex gap-2">
@@ -23,87 +16,69 @@
             <x-button as="a" href="{{ route('personnes.create') }}" variant="primary">Ajouter une personne</x-button>
         </div>
     </div>
-    <div class="bg-white dark:bg-gray-800 shadow rounded-lg overflow-x-auto">
-        <table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead class="bg-gray-50 dark:bg-gray-700">
+    <div class="overflow-x-auto w-full">
+    <x-table class="w-full" :headers="['', 'Nom', 'Prénom', 'Date naissance', 'Lieu naissance', 'Date décès', 'Lieu décès', 'Sexe', 'Titre', 'Adresse', 'Clubs', 'Actions']">
+            @foreach($personnes as $personne)
                 <tr>
-                    <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
-                        <input type="checkbox" id="selectAllPersonnes" onclick="toggleAllPersonnes(this)">
-                    </th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Nom</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Prénom</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date naissance</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lieu naissance</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Date décès</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Lieu décès</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Sexe</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Titre</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Adresse</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Clubs</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Actions</th>
+                    <td class="px-4 py-4 text-center whitespace-nowrap">
+                        <input type="checkbox" class="personne-checkbox" value="{{ $personne->id }}">
+                    </td>
+                    <td class="whitespace-nowrap text-center">{{ $personne->nom }}</td>
+                    <td class="whitespace-nowrap text-center">{{ $personne->prenom }}</td>
+                    <td class="whitespace-nowrap text-center">{{ $personne->date_naissance }}</td>
+                    <td class="whitespace-nowrap text-center">
+                        @if($personne->lieu_naissance)
+                            <a href="{{ route('lieux.show', $personne->lieu_naissance) }}">
+                                <x-badge class="mr-1">
+                                    {{ $personne->lieu_naissance->nom ?? '' }} {{ $personne->lieu_naissance->adresse ?? '' }} {{ $personne->lieu_naissance->commune ?? '' }} {{ $personne->lieu_naissance->code_postal ?? '' }}
+                                </x-badge>
+                            </a>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="whitespace-nowrap text-center">{{ $personne->date_deces }}</td>
+                    <td class="whitespace-nowrap text-center">
+                        @if($personne->lieu_deces)
+                            <a href="{{ route('lieux.show', $personne->lieu_deces) }}">
+                                <x-badge class="mr-1">
+                                    {{ $personne->lieu_deces->nom ?? '' }} {{ $personne->lieu_deces->adresse ?? '' }} {{ $personne->lieu_deces->commune ?? '' }} {{ $personne->lieu_deces->code_postal ?? '' }}
+                                </x-badge>
+                            </a>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="whitespace-nowrap text-center">{{ $personne->sexe }}</td>
+                    <td class="whitespace-nowrap text-center">{{ $personne->titre }}</td>
+                    <td class="whitespace-nowrap text-center">
+                        @if($personne->adresse)
+                            <a href="{{ route('lieux.show', $personne->adresse) }}">
+                                <x-badge class="mr-1">
+                                    {{ $personne->adresse->nom ?? '' }} {{ $personne->adresse->adresse ?? '' }} {{ $personne->adresse->commune ?? '' }} {{ $personne->adresse->code_postal ?? '' }}
+                                </x-badge>
+                            </a>
+                        @else
+                            -
+                        @endif
+                    </td>
+                    <td class="whitespace-nowrap text-center">
+                        @foreach($personne->clubs as $club)
+                            <a href="{{ route('clubs.show', $club) }}">
+                                <x-badge class="mr-1">{{ $club->nom }}</x-badge>
+                            </a>
+                        @endforeach
+                    </td>
+                    <td class="whitespace-nowrap text-center">
+                        <div class="flex flex-row gap-2 justify-center">
+                            <x-button as="a" href="{{ route('personnes.show', $personne) }}" variant="link-primary">Voir</x-button>
+                            <x-button as="a" href="{{ route('personnes.edit', $personne) }}" variant="link-orange">Modifier</x-button>
+                            <x-button as="a" href="#" variant="link-danger" onclick="window.dispatchEvent(new CustomEvent('open-delete-personne-modal', {detail: {personneId: {{ $personne->personne_id }}, personneName: '{{ addslashes($personne->nom) }}'}}))">Supprimer</x-button>
+                        </div>
+                    </td>
                 </tr>
-            </thead>
-            <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
-                @foreach($personnes as $personne)
-                    <tr>
-                        <td class="px-4 py-4 text-center">
-                            <input type="checkbox" class="personne-checkbox" value="{{ $personne->id }}">
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->nom }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->prenom }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->date_naissance }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @if($personne->lieu_naissance)
-                                    <a href="{{ route('lieux.show', $personne->lieu_naissance) }}">
-                                        <x-badge class="mr-1">
-                                            {{ $personne->lieu_naissance->nom ?? '' }} {{ $personne->lieu_naissance->adresse ?? '' }} {{ $personne->lieu_naissance->commune ?? '' }} {{ $personne->lieu_naissance->code_postal ?? '' }}
-                                        </x-badge>
-                                    </a>
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->date_deces }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @if($personne->lieu_deces)
-                                    <a href="{{ route('lieux.show', $personne->lieu_deces) }}">
-                                        <x-badge class="mr-1">
-                                            {{ $personne->lieu_deces->nom ?? '' }} {{ $personne->lieu_deces->adresse ?? '' }} {{ $personne->lieu_deces->commune ?? '' }} {{ $personne->lieu_deces->code_postal ?? '' }}
-                                        </x-badge>
-                                    </a>
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->sexe }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">{{ $personne->titre }}</td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @if($personne->adresse)
-                                    <a href="{{ route('lieux.show', $personne->adresse) }}">
-                                        <x-badge class="mr-1">
-                                            {{ $personne->adresse->nom ?? '' }} {{ $personne->adresse->adresse ?? '' }} {{ $personne->adresse->commune ?? '' }} {{ $personne->adresse->code_postal ?? '' }}
-                                        </x-badge>
-                                    </a>
-                            @else
-                                -
-                            @endif
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap text-gray-900 dark:text-gray-100">
-                            @foreach($personne->clubs as $club)
-                                    <a href="{{ route('clubs.show', $club) }}">
-                                        <x-badge class="mr-1">{{ $club->nom }}</x-badge>
-                                    </a>
-                            @endforeach
-                        </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <x-button as="a" href="{{ route('personnes.show', $personne) }}" variant="link-primary" class="mr-2">Voir</x-button>
-                            <x-button as="a" href="{{ route('personnes.edit', $personne) }}" variant="link-orange" class="mr-2">Modifier</x-button>
-                            <x-button as="a" href="#" variant="link-danger" class="mr-2" onclick="window.dispatchEvent(new CustomEvent('open-delete-personne-modal', {detail: {personneId: {{ $personne->personne_id }}, personneName: '{{ addslashes($personne->nom) }}'}}))">Supprimer</x-button>
-                        </td>
-                    </tr>
-                @endforeach
-            </tbody>
-        </table>
+            @endforeach
+        </x-table>
         <div class="p-4">
             {{ $personnes->links() }}
         </div>

@@ -40,24 +40,26 @@
 
     <!-- Affichage des entités associées (badges) -->
     <div class="mt-3">
-    @if(!empty($modelValue))
-        @if(is_iterable($selectedItems) && count($selectedItems))
-            @foreach($selectedItems as $item)
-                <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 align-middle text-gray-900 dark:text-gray-100">
-                    @foreach($displayFields as $field)
-                        <span class="inline-block mr-2">
-                            {{ is_array($item) ? ($item[$field] ?? '') : ($item->$field ?? '') }}
-                        </span>
+        @if(!empty($modelValue))
+            <div class="flex flex-wrap gap-2 mt-2">
+                @if(is_iterable($selectedItems) && count($selectedItems))
+                    @foreach($selectedItems as $item)
+                        <x-badge color="gray">
+                            @foreach($displayFields as $field)
+                                <span class="inline-block mr-2">
+                                    {{ is_array($item) ? ($item[$field] ?? '') : ($item->$field ?? '') }}
+                                </span>
+                            @endforeach
+                                <a href="#" wire:click.prevent="remove({{ is_array($item) ? $item[$idField] : $item->$idField }})" class="ml-1 text-red-500 hover:text-red-700 text-xs" style="text-decoration:none;">&times;</a>
+                        </x-badge>
                     @endforeach
-                    <button type="button" wire:click="remove({{ is_array($item) ? $item[$idField] : $item->$idField }})" class="ml-1 text-gray-500 hover:text-red-600 focus:outline-none" style="background:transparent;border:none;font-size:1em;vertical-align:middle;">&times;</button>
-                </span>
-            @endforeach
-        @elseif(!empty($selectedItems))
-            <span class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 align-middle text-gray-900 dark:text-gray-100">
-                {{ is_array($selectedItems) ? $selectedItems[$displayField] : $selectedItems->$displayField }}
-                <button type="button" wire:click="remove({{ is_array($selectedItems) ? $selectedItems[$idField] : $selectedItems->$idField }})" class="ml-1 text-gray-500 hover:text-red-600 focus:outline-none" style="background:transparent;border:none;font-size:1em;vertical-align:middle;">&times;</button>
-            </span>
-        @endif
+                @elseif(!empty($selectedItems))
+                    <x-badge color="gray">
+                        {{ is_array($selectedItems) ? $selectedItems[$displayField] : $selectedItems->$displayField }}
+                            <a href="#" wire:click.prevent="remove({{ is_array($selectedItems) ? $selectedItems[$idField] : $selectedItems->$idField }})" class="ml-1 text-red-500 hover:text-red-700 text-xs" style="text-decoration:none;">&times;</a>
+                    </x-badge>
+                @endif
+            </div>
     @endif
     </div>
 

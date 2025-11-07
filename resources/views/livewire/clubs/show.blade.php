@@ -1,134 +1,26 @@
 <div>
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Détail du club</h2>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Présence simple dans le club :</span>
-            <div class="mt-1">
-                @php
-                    $personnesAvecMandat = $club->clubPersonnes->pluck('personne_id')->toArray();
-                @endphp
-                @forelse($club->personnes as $personne)
-                        @if(!in_array($personne->personne_id, $personnesAvecMandat))
-                            <a href="{{ route('personnes.show', $personne) }}">
-                                <x-badge class="mr-1">{{ $personne->nom }} {{ $personne->prenom }}</x-badge>
-                            </a>
-                        @endif
-                @empty
-                    <span class="block text-gray-900 dark:text-gray-100">Aucune présence simple</span>
-                @endforelse
-            </div>
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Nom :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $club->nom }}</span>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Nom d'origine :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $club->nom_origine }}</span>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Surnoms :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $club->surnoms }}</span>
-        </div>
-        <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-                <span class="block text-gray-700 dark:text-gray-300 font-semibold">Date de fondation :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $club->date_fondation }}</span>
-            </div>
-            <div>
-                <span class="block text-gray-700 dark:text-gray-300 font-semibold">Date de disparition :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $club->date_disparition }}</span>
-            </div>
-            <div>
-                <span class="block text-gray-700 dark:text-gray-300 font-semibold">Date de déclaration :</span>
-                <span class="block text-gray-900 dark:text-gray-100">{{ $club->date_declaration }}</span>
-            </div>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Acronyme :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $club->acronyme }}</span>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Couleurs :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $club->couleurs }}</span>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Lieu (siège) :</span>
-            @if($club->siege)
-                    <a href="{{ route('lieux.show', $club->siege) }}">
-                        <x-badge>
-                            {{ $club->siege->nom ?? '' }}{{ $club->siege->nom ? ', ' : '' }}
-                            {{ $club->siege->adresse ?? '' }}{{ $club->siege->adresse ? ', ' : '' }}
-                            {{ $club->siege->commune ?? '' }}{{ $club->siege->commune ? ', ' : '' }}
-                            {{ $club->siege->code_postal ?? '' }}
-                        </x-badge>
-                    </a>
-            @else
-                <span class="block text-gray-900 dark:text-gray-100">-</span>
-            @endif
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Disciplines :</span>
-            <div class="mt-1">
-                    @foreach($club->disciplines as $discipline)
-                        <a href="{{ route('disciplines.show', $discipline) }}">
-                            <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
-                        </a>
-                    @endforeach
-            </div>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Mandats dans le club :</span>
-            <div class="mt-1 space-y-2">
-                @forelse($club->clubPersonnes as $mandat)
-                        <div class="flex items-center space-x-2">
-                            <a href="{{ route('personnes.show', $mandat->personne) }}" class="inline-block align-middle">
-                                <x-badge class="mr-1">{{ $mandat->personne->nom ?? '' }} {{ $mandat->personne->prenom ?? '' }}</x-badge>
-                            </a>
-                            @if(!empty($mandat->role))
-                                <x-badge class="mr-1 font-semibold">{{ $mandat->role }}</x-badge>
-                            @endif
-                            <span class="text-xs text-gray-700 dark:text-gray-300">
-                                @php
-                                    $precisions = ['année','year','mois','month','jour','day'];
-                                    $debut = $mandat->date_debut;
-                                    $debutPrecision = $mandat->date_debut_precision;
-                                    $fin = $mandat->date_fin;
-                                    $finPrecision = $mandat->date_fin_precision;
-                                    $debutAff = ($debut && in_array($debutPrecision, $precisions)) ? formatMandatDate($debut, $debutPrecision) : ($debut ?? null);
-                                    $finAff = ($fin && in_array($finPrecision, $precisions)) ? formatMandatDate($fin, $finPrecision) : ($fin ?? null);
-                                @endphp
-                                @if($debutAff && $finAff)
-                                    {{ $debutAff }} – {{ $finAff }}
-                                @elseif($debutAff)
-                                    {{ $debutAff }}
-                                @elseif($finAff)
-                                    Jusqu'à {{ $finAff }}
-                                @elseif(empty($debutAff) && empty($finAff))
-                                    <span class="italic text-gray-400">Période inconnue</span>
-                                @endif
-                            </span>
-                        </div>
-                @empty
-                    <span class="block text-gray-900 dark:text-gray-100">Aucun mandat enregistré</span>
-                @endforelse
-            </div>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Sources :</span>
-            <!-- Seules les sources associées au club via entity_type = 'club' sont affichées ici -->
-            <div class="mt-1">
-                    @forelse($club->sources as $source)
-                        <a href="{{ route('sources.show', $source) }}">
-                            <x-badge class="mr-1">{{ $source->titre }}</x-badge>
-                        </a>
-                    @empty
-                        <span class="block text-gray-900 dark:text-gray-100">-</span>
-                    @endforelse
-            </div>
-        </div>
-        <div class="mb-4">
-            <span class="block text-gray-700 dark:text-gray-300 font-semibold">Notes :</span>
-            <span class="block text-gray-900 dark:text-gray-100">{{ $club->notes }}</span>
-        </div>
+        @php
+            $personnesAvecMandat = $club->clubPersonnes->pluck('personne_id')->toArray();
+            $personnesSimples = $club->personnes->filter(fn($p) => !in_array($p->personne_id, $personnesAvecMandat));
+        @endphp
+        <x-list label="Présence simple dans le club" :items="$personnesSimples" route="personnes.show" />
+        <x-field label="Nom" :value="$club->nom" />
+        <x-field label="Nom d'origine" :value="$club->nom_origine" />
+        <x-field label="Surnoms" :value="$club->surnoms" />
+        <x-fields-group :fields="[
+            ['label' => 'Date de fondation', 'value' => $club->date_fondation],
+            ['label' => 'Date de disparition', 'value' => $club->date_disparition],
+            ['label' => 'Date de déclaration', 'value' => $club->date_declaration]
+        ]" />
+        <x-field label="Acronyme" :value="$club->acronyme" />
+        <x-field label="Couleurs" :value="$club->couleurs" />
+        <x-field-if label="Lieu (siège)" :value="$club->siege? $club->siege->nom : null" :route="'lieux.show'" :routeParam="$club->siege" />
+        <x-list label="Disciplines" :items="$club->disciplines" route="disciplines.show" />
+        <x-list-mandats label="Mandats dans le club" :mandats="$club->clubPersonnes" />
+        <x-list label="Sources" :items="$club->sources" route="sources.show" />
+        <x-field label="Notes" :value="$club->notes" />
         <div class="flex justify-end">
             <x-button as="a" href="{{ route('clubs.edit', $club) }}" variant="link-orange">Modifier</x-button>
         </div>

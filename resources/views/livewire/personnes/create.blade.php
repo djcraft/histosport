@@ -2,21 +2,12 @@
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Créer une personne</h2>
         <form wire:submit.prevent="save">
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Nom</label>
-                <input type="text" wire:model="nom" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Prénom</label>
-                <input type="text" wire:model="prenom" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            </div>
-            <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de naissance</label>
-                    <input type="text" wire:model="date_naissance" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de naissance</label>
+            <x-form-input name="nom" label="Nom" wire:model="nom" required />
+            <x-form-input name="prenom" label="Prénom" wire:model="prenom" />
+            <x-form-group class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <x-form-input name="date_naissance" label="Date de naissance" wire:model="date_naissance" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                <x-form-group>
+                    <x-label>Lieu de naissance</x-label>
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
@@ -30,15 +21,12 @@
                         />
                         <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
                     </div>
-                </div>
-            </div>
-            <div class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de décès</label>
-                    <input type="text" wire:model="date_deces" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu de décès</label>
+                </x-form-group>
+            </x-form-group>
+            <x-form-group class="mb-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+                <x-form-input name="date_deces" label="Date de décès" wire:model="date_deces" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                <x-form-group>
+                    <x-label>Lieu de décès</x-label>
                     <div class="flex w-full">
                         <livewire:search-bar
                             entity-class="App\\Models\\Lieu"
@@ -52,23 +40,17 @@
                         />
                         <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
                     </div>
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Sexe</label>
-                <select wire:model="sexe" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                    <option value="">Sélectionner</option>
-                    <option value="M">Masculin</option>
-                    <option value="F">Féminin</option>
-                    <option value="X">Autre</option>
-                </select>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Titre</label>
-                <input type="text" wire:model="titre" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Adresse</label>
+                </x-form-group>
+            </x-form-group>
+            <x-form-select name="sexe" label="Sexe" wire:model="sexe">
+                <option value="">Sélectionner</option>
+                <option value="M">Masculin</option>
+                <option value="F">Féminin</option>
+                <option value="X">Autre</option>
+            </x-form-select>
+            <x-form-input name="titre" label="Titre" wire:model="titre" />
+            <x-form-group class="mb-4">
+                <x-label>Adresse</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Lieu"
@@ -82,9 +64,9 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Disciplines</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Discipline"
@@ -98,9 +80,9 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openDisciplineModal')">Créer une discipline</x-button>
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Clubs</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Clubs</x-label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Club"
                     display-field="nom"
@@ -110,9 +92,9 @@
                     wire:model="clubs"
                     wire:key="search-bar-clubs-personne-create"
                 />
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Sources</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Source"
@@ -126,7 +108,7 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openSourceModal')">Créer une source</x-button>
                 </div>
-            </div>
+            </x-form-group>
             <div class="flex justify-end">
                 <x-button type="submit" variant="primary">Enregistrer</x-button>
             </div>

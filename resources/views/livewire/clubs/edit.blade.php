@@ -2,42 +2,18 @@
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Modifier un club</h2>
         <form wire:submit.prevent="update">
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Nom</label>
-                <input type="text" wire:model="nom" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100" required>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Nom d'origine</label>
-                <input type="text" wire:model="nom_origine" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Surnoms</label>
-                <input type="text" wire:model="surnoms" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            </div>
-            <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de fondation</label>
-                    <input type="text" wire:model="date_fondation" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de disparition</label>
-                    <input type="text" wire:model="date_disparition" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-                <div>
-                    <label class="block text-gray-700 dark:text-gray-300 mb-2">Date de déclaration</label>
-                    <input type="text" wire:model="date_declaration" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Acronyme</label>
-                <input type="text" wire:model="acronyme" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Couleurs</label>
-                <input type="text" wire:model="couleurs" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Lieu (siège)</label>
+            <x-form-input name="nom" label="Nom" wire:model="nom" required />
+            <x-form-input name="nom_origine" label="Nom d'origine" wire:model="nom_origine" />
+            <x-form-input name="surnoms" label="Surnoms" wire:model="surnoms" />
+            <x-form-group class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                <x-form-input name="date_fondation" label="Date de fondation" wire:model="date_fondation" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                <x-form-input name="date_disparition" label="Date de disparition" wire:model="date_disparition" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                <x-form-input name="date_declaration" label="Date de déclaration" wire:model="date_declaration" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+            </x-form-group>
+            <x-form-input name="acronyme" label="Acronyme" wire:model="acronyme" />
+            <x-form-input name="couleurs" label="Couleurs" wire:model="couleurs" />
+            <x-form-group class="mb-4">
+                <x-label>Lieu (siège)</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Lieu"
@@ -51,9 +27,9 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Personnes associées (présence simple)</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Personnes associées (présence simple)</x-label>
                 <livewire:search-bar
                     entity-class="App\\Models\\Personne"
                     display-field="nom"
@@ -64,14 +40,14 @@
                     wire:key="search-bar-personnes-edit"
                     class="w-full"
                 />
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Mandats datés</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Mandats datés</x-label>
                 <div class="space-y-4">
                     @foreach($clubPersonnes as $index => $clubPersonne)
                         <div class="border rounded p-3 bg-gray-50 dark:bg-gray-900">
-                            <div class="mb-2">
-                                <label class="block text-gray-700 dark:text-gray-300 mb-1">Personne</label>
+                            <x-form-group class="mb-2">
+                                <x-label>Personne</x-label>
                                 <livewire:search-bar
                                     entity-class="App\\Models\\Personne"
                                     display-field="nom"
@@ -82,29 +58,20 @@
                                     wire:key="search-bar-personne-{{ $index }}"
                                     class="w-full"
                                 />
-                            </div>
-                            <div class="mb-2">
-                                <label class="block text-gray-700 dark:text-gray-300 mb-1">Rôle</label>
-                                <select wire:model="clubPersonnes.{{ $index }}.role" class="w-full px-2 py-1 border rounded">
-                                    <option value="">Sélectionner un rôle</option>
-                                    <option value="Président">Président</option>
-                                    <option value="Trésorier">Trésorier</option>
-                                    <option value="Secrétaire">Secrétaire</option>
-                                    <option value="Membre">Membre</option>
-                                    <option value="Dirigeant">Dirigeant</option>
-                                    <option value="Autre">Autre</option>
-                                </select>
-                            </div>
-                            <div class="mb-2 grid grid-cols-2 gap-2">
-                                <div>
-                                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Date début</label>
-                                    <input type="text" wire:model="clubPersonnes.{{ $index }}.date_debut" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-2 py-1 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                                </div>
-                                <div>
-                                    <label class="block text-gray-700 dark:text-gray-300 mb-1">Date fin</label>
-                                    <input type="text" wire:model="clubPersonnes.{{ $index }}.date_fin" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" class="w-full px-2 py-1 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100">
-                                </div>
-                            </div>
+                            </x-form-group>
+                            <x-form-select name="clubPersonnes.{{ $index }}.role" label="Rôle" wire:model="clubPersonnes.{{ $index }}.role">
+                                <option value="">Sélectionner un rôle</option>
+                                <option value="Président">Président</option>
+                                <option value="Trésorier">Trésorier</option>
+                                <option value="Secrétaire">Secrétaire</option>
+                                <option value="Membre">Membre</option>
+                                <option value="Dirigeant">Dirigeant</option>
+                                <option value="Autre">Autre</option>
+                            </x-form-select>
+                            <x-form-group class="mb-2 grid grid-cols-2 gap-2">
+                                <x-form-input name="clubPersonnes.{{ $index }}.date_debut" label="Date début" wire:model="clubPersonnes.{{ $index }}.date_debut" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                                <x-form-input name="clubPersonnes.{{ $index }}.date_fin" label="Date fin" wire:model="clubPersonnes.{{ $index }}.date_fin" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                            </x-form-group>
                             <div class="flex justify-end mt-2">
                                 <x-button type="button" variant="danger" wire:click="removeClubPersonne({{ $index }})">Supprimer</x-button>
                             </div>
@@ -114,9 +81,9 @@
                         <x-button type="button" variant="primary" wire:click="addClubPersonne">Ajouter une personne</x-button>
                     </div>
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Disciplines associées</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Disciplines associées</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Discipline"
@@ -130,9 +97,9 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openDisciplineModal')">Créer une discipline</x-button>
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Sources</label>
+            </x-form-group>
+            <x-form-group class="mb-4">
+                <x-label>Sources</x-label>
                 <div class="flex w-full">
                     <livewire:search-bar
                         entity-class="App\\Models\\Source"
@@ -146,11 +113,8 @@
                     />
                     <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openSourceModal')">Créer une source</x-button>
                 </div>
-            </div>
-            <div class="mb-4">
-                <label class="block text-gray-700 dark:text-gray-300 mb-2">Notes</label>
-                <textarea wire:model="notes" rows="3" class="w-full px-3 py-2 border rounded bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100"></textarea>
-            </div>
+            </x-form-group>
+            <x-form-textarea name="notes" label="Notes" wire:model="notes" rows="3" />
             <div class="flex justify-end">
                 <x-button type="submit" variant="primary">Mettre à jour</x-button>
             </div>
