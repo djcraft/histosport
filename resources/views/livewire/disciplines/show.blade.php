@@ -2,7 +2,7 @@
 <div>
     <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
         <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">{{ $discipline->nom }}</h2>
-        <x-field label="Description" :value="$discipline->description" />
+    <x-form-elements.field label="Description" :value="$discipline->description" />
 
     <!-- Références à personnes, sources et clubs supprimées -->
         <div class="mb-4">
@@ -16,7 +16,7 @@
             </div>
         </div>
         <div class="flex justify-end gap-4">
-            <x-button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange">Modifier</x-button>
+            <x-buttons.button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange">Modifier</x-buttons.button>
             <!-- Bouton supprimer retiré -->
         </div>
         <!-- Modal de confirmation suppression retiré -->

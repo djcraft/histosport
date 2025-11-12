@@ -1,25 +1,25 @@
 <div>
-    <x-notification />
+    <x-notifications.notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Disciplines</h1>
         <div class="flex gap-2">
             <form method="POST" action="{{ route('disciplines.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <x-button type="submit" variant="success">Importer XLSX</x-button>
+                <x-buttons.button type="submit" variant="success">Importer XLSX</x-buttons.button>
             </form>
             <form method="POST" action="{{ route('disciplines.export') }}" id="exportFormDisciplines">
                 @csrf
                 <input type="hidden" name="ids" id="exportIds">
-                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
+                <x-buttons.button type="submit" variant="primary">Exporter la sélection</x-buttons.button>
             </form>
-            <x-button as="a" href="{{ route('disciplines.create') }}" variant="primary">Ajouter une discipline</x-button>
+            <x-buttons.button as="a" href="{{ route('disciplines.create') }}" variant="primary">Ajouter une discipline</x-buttons.button>
         </div>
     </div>
     <div class="overflow-x-auto w-full">
-        <x-table class="w-full" :headers="['', 'Nom', 'Description', 'Actions']">
+    <x-tables.table class="w-full" :headers="['', 'Nom', 'Description', 'Actions']">
             @foreach($disciplines as $discipline)
-                @component('components.discipline-table-row', ['discipline' => $discipline]) @endcomponent
+                @component('components.tables.discipline-table-row', ['discipline' => $discipline]) @endcomponent
             @endforeach
         </x-table>
         <div class="p-4">

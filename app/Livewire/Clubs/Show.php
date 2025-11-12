@@ -11,7 +11,13 @@ class Show extends Component
     {
         $club = $this->club ?? null;
         if (!$club && request()->route('club')) {
-            $club = \App\Models\Club::with(['disciplines', 'personnes', 'sources', 'siege'])->findOrFail(request()->route('club'));
+            $club = \App\Models\Club::with([
+                'disciplines',
+                'personnes',
+                'sources',
+                'siege',
+                'competitionParticipants.competition'
+            ])->findOrFail(request()->route('club'));
         }
         // Debug : log le contenu des sources
     Log::debug('Club sources', [

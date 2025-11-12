@@ -1,13 +1,25 @@
+
+@props([
+    'label' => '',
+    'mandats' => [],
+    'type' => 'club', // 'club' ou 'personne'
+])
 <div class="mb-4">
     <span class="block text-gray-700 dark:text-gray-300 font-semibold">{{ $label }}</span>
     <div class="mt-1 space-y-2">
         @forelse($mandats as $mandat)
             <div class="flex items-center space-x-2">
-                <a href="{{ route('personnes.show', $mandat->personne) }}" class="inline-block align-middle">
-                    <x-badge class="mr-1">{{ $mandat->personne->nom ?? '' }} {{ $mandat->personne->prenom ?? '' }}</x-badge>
-                </a>
+                @if($type === 'personne')
+                    <a href="{{ route('clubs.show', $mandat->club) }}" class="inline-block align-middle">
+                        <x-badges.badge class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">{{ $mandat->club->nom ?? '' }}</x-badges.badge>
+                    </a>
+                @else
+                    <a href="{{ route('personnes.show', $mandat->personne) }}" class="inline-block align-middle">
+                        <x-badges.badge class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">{{ $mandat->personne->nom ?? '' }} {{ $mandat->personne->prenom ?? '' }}</x-badges.badge>
+                    </a>
+                @endif
                 @if(!empty($mandat->role))
-                    <x-badge class="mr-1 font-semibold">{{ $mandat->role }}</x-badge>
+                    <x-badges.badge class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100 font-semibold">{{ $mandat->role }}</x-badges.badge>
                 @endif
                 <span class="text-xs text-gray-700 dark:text-gray-300">
                     @php

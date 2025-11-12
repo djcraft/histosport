@@ -8,7 +8,7 @@
     <td class="whitespace-nowrap text-center">
         @if($competition->lieu)
             <a href="{{ route('lieux.show', $competition->lieu) }}">
-                <x-badge>
+                <x-badges.badge class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">
                     {{ $competition->lieu->nom ?? '' }}{{ $competition->lieu->nom ? ', ' : '' }}
                     {{ $competition->lieu->adresse ?? '' }}{{ $competition->lieu->adresse ? ', ' : '' }}
                     {{ $competition->lieu->commune ?? '' }}{{ $competition->lieu->commune ? ', ' : '' }}
@@ -34,11 +34,11 @@
     <td class="whitespace-nowrap text-center">
         @forelse($competition->disciplines as $discipline)
             <a href="{{ route('disciplines.show', $discipline) }}">
-                <x-badge class="mr-1">{{ $discipline->nom }}</x-badge>
+                <x-badges.badge class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100">{{ $discipline->nom }}</x-badges.badge>
             </a>
         @empty
             -
         @endforelse
     </td>
-    <x-table-cell-actions :entity="$competition" :routes="['show' => 'competitions.show', 'edit' => 'competitions.edit', 'delete' => 'competitions.destroy']"/>
+    <x-tables.table-cell-actions :entity="$competition" :routes="['show' => 'competitions.show', 'edit' => 'competitions.edit', 'delete' => 'competitions.destroy']"/>
 </tr>

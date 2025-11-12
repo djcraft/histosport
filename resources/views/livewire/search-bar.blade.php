@@ -44,7 +44,7 @@
             <div class="flex flex-wrap gap-2 mt-2">
                 @if(is_iterable($selectedItems) && count($selectedItems))
                     @foreach($selectedItems as $item)
-                        <x-badge color="gray">
+                        <x-badges.badge class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100" color="gray">
                             @foreach($displayFields as $field)
                                 <span class="inline-block mr-2">
                                     {{ is_array($item) ? ($item[$field] ?? '') : ($item->$field ?? '') }}
@@ -54,7 +54,7 @@
                         </x-badge>
                     @endforeach
                 @elseif(!empty($selectedItems))
-                    <x-badge color="gray">
+                    <x-badges.badge class="inline-block bg-gray-200 dark:bg-gray-700 text-xs rounded px-2 py-1 mr-1 hover:bg-gray-300 dark:hover:bg-gray-600 transition align-middle text-gray-900 dark:text-gray-100" color="gray">
                         {{ is_array($selectedItems) ? $selectedItems[$displayField] : $selectedItems->$displayField }}
                             <a href="#" wire:click.prevent="remove({{ is_array($selectedItems) ? $selectedItems[$idField] : $selectedItems->$idField }})" class="ml-1 text-red-500 hover:text-red-700 text-xs" style="text-decoration:none;">&times;</a>
                     </x-badge>

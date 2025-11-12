@@ -106,10 +106,20 @@ class Edit extends BaseCrudComponent
         // Initialisation des participants clubs/personnes pour le formulaire
         // Initialisation uniquement si les propriétés sont vides (évite la réinitialisation après action utilisateur)
         if (empty($this->participant_club_ids)) {
-            $this->participant_club_ids = collect($competition->participants)->pluck('club_id')->filter()->unique()->values()->toArray();
+            $allClubIds = collect($competition->participants)->pluck('club_id')->filter()->unique()->values()->toArray();
+            $clubIdsAvecResultat = collect($this->participants)
+                ->filter(fn($p) => $p['type'] === 'club' && !empty($p['resultat']))
+                ->pluck('club_id')
+                ->toArray();
+            $this->participant_club_ids = array_values(array_diff($allClubIds, $clubIdsAvecResultat));
         }
         if (empty($this->participant_personne_ids)) {
-            $this->participant_personne_ids = collect($competition->participants)->pluck('personne_id')->filter()->unique()->values()->toArray();
+            $allPersonneIds = collect($competition->participants)->pluck('personne_id')->filter()->unique()->values()->toArray();
+            $personneIdsAvecResultat = collect($this->participants)
+                ->filter(fn($p) => $p['type'] === 'personne' && !empty($p['resultat']))
+                ->pluck('personne_id')
+                ->toArray();
+            $this->participant_personne_ids = array_values(array_diff($allPersonneIds, $personneIdsAvecResultat));
         }
     }
     // Ouvre le formulaire d'ajout de résultat club

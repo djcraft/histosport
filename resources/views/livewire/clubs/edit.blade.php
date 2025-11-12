@@ -1,5 +1,5 @@
 
 <div class="max-w-xl mx-auto bg-white dark:bg-gray-800 p-6 rounded shadow">
     <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Modifier un club</h2>
-    <x-club-form :mode="'edit'" :clubPersonnes="$clubPersonnes" />
+    <x-forms.club-form :mode="'edit'" :clubPersonnes="$clubPersonnes" />
 </div>

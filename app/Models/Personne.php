@@ -7,6 +7,13 @@ use App\Models\BaseModel;
 class Personne extends BaseModel
 {
     /**
+     * Les participations de la personne aux compétitions.
+     */
+    public function competitionParticipants()
+    {
+        return $this->hasMany(CompetitionParticipant::class, 'personne_id', 'personne_id');
+    }
+    /**
      * Les mandats datés (pivot club_personne).
      */
     public function clubPersonnes()

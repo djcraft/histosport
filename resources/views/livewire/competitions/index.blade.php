@@ -1,27 +1,27 @@
 <div>
-    <x-notification />
+    <x-notifications.notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Compétitions</h1>
         <div class="flex gap-2">
             <form method="POST" action="{{ route('competitions.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <x-button type="submit" variant="success">Importer XLSX</x-button>
+                <x-buttons.button type="submit" variant="success">Importer XLSX</x-buttons.button>
             </form>
             <form method="POST" action="{{ route('competitions.export') }}" id="exportFormCompetitions">
                 @csrf
                 <input type="hidden" name="ids" id="selectedCompetitionsInput">
-                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
+                <x-buttons.button type="submit" variant="primary">Exporter la sélection</x-buttons.button>
             </form>
-            <x-button as="a" href="{{ route('competitions.create') }}" variant="primary">Ajouter une compétition</x-button>
+            <x-buttons.button as="a" href="{{ route('competitions.create') }}" variant="primary">Ajouter une compétition</x-buttons.button>
         </div>
     </div>
     <div class="overflow-x-auto w-full">
-        <x-table class="w-full" :headers="['', 'Nom', 'Date', 'Lieu', 'Organisateur', 'Type', 'Durée', 'Niveau', 'Discipline', 'Actions']">
+    <x-tables.table class="w-full" :headers="['', 'Nom', 'Date', 'Lieu', 'Organisateur', 'Type', 'Durée', 'Niveau', 'Discipline', 'Actions']">
             @foreach($competitions as $competition)
-                @component('components.competition-table-row', ['competition' => $competition]) @endcomponent
+                @component('components.tables.competition-table-row', ['competition' => $competition]) @endcomponent
             @endforeach
-        </x-table>
+    </x-tables.table>
         <div class="p-4">
             {{ $competitions->links() }}
         </div>
@@ -36,11 +36,11 @@
                 <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (disciplines, clubs, personnes, sources) associées à cette compétition.</span>
             </div>
             <div class="flex justify-end gap-2">
-                <x-button type="button" variant="secondary" onclick="closeDeleteCompetitionModal()">Annuler</x-button>
+                <x-buttons.button type="button" variant="secondary" onclick="closeDeleteCompetitionModal()">Annuler</x-buttons.button>
                 <form id="deleteCompetitionForm" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <x-button type="submit" variant="danger">Confirmer</x-button>
+                    <x-buttons.button type="submit" variant="danger">Confirmer</x-buttons.button>
                 </form>
             </div>
         </div>

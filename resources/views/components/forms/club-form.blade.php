@@ -1,16 +1,16 @@
 <div>
     <form wire:submit.prevent="{{ $mode === 'create' ? 'save' : 'update' }}">
-        <x-form-input name="nom" label="Nom" wire:model="nom" required />
-        <x-form-input name="nom_origine" label="Nom d'origine" wire:model="nom_origine" />
-        <x-form-input name="surnoms" label="Surnoms" wire:model="surnoms" />
-        <x-form-group class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
-            <x-form-input name="date_fondation" label="Date de fondation" wire:model="date_fondation" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
-            <x-form-input name="date_disparition" label="Date de disparition" wire:model="date_disparition" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
-            <x-form-input name="date_declaration" label="Date de déclaration" wire:model="date_declaration" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+    <x-form-elements.form-input name="nom" label="Nom" wire:model="nom" required />
+    <x-form-elements.form-input name="nom_origine" label="Nom d'origine" wire:model="nom_origine" />
+    <x-form-elements.form-input name="surnoms" label="Surnoms" wire:model="surnoms" />
+    <x-form-elements.form-group class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+            <x-form-elements.form-input name="date_fondation" label="Date de fondation" wire:model="date_fondation" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+            <x-form-elements.form-input name="date_disparition" label="Date de disparition" wire:model="date_disparition" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+            <x-form-elements.form-input name="date_declaration" label="Date de déclaration" wire:model="date_declaration" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
         </x-form-group>
-        <x-form-input name="acronyme" label="Acronyme" wire:model="acronyme" />
-        <x-form-input name="couleurs" label="Couleurs" wire:model="couleurs" />
-        <x-form-group class="mb-4">
+    <x-form-elements.form-input name="acronyme" label="Acronyme" wire:model="acronyme" />
+    <x-form-elements.form-input name="couleurs" label="Couleurs" wire:model="couleurs" />
+    <x-form-elements.form-group class="mb-4">
             <x-label>Lieu (siège)</x-label>
             <div class="flex w-full">
                 <livewire:search-bar
@@ -23,10 +23,10 @@
                     wire:key="search-bar-lieu-{{ $mode }}"
                     class="w-full"
                 />
-                <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-button>
+                <x-buttons.button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openLieuModal')">Créer un lieu</x-buttons.button>
             </div>
         </x-form-group>
-        <x-form-group class="mb-4">
+    <x-form-elements.form-group class="mb-4">
             <x-label>Personnes associées (présence simple)</x-label>
             <livewire:search-bar
                 entity-class="App\\Models\\Personne"
@@ -39,12 +39,12 @@
                 class="w-full"
             />
         </x-form-group>
-        <x-form-group class="mb-4">
+    <x-form-elements.form-group class="mb-4">
             <x-label>Mandats datés</x-label>
             <div class="space-y-4">
                 @foreach($clubPersonnes as $index => $clubPersonne)
                     <div class="border rounded p-3 bg-gray-50 dark:bg-gray-900">
-                        <x-form-group class="mb-2">
+                        <x-form-elements.form-group class="mb-2">
                             <x-label value="Personne" />
                             <livewire:search-bar
                                 entity-class="App\\Models\\Personne"
@@ -57,7 +57,7 @@
                                 class="w-full"
                             />
                         </x-form-group>
-                        <x-form-select name="clubPersonnes.{{ $index }}.role" label="Rôle" wire:model="clubPersonnes.{{ $index }}.role">
+                        <x-form-elements.form-select name="clubPersonnes.{{ $index }}.role" label="Rôle" wire:model="clubPersonnes.{{ $index }}.role">
                             <option value="">Sélectionner un rôle</option>
                             <option value="Président">Président</option>
                             <option value="Trésorier">Trésorier</option>
@@ -66,21 +66,21 @@
                             <option value="Dirigeant">Dirigeant</option>
                             <option value="Autre">Autre</option>
                         </x-form-select>
-                        <x-form-group class="mb-2 grid grid-cols-2 gap-2">
-                            <x-form-input name="clubPersonnes.{{ $index }}.date_debut" label="Date début" wire:model="clubPersonnes.{{ $index }}.date_debut" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
-                            <x-form-input name="clubPersonnes.{{ $index }}.date_fin" label="Date fin" wire:model="clubPersonnes.{{ $index }}.date_fin" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                        <x-form-elements.form-group class="mb-2 grid grid-cols-2 gap-2">
+                            <x-form-elements.form-input name="clubPersonnes.{{ $index }}.date_debut" label="Date début" wire:model="clubPersonnes.{{ $index }}.date_debut" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
+                            <x-form-elements.form-input name="clubPersonnes.{{ $index }}.date_fin" label="Date fin" wire:model="clubPersonnes.{{ $index }}.date_fin" placeholder="AAAA, AAAA-MM ou AAAA-MM-JJ" />
                         </x-form-group>
                         <div class="flex justify-end mt-2">
-                            <x-button type="button" variant="danger" wire:click="removeClubPersonne({{ $index }})">Supprimer</x-button>
+                            <x-buttons.button type="button" variant="danger" wire:click="removeClubPersonne({{ $index }})">Supprimer</x-buttons.button>
                         </div>
                     </div>
                 @endforeach
                 <div class="flex justify-end">
-                    <x-button type="button" variant="primary" wire:click="addClubPersonne">Ajouter une personne</x-button>
+                    <x-buttons.button type="button" variant="primary" wire:click="addClubPersonne">Ajouter une personne</x-buttons.button>
                 </div>
             </div>
         </x-form-group>
-        <x-form-group class="mb-4">
+    <x-form-elements.form-group class="mb-4">
             <x-label>Disciplines associées</x-label>
             <div class="flex w-full">
                 <livewire:search-bar
@@ -93,10 +93,10 @@
                     wire:key="search-bar-disciplines-{{ $mode }}"
                     class="w-full"
                 />
-                <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openDisciplineModal')">Créer une discipline</x-button>
+                <x-buttons.button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openDisciplineModal')">Créer une discipline</x-buttons.button>
             </div>
         </x-form-group>
-        <x-form-group class="mb-4">
+    <x-form-elements.form-group class="mb-4">
             <x-label>Sources</x-label>
             <div class="flex w-full">
                 <livewire:search-bar
@@ -109,12 +109,12 @@
                     wire:key="search-bar-sources-{{ $mode }}"
                     class="w-full"
                 />
-                <x-button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openSourceModal')">Créer une source</x-button>
+                <x-buttons.button type="button" variant="primary" class="ml-2 py-0.5 text-sm" style="align-self:flex-start;" wire:click="$dispatch('openSourceModal')">Créer une source</x-buttons.button>
             </div>
         </x-form-group>
-        <x-form-textarea name="notes" label="Notes" wire:model="notes" rows="3" />
+    <x-form-elements.form-textarea name="notes" label="Notes" wire:model="notes" rows="3" />
         <div class="flex justify-end">
-            <x-button type="submit" variant="primary">
+            <x-buttons.button type="submit" variant="primary">
                 {{ $mode === 'create' ? 'Enregistrer' : 'Mettre à jour' }}
             </x-button>
         </div>

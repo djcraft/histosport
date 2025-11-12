@@ -9,5 +9,5 @@
     <td class="whitespace-nowrap text-center">{{ $lieu->commune }}</td>
     <td class="whitespace-nowrap text-center">{{ $lieu->departement }}</td>
     <td class="whitespace-nowrap text-center">{{ $lieu->pays }}</td>
-    <x-table-cell-actions :entity="$lieu" :routes="['show' => 'lieux.show', 'edit' => 'lieux.edit', 'delete' => 'lieux.destroy']"/>
+    <x-tables.table-cell-actions :entity="$lieu" :routes="['show' => 'lieux.show', 'edit' => 'lieux.edit', 'delete' => 'lieux.destroy']"/>
 </tr>

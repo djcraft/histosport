@@ -5,23 +5,23 @@
             <form method="POST" action="{{ route('sources.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <x-button type="submit" variant="success">Importer XLSX</x-button>
+                <x-buttons.button type="submit" variant="success">Importer XLSX</x-buttons.button>
             </form>
             <form method="POST" action="{{ route('sources.export') }}" id="exportForm">
                 @csrf
                 <input type="hidden" name="ids" id="exportIds">
-                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
+                <x-buttons.button type="submit" variant="primary">Exporter la sélection</x-buttons.button>
             </form>
-            <x-button as="a" href="{{ route('sources.create') }}" variant="primary">Ajouter une source</x-button>
+            <x-buttons.button as="a" href="{{ route('sources.create') }}" variant="primary">Ajouter une source</x-buttons.button>
         </div>
     </div>
-    <x-notification />
+    <x-notifications.notification />
     <div class="overflow-x-auto w-full">
-        <x-table class="w-full" :headers="['', 'Titre', 'Auteur', 'Année référence', 'Type', 'Cote', 'Lieu édition', 'Lieu conservation', 'Lieu couverture', 'URL', 'Actions']">
+    <x-tables.table class="w-full" :headers="['', 'Titre', 'Auteur', 'Année référence', 'Type', 'Cote', 'Lieu édition', 'Lieu conservation', 'Lieu couverture', 'URL', 'Actions']">
             @foreach($sources as $source)
-                @component('components.source-table-row', ['source' => $source]) @endcomponent
+                @component('components.tables.source-table-row', ['source' => $source]) @endcomponent
             @endforeach
-        </x-table>
+    </x-tables.table>
         <div class="p-4">
             {{ $sources->links() }}
         </div>
@@ -36,11 +36,11 @@
                 <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (clubs, disciplines, compétitions, personnes) associées à cette source.</span>
             </div>
             <div class="flex justify-end gap-2">
-                <x-button type="button" variant="secondary" onclick="closeDeleteSourceModal()">Annuler</x-button>
+                <x-buttons.button type="button" variant="secondary" onclick="closeDeleteSourceModal()">Annuler</x-buttons.button>
                 <form id="deleteSourceForm" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <x-button type="submit" variant="danger">Confirmer</x-button>
+                    <x-buttons.button type="submit" variant="danger">Confirmer</x-buttons.button>
                 </form>
             </div>
         </div>

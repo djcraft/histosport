@@ -7,6 +7,13 @@ use App\Models\BaseModel;
 class Club extends BaseModel
 {
     /**
+     * Les participations du club à des compétitions (via competition_participant).
+     */
+    public function competitionParticipants()
+    {
+        return $this->hasMany(\App\Models\CompetitionParticipant::class, 'club_id', 'club_id');
+    }
+    /**
      * Les mandats datés (pivot club_personne).
      */
     public function clubPersonnes()
@@ -101,10 +108,7 @@ class Club extends BaseModel
      *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */
-    public function competitions()
-    {
-        return $this->belongsToMany(Competition::class, 'competition_club', 'club_id', 'competition_id');
-    }
+    // La relation competitions via competition_club n'existe pas, utiliser competitionParticipants
 
     /**
      * The disciplines that belong to the club.

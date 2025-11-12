@@ -1,25 +1,25 @@
 <div>
-    <x-notification />
+    <x-notifications.notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Personnes</h1>
         <div class="flex gap-2">
             <form method="POST" action="{{ route('personnes.import') }}" enctype="multipart/form-data">
                 @csrf
                 <input type="file" name="file" accept=".xlsx" class="mr-2" required>
-                <x-button type="submit" variant="success">Importer XLSX</x-button>
+                <x-buttons.button type="submit" variant="success">Importer XLSX</x-buttons.button>
             </form>
             <form method="POST" action="{{ route('personnes.export') }}" id="exportFormPersonnes">
                 @csrf
                 <input type="hidden" name="selected" id="selectedPersonnesInput">
-                <x-button type="submit" variant="primary">Exporter la sélection</x-button>
+                <x-buttons.button type="submit" variant="primary">Exporter la sélection</x-buttons.button>
             </form>
-            <x-button as="a" href="{{ route('personnes.create') }}" variant="primary">Ajouter une personne</x-button>
+            <x-buttons.button as="a" href="{{ route('personnes.create') }}" variant="primary">Ajouter une personne</x-buttons.button>
         </div>
     </div>
     <div class="overflow-x-auto w-full">
-    <x-table class="w-full" :headers="['', 'Nom', 'Prénom', 'Date naissance', 'Lieu naissance', 'Date décès', 'Lieu décès', 'Sexe', 'Titre', 'Adresse', 'Clubs', 'Actions']">
+    <x-tables.table class="w-full" :headers="['', 'Nom', 'Prénom', 'Date naissance', 'Lieu naissance', 'Date décès', 'Lieu décès', 'Sexe', 'Titre', 'Adresse', 'Clubs', 'Actions']">
             @foreach($personnes as $personne)
-                @component('components.personne-table-row', ['personne' => $personne]) @endcomponent
+                @component('components.tables.personne-table-row', ['personne' => $personne]) @endcomponent
             @endforeach
         </x-table>
         <div class="p-4">
@@ -48,11 +48,11 @@
                 <span class="text-sm text-red-600">Cette action supprimera également toutes les relations (clubs, disciplines, compétitions, sources) associées à cette personne.</span>
             </div>
             <div class="flex justify-end gap-2">
-                <x-button type="button" variant="secondary" onclick="closeDeletePersonneModal()">Annuler</x-button>
+                <x-buttons.button type="button" variant="secondary" onclick="closeDeletePersonneModal()">Annuler</x-buttons.button>
                 <form id="deletePersonneForm" method="POST" action="" class="inline">
                     @csrf
                     @method('DELETE')
-                    <x-button type="submit" variant="danger">Confirmer</x-button>
+                    <x-buttons.button type="submit" variant="danger">Confirmer</x-buttons.button>
                 </form>
             </div>
         </div>
