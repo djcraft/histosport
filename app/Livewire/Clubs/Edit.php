@@ -175,7 +175,7 @@ class Edit extends BaseCrudComponent
         ];
 
         // Validation mutualisée
-        $validated = ValidateForm::run($this->form, $this->rules);
+        $validated = ValidateForm::run($this->form, $this->rules());
         $this->club->update($validated);
 
         // Synchronisation des relations mutualisée

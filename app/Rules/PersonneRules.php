@@ -13,6 +13,9 @@ class PersonneRules
             'date_deces' => 'nullable|string|max:10',
             'date_deces_precision' => 'nullable|string|max:20',
             'lieu_deces_id' => 'nullable|exists:lieu,lieu_id',
+            'sexe' => 'nullable|string|max:20',
+            'titre' => 'nullable|string|max:255',
+            'adresse_id' => 'nullable|exists:lieu,lieu_id',
         ];
     }
 }

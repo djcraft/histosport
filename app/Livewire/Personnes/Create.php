@@ -101,7 +101,7 @@ class Create extends BaseCrudComponent
         ];
 
         // Validation mutualisée
-        $validated = ValidateForm::run($this->form, $this->rules);
+    $validated = ValidateForm::run($this->form, $this->rules());
         $personne = Personne::create($validated);
 
         // Synchronisation des relations mutualisée

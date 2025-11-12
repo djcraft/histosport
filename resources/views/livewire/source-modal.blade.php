@@ -1,7 +1,7 @@
 <div>
-@if($show)
+    @if($show)
     <div class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-        <div class="bg-white dark:bg-gray-800 p-6 rounded shadow max-w-xl w-full">
+        <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-xl">
             <h2 class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Créer une source</h2>
             <form wire:submit.prevent="save">
                 <div class="mb-4">
@@ -90,6 +90,5 @@
             </form>
         </div>
     </div>
-@endif
-    @livewire('lieu-modal')
+    @endif
 </div>

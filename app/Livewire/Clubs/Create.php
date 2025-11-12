@@ -127,7 +127,7 @@ class Create extends BaseCrudComponent
             'siege_id' => $siege_id,
         ];
         // Validation mutualisée
-        $validated = ValidateForm::run($this->form, $this->rules);
+    $validated = ValidateForm::run($this->form, $this->rules());
         $club = Club::create($validated);
 
         // Synchronisation des relations mutualisée

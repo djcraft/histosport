@@ -30,11 +30,11 @@ class Edit extends BaseCrudComponent
     public $allDisciplines = [];
     public $sources = [];
     public $allSources = [];
-    
-        protected function rules()
-        {
-            return \App\Rules\PersonneRules::rules();
-        }
+
+    protected function rules()
+    {
+        return \App\Rules\PersonneRules::rules();
+    }
 
     public function mount(Personne $personne)
     {
@@ -48,14 +48,14 @@ class Edit extends BaseCrudComponent
         $this->sexe = $personne->sexe;
         $this->titre = $personne->titre;
         $this->adresse_id = $personne->adresse_id;
-    $this->clubs = $personne->clubs->pluck('club_id')->toArray();
-    $this->disciplines = $personne->disciplines->pluck('discipline_id')->toArray();
-    $this->sources = $personne->sources->pluck('source_id')->toArray();
-    $this->lieux = Lieu::all();
-    $this->adresses = Lieu::all();
-    $this->allClubs = Club::all();
-    $this->allDisciplines = \App\Models\Discipline::all();
-    $this->allSources = \App\Models\Source::all();
+        $this->clubs = $personne->clubs->pluck('club_id')->toArray();
+        $this->disciplines = $personne->disciplines->pluck('discipline_id')->toArray();
+        $this->sources = $personne->sources->pluck('source_id')->toArray();
+        $this->lieux = Lieu::all();
+        $this->adresses = Lieu::all();
+        $this->allClubs = Club::all();
+        $this->allDisciplines = \App\Models\Discipline::all();
+        $this->allSources = \App\Models\Source::all();
     }
 
     public function render()
@@ -99,7 +99,7 @@ class Edit extends BaseCrudComponent
             ? (count($this->adresse_id) ? $this->adresse_id[0] : null)
             : (is_object($this->adresse_id) && isset($this->adresse_id->lieu_id) ? (int)$this->adresse_id->lieu_id : (is_scalar($this->adresse_id) ? (int)$this->adresse_id : null));
 
-        $this->form = [
+        $form = [
             'nom' => $this->nom,
             'prenom' => $this->prenom,
             'date_naissance' => $this->date_naissance,
@@ -114,7 +114,7 @@ class Edit extends BaseCrudComponent
         ];
 
         // Validation mutualisée
-        $validated = ValidateForm::run($this->form, $this->rules);
+        $validated = ValidateForm::run($form, $this->rules());
         $this->personne->update($validated);
 
         // Synchronisation des relations mutualisée

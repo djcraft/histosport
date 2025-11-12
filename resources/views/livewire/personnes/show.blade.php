@@ -5,7 +5,6 @@
             $clubsAvecMandat = $personne->clubPersonnes->pluck('club_id')->toArray();
             $clubsSimples = $personne->clubs->filter(fn($c) => !in_array($c->club_id, $clubsAvecMandat));
         @endphp
-    <x-lists.list label="Présence dans les clubs" :items="$clubsSimples" route="clubs.show" />
     <x-form-elements.field label="Nom" :value="$personne->nom" />
     <x-form-elements.field label="Prénom" :value="$personne->prenom" />
     <x-form-elements.field label="Date de naissance" :value="$personne->date_naissance" />
