@@ -5,6 +5,7 @@ namespace App\Livewire\Competitions;
 use App\Livewire\BaseCrudComponent;
 use App\Models\Competition;
 use App\Models\Discipline;
+use Illuminate\Support\Facades\Log;
 
 class Edit extends BaseCrudComponent
 {
@@ -206,7 +207,7 @@ class Edit extends BaseCrudComponent
 
     public function update()
     {
-        $form = [
+        $this->notify('Update appelé avec : ' . json_encode([
             'nom' => $this->nom,
             'date' => $this->date,
             'lieu_id' => $this->lieu_id,
@@ -215,8 +216,7 @@ class Edit extends BaseCrudComponent
             'type' => $this->type,
             'duree' => $this->duree,
             'niveau' => $this->niveau,
-        ];
-        $validated = \App\Livewire\Actions\ValidateForm::run($form, $this->rules());
+        ]), 'info');
 
         // Empêcher la sélection simultanée d'un club et d'une personne comme organisateur
         if (!empty($this->organisateur_club_id) && !empty($this->organisateur_personne_id)) {
@@ -237,17 +237,52 @@ class Edit extends BaseCrudComponent
 
         // Correction : lieu_id doit être un entier ou null, jamais un tableau
         $lieu_id = is_array($this->lieu_id) ? (count($this->lieu_id) ? $this->lieu_id[0] : null) : $this->lieu_id;
+        // Correction universelle pour organisateur_club_id
+        if (is_array($this->organisateur_club_id)) {
+            $organisateur_club_id = count($this->organisateur_club_id) ? $this->organisateur_club_id[0] : null;
+        } elseif (is_numeric($this->organisateur_club_id)) {
+            $organisateur_club_id = intval($this->organisateur_club_id);
+        } else {
+            $organisateur_club_id = $this->organisateur_club_id;
+        }
+        // Correction universelle pour organisateur_personne_id
+        if (is_array($this->organisateur_personne_id)) {
+            $organisateur_personne_id = count($this->organisateur_personne_id) ? $this->organisateur_personne_id[0] : null;
+        } elseif (is_numeric($this->organisateur_personne_id)) {
+            $organisateur_personne_id = intval($this->organisateur_personne_id);
+        } else {
+            $organisateur_personne_id = $this->organisateur_personne_id;
+        }
+
+        $this->organisateur_club_id = $organisateur_club_id;
+        $this->organisateur_personne_id = $organisateur_personne_id;
+
+            
+        $form = [
+            'nom' => $this->nom,
+            'date' => $this->date,
+            'lieu_id' => $this->lieu_id,
+            'organisateur_club_id' => $organisateur_club_id,
+            'organisateur_personne_id' => $organisateur_personne_id,
+            'type' => $this->type,
+            'duree' => $this->duree,
+            'niveau' => $this->niveau,
+        ];
+
+        $validated = \App\Livewire\Actions\ValidateForm::run($form, $this->rules());
+
         $this->competition->update([
             'nom' => $this->nom,
             'date' => $this->date,
             'date_precision' => $datePrecision,
             'lieu_id' => $lieu_id,
-            'organisateur_club_id' => $this->organisateur_club_id !== '' ? $this->organisateur_club_id : null,
-            'organisateur_personne_id' => $this->organisateur_personne_id !== '' ? $this->organisateur_personne_id : null,
+            'organisateur_club_id' => $organisateur_club_id !== '' ? $organisateur_club_id : null,
+            'organisateur_personne_id' => $organisateur_personne_id !== '' ? $this->organisateur_personne_id : null,
             'type' => $this->type,
             'duree' => $this->duree,
             'niveau' => $this->niveau,
         ]);
+
 
         // Gestion des disciplines (relation n-n) via modèle pivot pour historisation
         $competitionId = $this->competition->competition_id;
@@ -310,5 +345,8 @@ class Edit extends BaseCrudComponent
                 ]);
             }
         }
+        
+        // Redirection vers l'index après mise à jour
+        return redirect()->route('competitions.index');
     }
 }
