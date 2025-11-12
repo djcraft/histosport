@@ -49,8 +49,8 @@
 <script>
 window.addEventListener('open-delete-source-modal', function(e) {
     document.getElementById('deleteSourceModal').classList.remove('hidden');
-    document.getElementById('deleteSourceName').textContent = 'Source : ' + e.detail.sourceName;
-    document.getElementById('deleteSourceForm').action = '/sources/' + e.detail.sourceId;
+    document.getElementById('deleteSourceName').textContent = 'Source : ' + e.detail.entityName;
+    document.getElementById('deleteSourceForm').action = '/sources/' + e.detail.entityId;
 });
 function closeDeleteSourceModal() {
     document.getElementById('deleteSourceModal').classList.add('hidden');

@@ -57,13 +57,16 @@
             </div>
         </div>
     </div>
+<script>
+window.addEventListener('open-delete-club-modal', function(e) {
+    document.getElementById('deleteClubModal').classList.remove('hidden');
+    document.getElementById('deleteClubName').textContent = 'Club : ' + e.detail.entityName;
+    document.getElementById('deleteClubForm').action = '/clubs/' + e.detail.entityId;
+});
+</script>
 </div>
 <script>
-window.addEventListener('open-delete-modal', function(e) {
-    document.getElementById('deleteClubModal').classList.remove('hidden');
-    document.getElementById('deleteClubName').textContent = 'Club : ' + e.detail.clubName;
-    document.getElementById('deleteClubForm').action = '/clubs/' + e.detail.clubId;
-});
+// Ancien script supprimé, remplacé par le nouveau ci-dessus
 function closeDeleteClubModal() {
     document.getElementById('deleteClubModal').classList.add('hidden');
 }

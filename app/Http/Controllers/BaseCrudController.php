@@ -119,7 +119,12 @@ abstract class BaseCrudController extends Controller
      */
     protected function getRouteIndex(): string
     {
-        return str_replace('.index', '', $this->viewIndex) . '.index';
+        // Extrait le nom d'entité depuis la vue (ex: livewire.competitions.index => competitions.index)
+        if (preg_match('/livewire\.([^.]+)\.index/', $this->viewIndex, $matches)) {
+            return $matches[1] . '.index';
+        }
+        // Fallback si le format ne correspond pas
+        return 'home';
     }
 
     /**

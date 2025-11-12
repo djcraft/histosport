@@ -49,8 +49,8 @@
 <script>
 window.addEventListener('open-delete-competition-modal', function(e) {
     document.getElementById('deleteCompetitionModal').classList.remove('hidden');
-    document.getElementById('deleteCompetitionName').textContent = 'Compétition : ' + e.detail.competitionName;
-    document.getElementById('deleteCompetitionForm').action = '/competitions/' + e.detail.competitionId;
+    document.getElementById('deleteCompetitionName').textContent = 'Compétition : ' + e.detail.entityName;
+    document.getElementById('deleteCompetitionForm').action = '/competitions/' + e.detail.entityId;
 });
 function closeDeleteCompetitionModal() {
     document.getElementById('deleteCompetitionModal').classList.add('hidden');

@@ -49,8 +49,8 @@
 <script>
 window.addEventListener('open-delete-discipline-modal', function(e) {
     document.getElementById('deleteDisciplineModal').classList.remove('hidden');
-    document.getElementById('deleteDisciplineName').textContent = 'Discipline : ' + e.detail.disciplineName;
-    document.getElementById('deleteDisciplineForm').action = '/disciplines/' + e.detail.disciplineId;
+    document.getElementById('deleteDisciplineName').textContent = 'Discipline : ' + e.detail.entityName;
+    document.getElementById('deleteDisciplineForm').action = '/disciplines/' + e.detail.entityId;
 });
 function closeDeleteDisciplineModal() {
     document.getElementById('deleteDisciplineModal').classList.add('hidden');

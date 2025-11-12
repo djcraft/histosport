@@ -61,8 +61,8 @@
 <script>
 window.addEventListener('open-delete-personne-modal', function(e) {
     document.getElementById('deletePersonneModal').classList.remove('hidden');
-    document.getElementById('deletePersonneName').textContent = 'Personne : ' + e.detail.personneName;
-    document.getElementById('deletePersonneForm').action = '/personnes/' + e.detail.personneId;
+    document.getElementById('deletePersonneName').textContent = 'Personne : ' + e.detail.entityName;
+    document.getElementById('deletePersonneForm').action = '/personnes/' + e.detail.entityId;
 });
 function closeDeletePersonneModal() {
     document.getElementById('deletePersonneModal').classList.add('hidden');

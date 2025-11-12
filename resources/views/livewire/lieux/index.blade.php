@@ -49,8 +49,8 @@
 <script>
 window.addEventListener('open-delete-lieu-modal', function(e) {
     document.getElementById('deleteLieuModal').classList.remove('hidden');
-    document.getElementById('deleteLieuName').textContent = 'Lieu : ' + e.detail.lieuName;
-    document.getElementById('deleteLieuForm').action = '/lieux/' + e.detail.lieuId;
+    document.getElementById('deleteLieuName').textContent = 'Lieu : ' + e.detail.entityName;
+    document.getElementById('deleteLieuForm').action = '/lieux/' + e.detail.entityId;
 });
 function closeDeleteLieuModal() {
     document.getElementById('deleteLieuModal').classList.add('hidden');
