@@ -312,7 +312,6 @@ class Edit extends BaseCrudComponent
         $this->competition->participants()->delete();
         // 1. Clubs sélectionnés dans la barre multi (sans résultat)
         foreach ((array)$this->participant_club_ids as $clubId) {
-            // Vérifier que le club n'est pas déjà dans $participants avec un résultat
             $existe = false;
             foreach ($this->participants as $p) {
                 if ($p['type'] === 'club' && $p['club_id'] == $clubId && !empty($p['resultat'])) {
@@ -342,6 +341,33 @@ class Edit extends BaseCrudComponent
                     'competition_id' => $this->competition->competition_id,
                     'personne_id' => $personneId,
                     'resultat' => null,
+                ]);
+            }
+        }
+        // 3. Participants avec résultat (clubs et personnes)
+        foreach ($this->participants as $p) {
+            if ($p['type'] === 'club') {
+                // Supprimer le participant sans résultat s'il existe
+                \App\Models\CompetitionParticipant::where([
+                    ['competition_id', '=', $this->competition->competition_id],
+                    ['club_id', '=', $p['club_id']],
+                    ['resultat', '=', null],
+                ])->delete();
+                \App\Models\CompetitionParticipant::create([
+                    'competition_id' => $this->competition->competition_id,
+                    'club_id' => $p['club_id'],
+                    'resultat' => $p['resultat'],
+                ]);
+            } elseif ($p['type'] === 'personne') {
+                \App\Models\CompetitionParticipant::where([
+                    ['competition_id', '=', $this->competition->competition_id],
+                    ['personne_id', '=', $p['personne_id']],
+                    ['resultat', '=', null],
+                ])->delete();
+                \App\Models\CompetitionParticipant::create([
+                    'competition_id' => $this->competition->competition_id,
+                    'personne_id' => $p['personne_id'],
+                    'resultat' => $p['resultat'],
                 ]);
             }
         }
