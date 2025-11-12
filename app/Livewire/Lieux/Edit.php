@@ -32,15 +32,16 @@ class Edit extends BaseCrudComponent
 
     public function update()
     {
-        $this->validate($this->rules);
-        $this->lieu->update([
+        $form = [
             'nom' => $this->nom,
             'adresse' => $this->adresse,
             'code_postal' => $this->code_postal,
             'commune' => $this->commune,
             'departement' => $this->departement,
             'pays' => $this->pays,
-        ]);
+        ];
+        $validated = \App\Livewire\Actions\ValidateForm::run($form, $this->rules());
+        $this->lieu->update($validated);
         Notify::run('Lieu mis à jour avec succès.');
         return redirect()->route('lieux.index');
     }

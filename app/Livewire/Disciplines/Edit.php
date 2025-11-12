@@ -28,16 +28,17 @@ class Edit extends BaseCrudComponent
 
     public function update()
     {
-        $this->validate($this->rules);
+        $form = [
+            'nom' => $this->nom,
+            'description' => $this->description,
+        ];
+        $validated = ValidateForm::run($form, $this->rules());
         $discipline = \App\Models\Discipline::find($this->discipline);
         if (!$discipline) {
             Notify::run('Discipline non trouvée.', 'error');
             return;
         }
-        $discipline->update([
-            'nom' => $this->nom,
-            'description' => $this->description,
-        ]);
+        $discipline->update($validated);
         Notify::run('Discipline modifiée avec succès.');
         return redirect()->route('disciplines.index');
     }

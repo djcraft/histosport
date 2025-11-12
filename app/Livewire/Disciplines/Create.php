@@ -21,7 +21,7 @@ class Create extends BaseCrudComponent
             'nom' => $this->nom,
             'description' => $this->description,
         ];
-        $validated = ValidateForm::run($this->form, $this->rules);
+    $validated = ValidateForm::run($this->form, $this->rules());
         \App\Models\Discipline::create($validated);
         Notify::run('Discipline créée avec succès');
         return redirect()->route('disciplines.index');

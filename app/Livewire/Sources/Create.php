@@ -47,7 +47,18 @@ class Create extends BaseCrudComponent
         } else {
             $this->lieu_couverture_id = is_numeric($this->lieu_couverture_id) ? intval($this->lieu_couverture_id) : null;
         }
-        $this->validate($this->rules);
+        $form = [
+            'titre' => $this->titre,
+            'auteur' => $this->auteur,
+            'annee_reference' => $this->annee_reference,
+            'type' => $this->type,
+            'cote' => $this->cote,
+            'url' => $this->url,
+            'lieu_edition_id' => $this->lieu_edition_id,
+            'lieu_conservation_id' => $this->lieu_conservation_id,
+            'lieu_couverture_id' => $this->lieu_couverture_id,
+        ];
+        $validated = \App\Livewire\Actions\ValidateForm::run($form, $this->rules());
 
         // Détection automatique de la précision de l'année de référence
         $anneeReferencePrecision = null;
@@ -58,19 +69,8 @@ class Create extends BaseCrudComponent
         } elseif (preg_match('/^\d{4}-\d{2}-\d{2}$/', $this->annee_reference)) {
             $anneeReferencePrecision = 'day';
         }
-
-        \App\Models\Source::create([
-            'titre' => $this->titre,
-            'auteur' => $this->auteur,
-            'annee_reference' => $this->annee_reference,
-            'annee_reference_precision' => $anneeReferencePrecision,
-            'type' => $this->type,
-            'cote' => $this->cote,
-            'url' => $this->url,
-            'lieu_edition_id' => $this->lieu_edition_id,
-            'lieu_conservation_id' => $this->lieu_conservation_id,
-            'lieu_couverture_id' => $this->lieu_couverture_id,
-        ]);
+        $validated['annee_reference_precision'] = $anneeReferencePrecision;
+        \App\Models\Source::create($validated);
 
         Notify::run('Source créée avec succès.');
         return redirect()->route('sources.index');

@@ -225,7 +225,17 @@ class Create extends BaseCrudComponent
 
     public function save()
     {
-        $this->validate($this->rules);
+        $form = [
+            'nom' => $this->nom,
+            'date' => $this->date,
+            'lieu_id' => $this->lieu_id,
+            'organisateur_club_id' => $this->organisateur_club_id,
+            'organisateur_personne_id' => $this->organisateur_personne_id,
+            'type' => $this->type,
+            'duree' => $this->duree,
+            'niveau' => $this->niveau,
+        ];
+        $validated = \App\Livewire\Actions\ValidateForm::run($form, $this->rules());
 
         // Empêcher la sélection simultanée d'un club et d'une personne comme organisateur
         if (!empty($this->organisateur_club_id) && !empty($this->organisateur_personne_id)) {

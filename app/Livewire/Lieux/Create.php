@@ -20,15 +20,16 @@ class Create extends BaseCrudComponent
 
     public function save()
     {
-        $this->validate($this->rules);
-        \App\Models\Lieu::create([
+        $form = [
             'nom' => $this->nom,
             'adresse' => $this->adresse,
             'code_postal' => $this->code_postal,
             'commune' => $this->commune,
             'departement' => $this->departement,
             'pays' => $this->pays,
-        ]);
+        ];
+        $validated = \App\Livewire\Actions\ValidateForm::run($form, $this->rules());
+        \App\Models\Lieu::create($validated);
         Notify::run('Lieu créé avec succès.');
         return redirect()->route('lieux.index');
     }
