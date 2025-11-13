@@ -32,8 +32,8 @@ RUN npm install && npm run build
 # Copier le reste du projet
 COPY . .
 
-# Optimisation Laravel et migration en production
-RUN composer install --no-dev --no-interaction --prefer-dist --optimize-autoloader \
+# Génère la clé Laravel uniquement si APP_KEY est vide, puis optimise et migre
+RUN if grep -q '^APP_KEY=$' .env; then php artisan key:generate --force; fi \
     && php artisan config:cache \
     && php artisan route:cache \
     && php artisan view:cache \
