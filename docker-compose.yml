@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ${MYSQL_DATA_PATH}:/var/lib/mysql
+    networks:
+      - mysql-phpmyadmin
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      UPLOAD_LIMIT: 1024M
+    ports:
+      - "3307:80"
+    networks:
+      - mysql-phpmyadmin
+
+  laravel:
+    build:
+      context: /opt/histosportSQL
+      dockerfile: Dockerfile
+    container_name: laravel
+    environment:
+      DB_HOST: ${DB_HOST}
+      DB_DATABASE: ${DB_DATABASE}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ${APP_PATH}:/var/www/html
+    networks:
+      - mysql-phpmyadmin
+    ports:
+      - "8080:9000"
+    depends_on:
+      - mysql
+
+networks:
+  mysql-phpmyadmin:
+    driver: bridge
