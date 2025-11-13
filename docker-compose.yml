@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   mysql:
     image: mysql:8.0
@@ -23,13 +21,13 @@ services:
       UPLOAD_LIMIT: 1024M
     ports:
       - "3307:80"
+    depends_on:
+      - mysql
     networks:
       - mysql-phpmyadmin
 
   laravel:
-    build:
-      context: /opt/histosportSQL
-      dockerfile: Dockerfile
+    image: laravel-app
     container_name: laravel
     environment:
       DB_HOST: ${DB_HOST}
@@ -37,13 +35,16 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
     volumes:
-      - ${APP_PATH}:/var/www/html
+      - ${APP_PATH}/storage:/var/www/html/storage
+      - ${APP_PATH}/bootstrap/cache:/var/www/html/bootstrap/cache
+      - ${APP_PATH}/.env:/var/www/html/.env
     networks:
       - mysql-phpmyadmin
     ports:
-      - "8080:9000"
+      - "28190:9000"
     depends_on:
       - mysql
+    command: sh /entrypoint.sh
 
 networks:
   mysql-phpmyadmin:

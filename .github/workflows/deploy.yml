@@ -13,28 +13,41 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Build Docker image
-        run: docker build -t laravel-app .
+      - name: Build Docker image (CI only, no cache)
+        run: docker build --no-cache -t laravel-app .
+
+      - name: Vérifier entrypoint.sh dans l'image
+        run: docker run --rm laravel-app ls -l /entrypoint.sh || (echo 'Entrypoint absent !' && exit 1)
 
       - name: Save Docker image as tar
         run: docker save laravel-app > laravel-app.tar
 
-      - name: Copy image to server
-        uses: appleboy/scp-action@v0.1.7
+      - name: Créer une archive tar pour le transfert
+        run: tar -cvf deploy-files.tar laravel-app.tar docker-compose.yml
+
+      - name: Vérifier l'archive à transférer
+        run: ls -lh deploy-files.tar
+
+      - name: Transférer l’archive sur le serveur
+        uses: appleboy/scp-action@v1.0.0
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
-          source: laravel-app.tar
-          target: /tmp
+          source: deploy-files.tar
+          target: /opt/histosportSQL
 
       - name: Load image and restart container (via SSH)
-        uses: appleboy/ssh-action@v0.1.11
+        uses: appleboy/ssh-action@v1.2.3
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
             cd /opt/histosportSQL
-            docker load -i /tmp/laravel-app.tar
-            docker-compose up -d --build laravel
+            tar -xvf deploy-files.tar
+            docker compose down
+            docker rm laravel || true
+            docker load -i laravel-app.tar
+            rm deploy-files.tar laravel-app.tar
+            docker compose up -d

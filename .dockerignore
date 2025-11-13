@@ -1,0 +1,12 @@
+storage/app/private/mysql/
+# Exclure les fichiers et dossiers MySQL internes
+*.pid
+*.sock
+*.err
+*.ibd
+*.frm
+*.MYD
+*.MYI
+*.log
+# Exclure les dossiers de données persistantes
+storage/app/private/mysql/#*

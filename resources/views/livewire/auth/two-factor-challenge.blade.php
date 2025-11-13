@@ -43,7 +43,7 @@
                 <div class="space-y-5 text-center">
                     <div x-show="!showRecoveryInput">
                         <div class="flex items-center justify-center my-5">
-                            <x-input-otp
+                            <x-form-elements.input-otp
                                 name="code"
                                 digits="6"
                                 autocomplete="one-time-code"
