@@ -30,9 +30,9 @@
                     <flux:button variant="primary" type="submit" class="w-full">{{ __('Save') }}</flux:button>
                 </div>
 
-                <x-action-message class="me-3" on="password-updated">
+                <x-notifications.action-message class="me-3" on="password-updated">
                     {{ __('Saved.') }}
-                </x-action-message>
+                </x-notifications.action-message>
             </div>
         </form>
     </x-settings.layout>

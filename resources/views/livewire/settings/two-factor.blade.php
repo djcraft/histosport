@@ -87,7 +87,7 @@
             @if ($showVerificationStep)
                 <div class="space-y-6">
                     <div class="flex flex-col items-center space-y-3">
-                        <x-input-otp
+                        <x-form-elements.input-otp
                             :digits="6"
                             name="code"
                             wire:model="code"
