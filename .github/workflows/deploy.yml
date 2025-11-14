@@ -47,7 +47,7 @@ jobs:
             cd /opt/histosportSQL
             tar -xvf deploy-files.tar
             docker compose down
-            docker rm laravel || true
+            docker rm laravel-app || true
             docker load -i laravel-app.tar
             rm deploy-files.tar laravel-app.tar
             docker compose up -d

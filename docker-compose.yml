@@ -41,10 +41,9 @@ services:
     networks:
       - mysql-phpmyadmin
     ports:
-      - "28190:9000"
+      - "28190:80"
     depends_on:
       - mysql
-    command: sh /entrypoint.sh
 
 networks:
   mysql-phpmyadmin:

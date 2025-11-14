@@ -15,6 +15,8 @@ RUN apt-get update && apt-get install -y \
     libmemcached-dev \
     zlib1g-dev \
     libzip-dev \
+    nginx \
+    supervisor \
     && pecl install memcached \
     && docker-php-ext-enable memcached \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
@@ -36,11 +38,17 @@ RUN npm install && npm run build
 # Set permissions
 RUN chown -R www-data:www-data /var/www/html/*
 
+# Configuration Nginx dans le conteneur
+COPY docker/nginx.conf /etc/nginx/sites-available/default
+
+# Configuration Supervisor pour gérer Nginx + PHP-FPM
+COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+
 # Ajout du script d'entrée et permission exécutable
 COPY entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
-# Expose port 9000
-EXPOSE 9000
+# Expose port 9000 (PHP-FPM) et 80 (Nginx)
+EXPOSE 9000 80
 
-CMD ["php-fpm"]
+CMD ["/usr/bin/supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
