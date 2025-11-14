@@ -36,7 +36,8 @@ RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 RUN npm install && npm run build
 
 # Set permissions
-RUN chown -R www-data:www-data /var/www/html/*
+RUN chown -R www-data:www-data /var/www/html
+RUN chmod -R 755 /var/www/html/public
 
 # Configuration Nginx dans le conteneur
 COPY docker/nginx.conf /etc/nginx/sites-available/default

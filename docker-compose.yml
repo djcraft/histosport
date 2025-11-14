@@ -30,6 +30,8 @@ services:
     image: laravel-app
     container_name: laravel
     environment:
+      APP_ENV: production
+      APP_URL: https://donnees.histo-sport.fr
       DB_HOST: ${DB_HOST}
       DB_DATABASE: ${DB_DATABASE}
       DB_USERNAME: ${DB_USERNAME}

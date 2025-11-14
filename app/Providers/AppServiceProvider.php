@@ -19,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Force HTTPS pour les URLs générées (reverse proxy)
+        if ($this->app->environment('production')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+        
     \App\Models\ClubPersonne::observe(\App\Observers\HistorisationPivotObserver::class);
     \App\Models\ClubDiscipline::observe(\App\Observers\HistorisationPivotObserver::class);
     \App\Models\DisciplinePersonne::observe(\App\Observers\HistorisationPivotObserver::class);
