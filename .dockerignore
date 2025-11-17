@@ -1,3 +1,4 @@
+# MySQL data directory and files
 storage/app/private/mysql/
 # Exclure les fichiers et dossiers MySQL internes
 *.pid
@@ -10,3 +11,25 @@ storage/app/private/mysql/
 *.log
 # Exclure les dossiers de données persistantes
 storage/app/private/mysql/#*
+
+# Security: Exclude sensitive files from Docker build
+.git
+.env
+.env.*
+!.env.example
+node_modules
+vendor
+storage/logs
+storage/framework/cache
+storage/framework/sessions
+storage/framework/testing
+storage/framework/views
+.DS_Store
+*.pem
+*.key
+*.p12
+*.jks
+.idea
+.vscode
+auth.json
+.phpunit.result.cache

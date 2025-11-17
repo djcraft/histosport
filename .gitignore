@@ -21,3 +21,15 @@ yarn-error.log
 /.nova
 /.vscode
 /.zed
+
+# Security: Additional sensitive files
+*.pem
+*.key
+*.p12
+*.jks
+*.pfx
+id_rsa
+id_dsa
+*.log
+.DS_Store
+Thumbs.db
