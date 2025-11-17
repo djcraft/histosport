@@ -150,9 +150,11 @@ Secure the HistoSport repository before making it public.
 - Exemples de configuration sécurisée dans `.env.example`
 
 ### 2. Analyse Automatique / Automated Analysis
-- CodeQL pour l'analyse de code statique
-- Audit de dépendances quotidien
+- CodeQL pour l'analyse de code statique (s'activera au passage en public)
+- Audit de dépendances quotidien (actif maintenant)
 - Workflows avec permissions minimales
+
+**Note importante:** CodeQL est gratuit pour les dépôts publics. Il s'activera automatiquement lors du passage du dépôt en public. Voir `.github/CODEQL_INFO.md` pour plus de détails.
 
 ### 3. Documentation Complète / Comprehensive Documentation
 - Guide de sécurité en FR et EN
@@ -169,11 +171,13 @@ Secure the HistoSport repository before making it public.
 ## 📋 Actions Recommandées Avant Publication / Recommended Actions Before Going Public
 
 ### Sur GitHub / On GitHub
-1. **Activer CodeQL Analysis**
-   - Settings > Security > Code security and analysis
-   - Enable "CodeQL analysis"
+1. **Rendre le dépôt public**
+   - Settings > Danger Zone > Change repository visibility
+   - CodeQL s'activera automatiquement (GRATUIT pour les dépôts publics)
+   - Voir `.github/CODEQL_INFO.md` pour plus de détails
 
 2. **Activer Dependabot**
+   - Settings > Security > Code security and analysis
    - Enable "Dependabot alerts"
    - Enable "Dependabot security updates"
 

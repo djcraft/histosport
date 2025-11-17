@@ -150,6 +150,10 @@ Points critiques :
 
 Si vous découvrez une vulnérabilité de sécurité, veuillez consulter notre [Politique de Sécurité](SECURITY.md).
 
+### À propos de CodeQL
+
+Le workflow CodeQL est configuré mais s'activera automatiquement une fois le dépôt rendu public (CodeQL est gratuit pour les dépôts publics). Consultez [.github/CODEQL_INFO.md](.github/CODEQL_INFO.md) pour plus d'informations.
+
 ## Technologies utilisées
 
 - [Laravel 12](https://laravel.com) - Framework PHP

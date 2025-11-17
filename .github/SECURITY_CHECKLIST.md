@@ -40,13 +40,15 @@ This document provides a comprehensive checklist to ensure the repository is sec
 
 ### 🤖 CI/CD et Workflows
 
-- [x] Workflow CodeQL configuré pour l'analyse de sécurité
+- [x] Workflow CodeQL configuré pour l'analyse de sécurité (s'activera au passage en public)
 - [x] Workflow d'audit de dépendances configuré
 - [x] Workflow de déploiement utilise des secrets GitHub
 - [x] Workflow de tests configuré correctement
 - [x] Workflow de linting configuré
 - [x] Permissions GITHUB_TOKEN limitées dans tous les workflows
 - [x] Aucun secret exposé dans les logs des workflows
+
+**Note:** CodeQL est gratuit pour les dépôts publics. Pour les dépôts privés, il nécessite une organisation avec GitHub Advanced Security. Le workflow CodeQL s'activera automatiquement lors du passage du dépôt en public.
 
 ### 🔒 Code et Dépendances
 
@@ -76,9 +78,10 @@ This document provides a comprehensive checklist to ensure the repository is sec
 
 ### Actions immédiates / Immediate Actions
 
-1. **Activer CodeQL sur le dépôt GitHub**
+1. **Vérifier que CodeQL est activé (automatique pour les dépôts publics)**
    - Settings > Security > Code security and analysis
-   - Enable "CodeQL analysis"
+   - CodeQL s'activera automatiquement car le dépôt sera public
+   - Note: CodeQL est GRATUIT pour tous les dépôts publics
 
 2. **Activer Dependabot**
    - Settings > Security > Code security and analysis
