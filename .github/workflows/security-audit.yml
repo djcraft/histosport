@@ -13,6 +13,8 @@ jobs:
   composer-audit:
     name: PHP Dependencies Audit
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout code
@@ -44,6 +46,8 @@ jobs:
   npm-audit:
     name: NPM Dependencies Audit
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     
     steps:
       - name: Checkout code

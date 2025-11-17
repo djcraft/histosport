@@ -17,6 +17,8 @@ jobs:
   quality:
     runs-on: ubuntu-latest
     environment: Testing
+    permissions:
+      contents: write  # Needed if auto-commit is enabled
     steps:
       - uses: actions/checkout@v4
 
