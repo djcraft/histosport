@@ -9,6 +9,15 @@ use Laravel\Telescope\IncomingEntry;
 
 class TelescopeServiceProvider extends ServiceProvider
 {
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot()
+    {
+        $this->gate();
+    }
+
     /**
      * Register any application services.
      */

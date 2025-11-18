@@ -14,11 +14,13 @@ class LieuImportExportController extends Controller
     {
         $import = new LieuImport();
         Excel::import($import, $request->file('file'));
-        Session::flash('import_report', [
-            'created' => $import->created,
-            'updated' => $import->updated,
-            'errors' => $import->errors,
-        ]);
+            Session::flash('notification', [
+                'type' => 'success',
+                'message' => 'Import terminé.<br>'
+                    . 'Créés : ' . (is_array($import->created) ? implode(', ', $import->created) : $import->created) . '<br>'
+                    . 'Modifiés : ' . (is_array($import->updated) ? implode(', ', $import->updated) : $import->updated) . '<br>'
+                    . 'Erreurs : ' . (is_array($import->errors) ? implode(', ', $import->errors) : $import->errors)
+            ]);
         return redirect()->route('lieux.index');
     }
 

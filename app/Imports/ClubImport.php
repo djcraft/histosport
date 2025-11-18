@@ -3,6 +3,7 @@
 namespace App\Imports;
 
 use App\Models\Club;
+use Illuminate\Support\Facades\Log;
 use App\Imports\BaseImport;
 use Maatwebsite\Excel\Concerns\Importable;
 
@@ -13,7 +14,12 @@ class ClubImport extends BaseImport
     public function model(array $row)
     {
         $data = [
-            'nom' => $row['nom'] ?? null,
+            'nom' => $row['nom'] ?? '',
+            'adresse' => $row['adresse'] ?? '',
+            'code_postal' => $row['code_postal'] ?? '',
+            'commune' => $row['commune'] ?? '',
+            'departement' => $row['departement'] ?? '',
+            'pays' => $row['pays'] ?? '',
             'nom_origine' => $row['nom_origine'] ?? null,
             'surnoms' => $row['surnoms'] ?? null,
             'date_fondation' => $row['date_fondation'] ?? null,
@@ -27,16 +33,9 @@ class ClubImport extends BaseImport
             'notes' => $row['notes'] ?? null,
         ];
         try {
-            // Adresse complète
-            if (!empty($row['adresse'])) {
-                $lieuFieldsCreate = \App\Models\Lieu::normalizeFields(explode(',', $row['adresse']), false);
-                $lieu = \App\Models\Lieu::findNormalized($lieuFieldsCreate);
-                if (!$lieu) {
-                    $lieu = \App\Models\Lieu::create($lieuFieldsCreate);
-                }
-                $data['siege_id'] = $lieu->lieu_id;
-            }
-            $club = Club::where('nom', $data['nom'])->first();
+            // Normalisation et déduplication du club
+            $clubFieldsNormalized = Club::normalizeFields($data);
+            $club = Club::findNormalized($clubFieldsNormalized);
             if ($club) {
                 $club->update($data);
                 $this->updated[] = $data['nom'];
@@ -46,6 +45,7 @@ class ClubImport extends BaseImport
             }
         } catch (\Exception $e) {
             $this->errors[] = $row['nom'] ?? '(sans nom)';
+            Log::error('Erreur import club : ' . ($row['nom'] ?? '(sans nom)') . ' - ' . $e->getMessage());
             return null;
         }
         try {
@@ -70,12 +70,14 @@ class ClubImport extends BaseImport
                     'nom' => $nom,
                     'prenom' => $prenom,
                 ]);
-                $personneIds[] = $personne->id;
+                if (!empty($personne->personne_id)) {
+                    $personneIds[] = $personne->personne_id;
+                }
             }
             $club->personnes()->sync($personneIds);
         } catch (\Exception $e) {
             // On logue l'erreur mais on ne signale pas le club comme erroné
-            \Log::error('Erreur association club (discipline/personne) : ' . ($row['nom'] ?? '(sans nom)') . ' - ' . $e->getMessage());
+            Log::error('Erreur association club (discipline/personne) : ' . ($row['nom'] ?? '(sans nom)') . ' - ' . $e->getMessage());
         }
         return $club;
     }

@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Source;
 use App\Models\Lieu;
 use App\Imports\BaseImport;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Importable;
 
 class SourceImport extends BaseImport
@@ -13,14 +14,14 @@ class SourceImport extends BaseImport
 
     public function model(array $row)
     {
-        $data = [
-            'titre' => $row['titre'] ?? null,
-            'auteur' => $row['auteur'] ?? null,
-            'annee_reference' => $row['annee_reference'] ?? null,
-            'type' => $row['type'] ?? null,
-            'cote' => $row['cote'] ?? null,
-            'url' => $row['url'] ?? null,
-        ];
+            $data = [
+                'titre' => $row['titre'] ?? '',
+                'auteur' => $row['auteur'] ?? '',
+                'annee_reference' => $row['annee_reference'] ?? '',
+                'type' => $row['type'] ?? '',
+                'cote' => $row['cote'] ?? '',
+                'url' => $row['url'] ?? '',
+            ];
         try {
             // Lieux liés
             if (!empty($row['lieu_edition'])) {
@@ -47,7 +48,8 @@ class SourceImport extends BaseImport
                 }
                 $data['lieu_couverture_id'] = $lieuCouverture->lieu_id;
             }
-            $source = Source::where('titre', $data['titre'])->first();
+            $fieldsNormalized = Source::normalizeFields($data);
+            $source = Source::findNormalized($fieldsNormalized);
             if ($source) {
                 $source->update($data);
                 $this->updated[] = $data['titre'];
@@ -69,6 +71,7 @@ class SourceImport extends BaseImport
             $source->save();
         } catch (\Exception $e) {
             $this->errors[] = $row['titre'] ?? '';
+            Log::error('Erreur import source : ' . ($row['titre'] ?? '') . ' - ' . $e->getMessage());
             return null;
         }
         try {
@@ -128,7 +131,7 @@ class SourceImport extends BaseImport
             }
             $source->lieux()->sync($lieuIds);
         } catch (\Exception $e) {
-            \Log::error('Erreur association source (clubs/personnes/compétitions/lieux) : ' . ($row['titre'] ?? '') . ' - ' . $e->getMessage());
+            Log::error('Erreur association source (clubs/personnes/compétitions/lieux) : ' . ($row['titre'] ?? '') . ' - ' . $e->getMessage());
         }
         return $source;
     }

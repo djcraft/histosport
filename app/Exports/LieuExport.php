@@ -33,16 +33,25 @@ class LieuExport extends BaseExport
 
     protected function transform($lieu)
     {
-        $adresse = $this->formatLieu($lieu);
         return [
-            'adresse' => $adresse,
+            'nom' => $lieu->nom ?? '',
+            'adresse' => $lieu->adresse ?? '',
+            'commune' => $lieu->commune ?? '',
+            'code_postal' => $lieu->code_postal ?? '',
+            'departement' => $lieu->departement ?? '',
+            'pays' => $lieu->pays ?? '',
         ];
     }
 
     public function headings(): array
     {
         return [
+            'nom',
             'adresse',
+            'commune',
+            'code_postal',
+            'departement',
+            'pays',
         ];
     }
 }

@@ -4,6 +4,7 @@ namespace App\Imports;
 
 use App\Models\Lieu;
 use App\Imports\BaseImport;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Importable;
 
 class LieuImport extends BaseImport
@@ -69,22 +70,6 @@ class LieuImport extends BaseImport
             }
             $lieu->clubs()->sync($clubIds);
 
-            // Personnes
-            $personneIds = [];
-            if (!empty($row['personnes'])) {
-                $personnesList = array_map('trim', explode(',', $row['personnes']));
-                foreach ($personnesList as $personneFullName) {
-                    $personneParts = explode(' ', $personneFullName);
-                    $prenom = array_shift($personneParts);
-                    $nom = implode(' ', $personneParts);
-                    $personne = \App\Models\Personne::where('prenom', $prenom)->where('nom', $nom)->first();
-                    if ($personne) {
-                        $personneIds[] = $personne->personne_id;
-                    }
-                }
-            }
-            $lieu->personnes()->sync($personneIds);
-
             // Compétitions
             $competitionIds = [];
             if (!empty($row['competitions'])) {
@@ -98,7 +83,7 @@ class LieuImport extends BaseImport
             }
             $lieu->competitions()->sync($competitionIds);
         } catch (\Exception $e) {
-            \Log::error('Erreur association lieu (sources/clubs/personnes/compétitions) : ' . ($row['adresse'] ?? '') . ' - ' . $e->getMessage());
+            Log::error('Erreur association lieu (sources/clubs/personnes/compétitions) : ' . ($row['adresse'] ?? '') . ' - ' . $e->getMessage());
         }
         return $lieu;
     }

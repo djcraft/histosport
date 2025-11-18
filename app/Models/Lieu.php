@@ -6,6 +6,23 @@ use App\Models\BaseModel;
 
 class Lieu extends BaseModel
 {
+    /**
+     * Les personnes liées à ce lieu via la table de liaison personne_lieu.
+     */
+    public function personnes()
+    {
+        return $this->belongsToMany(Personne::class, 'personne_lieu', 'lieu_id', 'personne_id');
+    }
+
+    /**
+     * Les sources associées au lieu via le pivot entity_source.
+     */
+    public function sources()
+    {
+        return $this->belongsToMany(Source::class, 'entity_source', 'entity_id', 'source_id')
+            ->wherePivot('entity_type', 'lieu');
+    }
+
     public static string $entityType = 'lieu';
     protected $fillable = [
         'nom',
@@ -15,7 +32,6 @@ class Lieu extends BaseModel
         'departement',
         'pays',
     ];
-    // ...existing code...
 
     /**
      * Recherche un lieu avec gestion des nulls et casse (null-safe, insensible à la casse).
@@ -28,12 +44,8 @@ class Lieu extends BaseModel
         foreach ([
             'nom', 'adresse', 'commune', 'code_postal', 'departement', 'pays'
         ] as $field) {
-            $value = $fields[$field] ?? null;
-            if ($value === null) {
-                $query->whereNull($field);
-            } else {
-                $query->whereRaw('lower(' . $field . ') = ?', [mb_strtolower($value)]);
-            }
+            $value = $fields[$field] ?? '';
+            $query->whereRaw("COALESCE(LOWER(TRIM(" . $field . ")), '') = ?", [mb_strtolower($value)]);
         }
         return $query->first();
     }
@@ -91,9 +103,12 @@ class Lieu extends BaseModel
     /**
      * Get the clubs for the lieu.
      */
+    /**
+     * Les clubs liés à ce lieu via la table de liaison club_lieu.
+     */
     public function clubs()
     {
-        return $this->hasMany(Club::class, 'siege_id', 'lieu_id');
+        return $this->belongsToMany(Club::class, 'club_lieu', 'lieu_id', 'club_id');
     }
 
 

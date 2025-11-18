@@ -16,12 +16,13 @@ class CompetitionImportExportController extends Controller
         $file = $request->file('file');
         $import = new CompetitionImport();
         Excel::import($import, $file);
-        Session::flash('import_report', [
-            'succès' => 'Import terminé',
-            'créés' => count($import->created) ? implode(', ', $import->created) : 'Aucun',
-            'modifiés' => count($import->updated) ? implode(', ', $import->updated) : 'Aucun',
-            'erronés' => count($import->errors) ? implode(', ', $import->errors) : 'Aucun',
-        ]);
+            Session::flash('notification', [
+                'type' => 'success',
+                'message' => 'Import terminé.<br>'
+                    . 'Créés : ' . (is_array($import->created) ? implode(', ', $import->created) : $import->created) . '<br>'
+                    . 'Modifiés : ' . (is_array($import->updated) ? implode(', ', $import->updated) : $import->updated) . '<br>'
+                    . 'Erreurs : ' . (is_array($import->errors) ? implode(', ', $import->errors) : $import->errors)
+            ]);
         return redirect()->route('competitions.index');
     }
 

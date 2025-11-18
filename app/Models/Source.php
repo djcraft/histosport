@@ -113,4 +113,32 @@ class Source extends BaseModel
     {
         return $this->belongsTo(Lieu::class, 'lieu_couverture_id', 'lieu_id');
     }
+    /**
+     * Recherche une source normalisée selon les champs principaux.
+     */
+    public static function findNormalized($fields)
+    {
+        $query = self::query();
+        foreach ([
+            'titre', 'auteur', 'annee_reference', 'type'
+        ] as $field) {
+            $value = $fields[$field] ?? '';
+            $query->whereRaw("COALESCE(LOWER(TRIM($field)), '') = ?", [mb_strtolower($value)]);
+        }
+        return $query->first();
+    }
+
+    /**
+     * Normalise les champs pour la comparaison et la déduplication.
+     */
+    public static function normalizeFields($fields, $assoc = true)
+    {
+        $normalized = [];
+    $keys = ['titre', 'auteur', 'annee_reference', 'type'];
+        foreach ($keys as $i => $key) {
+            $value = $assoc ? ($fields[$key] ?? '') : ($fields[$i] ?? '');
+            $normalized[$key] = mb_strtolower(trim((string)($value ?? '')));
+        }
+        return $normalized;
+    }
 }

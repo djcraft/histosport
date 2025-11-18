@@ -7,6 +7,7 @@ use App\Models\Club;
 use App\Models\Discipline;
 use App\Models\Lieu;
 use App\Imports\BaseImport;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Importable;
 
 class CompetitionImport extends BaseImport
@@ -17,12 +18,12 @@ class CompetitionImport extends BaseImport
     {
         // ...existing code...
         $data = [
-            'nom' => $row['nom'] ?? null,
-            'date' => $row['date'] ?? null,
-            'date_precision' => $row['date_precision'] ?? null,
-            'type' => $row['type'] ?? null,
-            'duree' => $row['duree'] ?? null,
-            'niveau' => $row['niveau'] ?? null,
+            'nom' => $row['nom'] ?? '',
+            'date' => $row['date'] ?? '',
+            'date_precision' => $row['date_precision'] ?? '',
+            'type' => $row['type'] ?? '',
+            'duree' => $row['duree'] ?? '',
+            'niveau' => $row['niveau'] ?? '',
         ];
         try {
             // Lieu principal
@@ -50,7 +51,8 @@ class CompetitionImport extends BaseImport
                 ]);
                 $data['organisateur_personne_id'] = $personne->personne_id;
             }
-            $competition = Competition::where('nom', $data['nom'])->first();
+            $fieldsNormalized = Competition::normalizeFields($data);
+            $competition = Competition::findNormalized($fieldsNormalized);
             if ($competition) {
                 $competition->update($data);
                 $this->updated[] = $data['nom'];
@@ -60,6 +62,7 @@ class CompetitionImport extends BaseImport
             }
         } catch (\Exception $e) {
             $this->errors[] = $row['nom'] ?? '';
+            Log::error('Erreur import compétition : ' . ($row['nom'] ?? '') . ' - ' . $e->getMessage());
             return null;
         }
         try {
@@ -78,7 +81,7 @@ class CompetitionImport extends BaseImport
                 $competition->sites()->sync($siteIds);
             }
         } catch (\Exception $e) {
-            \Log::error('Erreur association compétition (sites) : ' . ($row['nom'] ?? '') . ' - ' . $e->getMessage());
+            Log::error('Erreur association compétition (sites) : ' . ($row['nom'] ?? '') . ' - ' . $e->getMessage());
         }
         try {
             // Disciplines
@@ -168,7 +171,7 @@ class CompetitionImport extends BaseImport
                 $competition->sites()->sync($siteIds);
             }
         } catch (\Exception $e) {
-            \Log::error('Erreur association compétition (disciplines/clubs/personnes/sites) : ' . ($row['nom'] ?? '') . ' - ' . $e->getMessage());
+            Log::error('Erreur association compétition (disciplines/clubs/personnes/sites) : ' . ($row['nom'] ?? '') . ' - ' . $e->getMessage());
         }
         return $competition;
     }

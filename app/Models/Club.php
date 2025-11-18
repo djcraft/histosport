@@ -6,6 +6,17 @@ use App\Models\BaseModel;
 
 class Club extends BaseModel
 {
+    public static function findNormalized(array $fields): ?self
+    {
+        $query = self::query();
+        foreach ([
+            'nom', 'nom_origine', 'acronyme'
+        ] as $field) {
+            $value = $fields[$field] ?? '';
+            $query->whereRaw("COALESCE(LOWER(TRIM($field)), '') = ?", [mb_strtolower($value)]);
+        }
+        return $query->first();
+    }
     /**
      * Les participations du club à des compétitions (via competition_participant).
      */
@@ -134,4 +145,19 @@ class Club extends BaseModel
     {
         return $this->morphMany(Historisation::class, 'entity');
     }
+        /**
+         * Normalise les champs pour la comparaison et la déduplication.
+         * @param array $fields
+         * @return array
+         */
+        public static function normalizeFields(array $fields): array
+        {
+            $normalized = [];
+            foreach ([
+                'nom', 'nom_origine', 'acronyme'
+            ] as $field) {
+                $normalized[$field] = isset($fields[$field]) ? trim(mb_strtolower((string)$fields[$field])) : '';
+            }
+            return $normalized;
+        }
 }

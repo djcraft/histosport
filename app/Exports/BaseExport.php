@@ -52,9 +52,9 @@ abstract class BaseExport implements FromCollection, WithHeadings
     public function collection()
     {
         $entities = $this->getEntities();
-        return $entities->map(function ($entity) {
-            return $this->transform($entity);
-        });
+        return collect($entities->map(function ($entity) {
+            return array_values($this->transform($entity));
+        })->toArray());
     }
 
     /**

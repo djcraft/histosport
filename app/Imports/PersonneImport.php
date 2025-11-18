@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Models\Personne;
 use App\Models\Club;
 use App\Imports\BaseImport;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Importable;
 
 class PersonneImport extends BaseImport
@@ -13,14 +14,14 @@ class PersonneImport extends BaseImport
 
     public function model(array $row)
     {
-        $data = [
-            'nom' => $row['nom'] ?? null,
-            'prenom' => $row['prenom'] ?? null,
-            'date_naissance' => $row['date_naissance'] ?? null,
-            'date_deces' => $row['date_deces'] ?? null,
-            'sexe' => $row['sexe'] ?? null,
-            'titre' => $row['titre'] ?? null,
-        ];
+            $data = [
+                'nom' => $row['nom'] ?? '',
+                'prenom' => $row['prenom'] ?? '',
+                'date_naissance' => $row['date_naissance'] ?? '',
+                'date_deces' => $row['date_deces'] ?? '',
+                'sexe' => $row['sexe'] ?? '',
+                'titre' => $row['titre'] ?? '',
+            ];
         try {
             // Adresse complète
             if (!empty($row['adresse'])) {
@@ -49,7 +50,8 @@ class PersonneImport extends BaseImport
                 }
                 $data['lieu_deces_id'] = $lieuDeces->lieu_id;
             }
-            $personne = Personne::where('nom', $data['nom'])->where('prenom', $data['prenom'])->first();
+            $fieldsNormalized = Personne::normalizeFields($data);
+            $personne = Personne::findNormalized($fieldsNormalized);
             if ($personne) {
                 $personne->update($data);
                 $this->updated[] = $data['nom'] . ' ' . $data['prenom'];
@@ -59,6 +61,7 @@ class PersonneImport extends BaseImport
             }
         } catch (\Exception $e) {
             $this->errors[] = ($row['nom'] ?? '') . ' ' . ($row['prenom'] ?? '');
+            Log::error('Erreur import personne : ' . (($row['nom'] ?? '') . ' ' . ($row['prenom'] ?? '')) . ' - ' . $e->getMessage());
             return null;
         }
         try {
@@ -71,7 +74,7 @@ class PersonneImport extends BaseImport
             }
             $personne->clubs()->sync($clubIds);
         } catch (\Exception $e) {
-            \Log::error('Erreur association personne (clubs) : ' . (($row['nom'] ?? '') . ' ' . ($row['prenom'] ?? '')) . ' - ' . $e->getMessage());
+            Log::error('Erreur association personne (clubs) : ' . (($row['nom'] ?? '') . ' ' . ($row['prenom'] ?? '')) . ' - ' . $e->getMessage());
         }
         return $personne;
     }
