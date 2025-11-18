@@ -19,11 +19,6 @@ storage/app/private/mysql/#*
 !.env.example
 node_modules
 vendor
-storage/logs
-storage/framework/cache
-storage/framework/sessions
-storage/framework/testing
-storage/framework/views
 .DS_Store
 *.pem
 *.key
