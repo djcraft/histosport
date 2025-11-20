@@ -15,11 +15,6 @@ class ClubImport extends BaseImport
     {
         $data = [
             'nom' => $row['nom'] ?? '',
-            'adresse' => $row['adresse'] ?? '',
-            'code_postal' => $row['code_postal'] ?? '',
-            'commune' => $row['commune'] ?? '',
-            'departement' => $row['departement'] ?? '',
-            'pays' => $row['pays'] ?? '',
             'nom_origine' => $row['nom_origine'] ?? null,
             'surnoms' => $row['surnoms'] ?? null,
             'date_fondation' => $row['date_fondation'] ?? null,
@@ -32,6 +27,15 @@ class ClubImport extends BaseImport
             'couleurs' => $row['couleurs'] ?? null,
             'notes' => $row['notes'] ?? null,
         ];
+        // Gestion du siège (Lieu) comme pour l'adresse de personne
+        if (!empty($row['siege'])) {
+            $lieuFieldsCreate = \App\Models\Lieu::normalizeFields(explode(',', $row['siege']), false);
+            $lieu = \App\Models\Lieu::findNormalized($lieuFieldsCreate);
+            if (!$lieu) {
+                $lieu = \App\Models\Lieu::create($lieuFieldsCreate);
+            }
+            $data['siege_id'] = $lieu->lieu_id;
+        }
         try {
             // Normalisation et déduplication du club
             $clubFieldsNormalized = Club::normalizeFields($data);
