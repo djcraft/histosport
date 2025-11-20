@@ -43,7 +43,7 @@ class ClubExport extends BaseExport
 
     protected function transform($club)
     {
-        $adresse = $this->formatLieu($club->siege);
+        $siege = $this->formatLieu($club->siege);
         $personnes = $club->personnes->map(function($p) {
             return trim($p->nom . ' ' . $p->prenom);
         })->implode(', ');
@@ -59,7 +59,7 @@ class ClubExport extends BaseExport
             'date_declaration_precision' => $club->date_declaration_precision,
             'acronyme' => $club->acronyme,
             'couleurs' => $club->couleurs,
-            'adresse' => $adresse,
+            'siege' => $siege,
             'notes' => $club->notes,
             'disciplines' => $this->formatListe($club->disciplines),
             'personnes' => $personnes,
@@ -80,7 +80,7 @@ class ClubExport extends BaseExport
             'date_declaration_precision',
             'acronyme',
             'couleurs',
-            'adresse',
+            'siege',
             'notes',
             'disciplines',
             'personnes',
