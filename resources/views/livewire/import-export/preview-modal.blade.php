@@ -4,6 +4,26 @@
         <p><strong>Type :</strong> {{ $pendingImport->type }}</p>
         <p><strong>Status :</strong> {{ $pendingImport->status }}</p>
 
+
+        <div class="flex gap-2 my-4">
+            @if($pendingImport->status === 'pending')
+                <x-buttons.button wire:click="validateImport" variant="primary">
+                    <x-icons.check class="inline mr-1"/> Valider l'import
+                </x-buttons.button>
+                <x-buttons.button wire:click="rejectImport" variant="danger">
+                    <x-icons.x class="inline mr-1"/> Rejeter l'import
+                </x-buttons.button>
+            @elseif($pendingImport->status === 'validated')
+                <x-badges.badge variant="success">Import validé</x-badges.badge>
+            @else
+                <x-badges.badge variant="danger">Import supprimé ou rejeté</x-badges.badge>
+            @endif
+        </div>
+
+        @if(session('notification'))
+            <x-notifications.notification :type="session('notification.type')" :message="session('notification.message')" />
+        @endif
+
         {{-- Clubs importés --}}
         @php
             $clubs = $pendingImport->entities->where('entity_type', 'club');
