@@ -20,6 +20,7 @@ class TransactionStorageService
     public function deletePendingImport(int $id): void
     {
         PendingImport::where('id', $id)->delete();
+        \Log::info('Import multi-feuilles supprimé/rejeté', ['import_id' => $id]);
     }
 
     /**
@@ -44,9 +45,15 @@ class TransactionStorageService
                 }
                 $entity->status = 'validated';
                 $entity->save();
+                \Log::info('Import validé pour entité', [
+                    'type' => $entity->entity_type,
+                    'hash' => $entity->hash,
+                    'data' => $entity->data
+                ]);
             }
             $import->status = 'validated';
             $import->save();
+            \Log::info('Import multi-feuilles validé', ['import_id' => $import->id]);
         }
     }
 
@@ -121,6 +128,11 @@ class TransactionStorageService
                 $entity->status = 'conflict';
                 $entity->conflicts = $conflicts;
                 $entity->save();
+                \Log::warning('Conflit détecté lors de l’import', [
+                    'type' => $entity->entity_type,
+                    'hash' => $entity->hash,
+                    'conflicts' => $conflicts
+                ]);
             }
         }
     }
