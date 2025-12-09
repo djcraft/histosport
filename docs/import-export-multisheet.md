@@ -42,4 +42,33 @@ Voir le guide et la structure des dossiers/fichiers dans le projet.
 - Utiliser les logs pour diagnostiquer les problèmes ou suivre les opérations.
 - Tester le workflow complet avec des jeux de données réels.
 
-## À compléter au fil du développement
+
+## Plan de test manuel
+
+1. **Import d’un fichier multi-feuilles**
+	- Sélectionner un fichier Excel avec plusieurs feuilles (clubs, personnes, etc.).
+	- Vérifier que toutes les entités sont bien importées et affichées en prévisualisation.
+
+2. **Détection des conflits/doublons**
+	- Importer un fichier contenant des entités déjà présentes en base.
+	- Vérifier que les conflits sont détectés et affichés correctement.
+
+3. **Validation de l’import**
+	- Cliquer sur « Valider l’import ».
+	- Vérifier que les entités sont synchronisées en base et que le statut passe à « validé ».
+	- Contrôler les logs pour s’assurer du suivi des actions.
+
+4. **Rejet de l’import**
+	- Cliquer sur « Rejeter l’import ».
+	- Vérifier que les données temporaires sont supprimées et que le statut passe à « rejeté ».
+	- Contrôler les logs pour s’assurer du suivi des actions.
+
+5. **Nettoyage**
+	- Vérifier qu’aucune donnée temporaire ne reste après validation ou rejet.
+
+6. **Retour utilisateur**
+	- Vérifier l’affichage des notifications, badges et statuts dans l’UI.
+
+7. **Robustesse**
+	- Tester avec des fichiers volumineux, des données mal formatées ou incomplètes.
+	- Vérifier la gestion des erreurs et la stabilité du workflow.
