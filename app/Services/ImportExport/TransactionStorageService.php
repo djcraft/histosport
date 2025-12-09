@@ -27,12 +27,52 @@ class TransactionStorageService
      */
     public function validatePendingImport(int $id): void
     {
-        $import = PendingImport::find($id);
-        if ($import) {
+        $import = PendingImport::with('entities')->find($id);
+        if ($import && $import->status === 'pending') {
+            foreach ($import->entities as $entity) {
+                switch ($entity->entity_type) {
+                    case 'club':
+                        $this->syncClub($entity->data);
+                        break;
+                    case 'personne':
+                        $this->syncPersonne($entity->data);
+                        break;
+                    // Ajouter d'autres entités ici
+                    default:
+                        // Synchronisation générique ou ignorée
+                        break;
+                }
+                $entity->status = 'validated';
+                $entity->save();
+            }
             $import->status = 'validated';
             $import->save();
-            // À compléter : synchronisation des entités en base définitive
         }
+    }
+
+    protected function syncClub(array $data): void
+    {
+        // Exemple de synchronisation pour un club
+        // Recherche ou création selon les champs normalisés
+        $club = \App\Models\Club::findNormalized($data);
+        if ($club) {
+            $club->update($data);
+        } else {
+            $club = \App\Models\Club::create($data);
+        }
+        // À compléter : gestion des relations (disciplines, personnes, etc.)
+    }
+
+    protected function syncPersonne(array $data): void
+    {
+        // Exemple de synchronisation pour une personne
+        $personne = \App\Models\Personne::findNormalized($data);
+        if ($personne) {
+            $personne->update($data);
+        } else {
+            $personne = \App\Models\Personne::create($data);
+        }
+        // À compléter : gestion des relations
     }
 
     /**
