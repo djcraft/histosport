@@ -1,3 +1,36 @@
+        {{-- Entités en conflit --}}
+        @php
+            $conflicts = $pendingImport->entities->where('status', 'conflict');
+        @endphp
+        @if($conflicts->count())
+            <h4 class="mt-6 text-red-700">Conflits détectés</h4>
+            <table class="min-w-max divide-y divide-gray-200 dark:divide-gray-700 mb-4">
+                <thead>
+                    <tr>
+                        <th>Type</th>
+                        <th>Données</th>
+                        <th>Conflits</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($conflicts as $entity)
+                        <tr class="bg-red-50 dark:bg-red-900">
+                            <td>{{ $entity->entity_type }}</td>
+                            <td><pre>{{ json_encode($entity->data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) }}</pre></td>
+                            <td>
+                                @foreach((array) $entity->conflicts as $conflict)
+                                    <div class="mb-2 p-2 rounded bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-100">
+                                        <strong>ID :</strong> {{ $conflict['id'] ?? '-' }}<br>
+                                        <strong>Nom :</strong> {{ $conflict['nom'] ?? '-' }}<br>
+                                        <strong>Message :</strong> {{ $conflict['message'] ?? '' }}
+                                    </div>
+                                @endforeach
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        @endif
 <div>
     <h3>Prévisualisation Import Multi-Feuilles</h3>
     @if($pendingImport)

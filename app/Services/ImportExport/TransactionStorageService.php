@@ -82,4 +82,46 @@ class TransactionStorageService
     {
         return PendingImport::where('status', 'pending')->get();
     }
+
+        /**
+     * Détecte les conflits/doublons pour un import temporaire.
+     * Marque les entités en conflit avec le statut 'conflict' et stocke les infos dans 'conflicts'.
+     */
+    public function detectConflicts(int $pendingImportId): void
+    {
+        $import = PendingImport::with('entities')->find($pendingImportId);
+        if (!$import) return;
+
+        foreach ($import->entities as $entity) {
+            $conflicts = [];
+            switch ($entity->entity_type) {
+                case 'club':
+                    $existing = \App\Models\Club::whereRaw("hash = ?", [$entity->hash])->first();
+                    if ($existing) {
+                        $conflicts[] = [
+                            'id' => $existing->club_id,
+                            'nom' => $existing->nom,
+                            'message' => 'Club déjà existant avec ce hash.'
+                        ];
+                    }
+                    break;
+                case 'personne':
+                    $existing = \App\Models\Personne::whereRaw("hash = ?", [$entity->hash])->first();
+                    if ($existing) {
+                        $conflicts[] = [
+                            'id' => $existing->personne_id,
+                            'nom' => $existing->nom,
+                            'message' => 'Personne déjà existante avec ce hash.'
+                        ];
+                    }
+                    break;
+                // Ajouter d'autres entités ici
+            }
+            if (!empty($conflicts)) {
+                $entity->status = 'conflict';
+                $entity->conflicts = $conflicts;
+                $entity->save();
+            }
+        }
+    }
 }
