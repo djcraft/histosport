@@ -70,6 +70,73 @@
 
 8. **Documentation et guide utilisateur**.
 
----
+
+
 
 Ce fichier servira de guide pour l'ensemble du processus de création du nouveau système d'import/export multi-feuilles.
+
+### 1. Services
+Pour la logique métier d’import/export multi-feuilles :
+```
+app/Services/ImportExport/
+   MultiSheetExportService.php
+   MultiSheetImportService.php
+   DataNormalizer.php
+   HashHelper.php
+   TransactionStorageService.php
+```
+
+### 2. Jobs/Batches
+Pour le traitement asynchrone et par lots :
+```
+app/Jobs/ImportExport/
+   MultiSheetImportJob.php
+   MultiSheetExportJob.php
+```
+
+### 3. Livewire Components
+Pour la prévisualisation, la synthèse et la gestion des conflits :
+```
+app/Livewire/ImportExport/
+   PreviewModal.php
+   ConflictResolver.php
+   DryRunSummary.php
+```
+et les vues associées :
+```
+resources/views/livewire/import-export/
+   preview-modal.blade.php
+   conflict-resolver.blade.php
+   dryrun-summary.blade.php
+```
+
+### 4. Modèles temporaires
+Pour le stockage en attente de validation :
+```
+app/Models/ImportExport/
+   PendingImport.php
+   PendingImportEntity.php
+```
+et éventuellement une migration :
+```
+database/migrations/
+   YYYY_MM_DD_HHMMSS_create_pending_import_tables.php
+```
+
+### 5. Tests
+Pour garantir la fiabilité :
+```
+tests/Feature/ImportExport/
+   MultiSheetImportTest.php
+   MultiSheetExportTest.php
+   PreviewTest.php
+```
+
+### 6. Documentation
+Pour l’utilisateur et l’équipe :
+```
+docs/
+   import-export-multisheet.md
+```
+
+Cette structure permet de séparer clairement la logique métier, l’UI, le stockage temporaire et les tests, tout en facilitant l’évolution et la maintenance du système.
