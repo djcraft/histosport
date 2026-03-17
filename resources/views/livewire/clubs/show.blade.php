@@ -60,8 +60,10 @@
     </div><x-lists.list label="Sources" :items="$club->sources" route="sources.show" />
 
     <x-form-elements.field label="Notes" :value="$club->notes" />
-        <div class="flex justify-end">
-            <x-buttons.button as="a" href="{{ route('clubs.edit', $club) }}" variant="link-orange">Modifier</x-buttons.button>
-        </div>
+        @auth
+            <div class="flex justify-end">
+                <x-buttons.button as="a" href="{{ route('clubs.edit', $club) }}" variant="link-orange">Modifier</x-buttons.button>
+            </div>
+        @endauth
     </div>
 </div>

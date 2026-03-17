@@ -85,9 +85,11 @@
 
     <x-lists.list label="Sources" :items="$personne->sources" route="sources.show" />
     <x-lists.list label="Disciplines" :items="$personne->disciplines" route="disciplines.show" />
-        <div class="flex justify-end">
-            <x-buttons.button as="a" href="{{ route('personnes.edit', $personne) }}" variant="link-orange">Modifier</x-buttons.button>
-        </div>
+        @auth
+            <div class="flex justify-end">
+                <x-buttons.button as="a" href="{{ route('personnes.edit', $personne) }}" variant="link-orange">Modifier</x-buttons.button>
+            </div>
+        @endauth
         </div>
     </div>
 </div>

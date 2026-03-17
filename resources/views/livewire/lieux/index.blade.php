@@ -2,6 +2,7 @@
     <x-notifications.notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Lieux</h1>
+        @auth
         <div class="flex gap-2">
             <form method="POST" action="{{ route('lieux.import') }}" enctype="multipart/form-data">
                 @csrf
@@ -15,6 +16,7 @@
             </form>
             <x-buttons.button as="a" href="{{ route('lieux.create') }}" variant="primary">Ajouter un lieu</x-buttons.button>
         </div>
+        @endauth
     </div>
     <div class="overflow-x-auto w-full">
     <x-tables.table class="w-full" :headers="['', 'Nom', 'Adresse', 'Code postal', 'Commune', 'Département', 'Pays', 'Actions']">
@@ -27,6 +29,7 @@
         </div>
     </div>
 
+    @auth
     <!-- Modal de suppression -->
     <div id="deleteLieuModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -45,6 +48,7 @@
             </div>
         </div>
     </div>
+    @endauth
 </div>
 <script>
 window.addEventListener('open-delete-lieu-modal', function(e) {
@@ -61,8 +65,11 @@ function toggleAllLieux(source) {
     const checkboxes = document.querySelectorAll('.lieu-checkbox');
     checkboxes.forEach(cb => cb.checked = source.checked);
 }
-document.getElementById('exportForm').addEventListener('submit', function(e) {
-    const selected = Array.from(document.querySelectorAll('.lieu-checkbox:checked')).map(cb => cb.value);
-    document.getElementById('exportIds').value = selected.join(',');
-});
+const exportForm = document.getElementById('exportForm');
+if (exportForm) {
+    exportForm.addEventListener('submit', function(e) {
+        const selected = Array.from(document.querySelectorAll('.lieu-checkbox:checked')).map(cb => cb.value);
+        document.getElementById('exportIds').value = selected.join(',');
+    });
+}
 </script>

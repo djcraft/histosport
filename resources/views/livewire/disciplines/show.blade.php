@@ -15,10 +15,12 @@
                 @endforeach
             </div>
         </div>
-        <div class="flex justify-end gap-4">
-            <x-buttons.button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange">Modifier</x-buttons.button>
-            <!-- Bouton supprimer retiré -->
-        </div>
+        @auth
+            <div class="flex justify-end gap-4">
+                <x-buttons.button as="a" href="{{ route('disciplines.edit', $discipline) }}" variant="link-orange">Modifier</x-buttons.button>
+                <!-- Bouton supprimer retiré -->
+            </div>
+        @endauth
         <!-- Modal de confirmation suppression retiré -->
     </div>
 </div>

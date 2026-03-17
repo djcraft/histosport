@@ -2,6 +2,7 @@
     <x-notifications.notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Clubs</h1>
+        @auth
         <div class="flex gap-2">
             <form method="POST" action="{{ route('clubs.import') }}" enctype="multipart/form-data">
                 @csrf
@@ -15,6 +16,7 @@
             </form>
             <x-buttons.button as="a" href="{{ route('clubs.create') }}" variant="primary">Ajouter un club</x-buttons.button>
         </div>
+        @endauth
     </div>
     <div class="overflow-x-auto w-full">
     <x-tables.table class="w-full" :headers="['', 'Nom', 'Nom origine', 'Surnoms', 'Date fondation', 'Date disparition', 'Date déclaration', 'Acronyme', 'Couleurs', 'Siège', 'Disciplines', 'Actions']">
@@ -33,12 +35,16 @@
         checkboxes.forEach(cb => cb.checked = source.checked);
     }
     // Remplir le champ hidden avant export
-    document.getElementById('exportForm').addEventListener('submit', function(e) {
-        const selected = Array.from(document.querySelectorAll('.club-checkbox:checked')).map(cb => cb.value);
-        document.getElementById('selectedClubsInput').value = selected.join(',');
-    });
+    const exportForm = document.getElementById('exportForm');
+    if (exportForm) {
+        exportForm.addEventListener('submit', function(e) {
+            const selected = Array.from(document.querySelectorAll('.club-checkbox:checked')).map(cb => cb.value);
+            document.getElementById('selectedClubsInput').value = selected.join(',');
+        });
+    }
     </script>
 
+    @auth
     <!-- Modal de suppression -->
     <div id="deleteClubModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -57,6 +63,7 @@
             </div>
         </div>
     </div>
+    @endauth
 <script>
 window.addEventListener('open-delete-club-modal', function(e) {
     document.getElementById('deleteClubModal').classList.remove('hidden');

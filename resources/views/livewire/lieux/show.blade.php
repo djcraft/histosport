@@ -9,8 +9,10 @@
             ['label' => 'Département', 'value' => $lieu->departement],
             ['label' => 'Pays', 'value' => $lieu->pays]
         ]" />
-        <div class="flex justify-end">
-            <x-buttons.button as="a" href="{{ route('lieux.edit', $lieu) }}" variant="link-orange">Modifier</x-buttons.button>
-        </div>
+        @auth
+            <div class="flex justify-end">
+                <x-buttons.button as="a" href="{{ route('lieux.edit', $lieu) }}" variant="link-orange">Modifier</x-buttons.button>
+            </div>
+        @endauth
     </div>
 </div>

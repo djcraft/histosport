@@ -2,6 +2,7 @@
     <x-notifications.notification />
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Personnes</h1>
+        @auth
         <div class="flex gap-2">
             <form method="POST" action="{{ route('personnes.import') }}" enctype="multipart/form-data">
                 @csrf
@@ -15,6 +16,7 @@
             </form>
             <x-buttons.button as="a" href="{{ route('personnes.create') }}" variant="primary">Ajouter une personne</x-buttons.button>
         </div>
+        @endauth
     </div>
     <div class="overflow-x-auto w-full">
     <x-tables.table class="w-full" :headers="['', 'Nom', 'Prénom', 'Date naissance', 'Lieu naissance', 'Date décès', 'Lieu décès', 'Sexe', 'Titre', 'Adresse', 'Clubs', 'Actions']">
@@ -33,12 +35,16 @@
         checkboxes.forEach(cb => cb.checked = source.checked);
     }
     // Remplir le champ hidden avant export
-    document.getElementById('exportFormPersonnes').addEventListener('submit', function(e) {
-        const selected = Array.from(document.querySelectorAll('.personne-checkbox:checked')).map(cb => cb.value);
-        document.getElementById('selectedPersonnesInput').value = selected.join(',');
-    });
+    const exportFormPersonnes = document.getElementById('exportFormPersonnes');
+    if (exportFormPersonnes) {
+        exportFormPersonnes.addEventListener('submit', function(e) {
+            const selected = Array.from(document.querySelectorAll('.personne-checkbox:checked')).map(cb => cb.value);
+            document.getElementById('selectedPersonnesInput').value = selected.join(',');
+        });
+    }
     </script>
 
+    @auth
     <!-- Modal de suppression -->
     <div id="deletePersonneModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -57,6 +63,7 @@
             </div>
         </div>
     </div>
+    @endauth
 </div>
 <script>
 window.addEventListener('open-delete-personne-modal', function(e) {

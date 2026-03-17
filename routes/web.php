@@ -13,7 +13,6 @@ Route::get('/', function () {
 
 
 
-use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
 Route::get('dashboard', function () {
@@ -47,43 +46,53 @@ Route::get('dashboard', function () {
         'personnesData' => $personnesData,
         'competitionsData' => $competitionsData,
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+})->name('dashboard');
 
+$livewireFolders = [
+    'clubs' => 'Clubs',
+    'personnes' => 'Personnes',
+    'disciplines' => 'Disciplines',
+    'competitions' => 'Competitions',
+    'sources' => 'Sources',
+    'lieux' => 'Lieux',
+];
 
+$entities = [
+    'clubs' => 'Club',
+    'personnes' => 'Personne',
+    'disciplines' => 'Discipline',
+    'competitions' => 'Competition',
+    'sources' => 'Source',
+    'lieux' => 'Lieu',
+];
 
-Route::middleware(['auth'])->group(function () {
-    $livewireFolders = [
-        'clubs' => 'Clubs',
-        'personnes' => 'Personnes',
-        'disciplines' => 'Disciplines',
-        'competitions' => 'Competitions',
-        'sources' => 'Sources',
-        'lieux' => 'Lieux',
-    ];
-    $entities = [
-        'clubs' => 'Club',
-        'personnes' => 'Personne',
-        'disciplines' => 'Discipline',
-        'competitions' => 'Competition',
-        'sources' => 'Source',
-        'lieux' => 'Lieu',
-    ];
+// Routes publiques en lecture seule
+foreach ($entities as $route => $entity) {
+    $folder = $livewireFolders[$route];
+    $param = strtolower($entity);
+
+    Route::get("$route", "App\\Livewire\\{$folder}\\Index")->name("$route.index");
+    Route::get("$route/{{$param}}", "App\\Livewire\\{$folder}\\Show")->name("$route.show");
+}
+
+Route::middleware(['auth'])->group(function () use ($livewireFolders, $entities) {
 
     foreach ($entities as $route => $entity) {
         $folder = $livewireFolders[$route];
         $param = strtolower($entity);
-        // CRUD Livewire
-        Route::get("$route", "App\\Livewire\\{$folder}\\Index")->name("$route.index");
+        $importExportController = "App\\Http\\Controllers\\{$entity}ImportExportController";
+        $resourceController = "App\\Http\\Controllers\\{$entity}Controller";
+
+        // Actions réservées aux utilisateurs connectés
         Route::get("$route/create", "App\\Livewire\\{$folder}\\Create")->name("$route.create");
         Route::get("$route/{{$param}}/edit", "App\\Livewire\\{$folder}\\Edit")->name("$route.edit");
-        Route::get("$route/{{$param}}", "App\\Livewire\\{$folder}\\Show")->name("$route.show");
 
         // Import/Export
-        Route::post("$route/import", "App\\Http\\Controllers\\{$entity}ImportExportController@import")->name("$route.import");
-        Route::post("$route/export", "App\\Http\\Controllers\\{$entity}ImportExportController@export")->name("$route.export");
+        Route::post("$route/import", [$importExportController, 'import'])->name("$route.import");
+        Route::post("$route/export", [$importExportController, 'export'])->name("$route.export");
 
         // Suppression
-        Route::delete("$route/{{$param}}", "App\\Http\\Controllers\\{$entity}Controller@destroy")->name("$route.destroy");
+        Route::delete("$route/{{$param}}", [$resourceController, 'destroy'])->name("$route.destroy");
     }
 
     // Routes settings, historisations, etc. (à garder à part)
@@ -115,9 +124,9 @@ Route::middleware(['auth'])->group(function () {
         }
         $historisations = $query->orderByDesc('date')->paginate(20);
         return view('historisations.index', compact('historisations'));
-    })->name('historisations.index');
+    })->middleware(['auth'])->name('historisations.index');
 
     Route::post('historisations/{id}/restore', [\App\Http\Controllers\HistorisationRestoreController::class, 'restore'])
-        ->name('historisations.restore')
-        ->middleware(['auth']);
+        ->middleware(['auth'])
+        ->name('historisations.restore');
 });

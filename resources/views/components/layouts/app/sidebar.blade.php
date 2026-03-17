@@ -20,19 +20,22 @@
                     <flux:navlist.item icon="flag" :href="route('competitions.index')" :current="request()->routeIs('competitions.*')" wire:navigate>Compétitions</flux:navlist.item>
                     <flux:navlist.item icon="user" :href="route('lieux.index')" :current="request()->routeIs('lieux.*')" wire:navigate>Lieux</flux:navlist.item>
                     <flux:navlist.item icon="user" :href="route('sources.index')" :current="request()->routeIs('sources.*')" wire:navigate>Sources</flux:navlist.item>
-                    <flux:navlist.item icon="user" :href="route('historisations.index')" :current="request()->routeIs('historisations.*')" wire:navigate>Historisations</flux:navlist.item>
+                    @auth
+                        <flux:navlist.item icon="user" :href="route('historisations.index')" :current="request()->routeIs('historisations.*')" wire:navigate>Historisations</flux:navlist.item>
+                    @endauth
                 </flux:navlist.group>
             </flux:navlist>
 
             <flux:spacer />
 
             <!-- Desktop User Menu -->
-            <flux:dropdown class="hidden lg:block" position="bottom" align="start">
-                <flux:profile
-                    :name="auth()->user()->name"
-                    :initials="auth()->user()->initials()"
-                    icon:trailing="chevrons-up-down"
-                />
+            @auth
+                <flux:dropdown class="hidden lg:block" position="bottom" align="start">
+                    <flux:profile
+                        :name="auth()->user()->name"
+                        :initials="auth()->user()->initials()"
+                        icon:trailing="chevrons-up-down"
+                    />
 
                 <flux:menu class="w-[220px]">
                     <flux:menu.radio.group>
@@ -68,8 +71,13 @@
                             {{ __('Log Out') }}
                         </flux:menu.item>
                     </form>
-                </flux:menu>
-            </flux:dropdown>
+                    </flux:menu>
+                </flux:dropdown>
+            @else
+                <div class="hidden lg:block">
+                    <a href="{{ route('login') }}" class="inline-block px-3 py-2 rounded-md border border-zinc-300 dark:border-zinc-600">Se connecter</a>
+                </div>
+            @endauth
         </flux:sidebar>
 
         <!-- Mobile User Menu -->
@@ -78,11 +86,12 @@
 
             <flux:spacer />
 
-            <flux:dropdown position="top" align="end">
-                <flux:profile
-                    :initials="auth()->user()->initials()"
-                    icon-trailing="chevron-down"
-                />
+            @auth
+                <flux:dropdown position="top" align="end">
+                    <flux:profile
+                        :initials="auth()->user()->initials()"
+                        icon-trailing="chevron-down"
+                    />
 
                 <flux:menu>
                     <flux:menu.radio.group>
@@ -118,8 +127,11 @@
                             {{ __('Log Out') }}
                         </flux:menu.item>
                     </form>
-                </flux:menu>
-            </flux:dropdown>
+                    </flux:menu>
+                </flux:dropdown>
+            @else
+                <a href="{{ route('login') }}" class="inline-block px-3 py-2 rounded-md border border-zinc-300 dark:border-zinc-600">Se connecter</a>
+            @endauth
         </flux:header>
 
         {{ $slot }}

@@ -1,6 +1,7 @@
 <div>
     <div class="flex justify-between items-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">Sources</h1>
+        @auth
         <div class="flex gap-2 justify-end w-full">
             <form method="POST" action="{{ route('sources.import') }}" enctype="multipart/form-data">
                 @csrf
@@ -14,6 +15,7 @@
             </form>
             <x-buttons.button as="a" href="{{ route('sources.create') }}" variant="primary">Ajouter une source</x-buttons.button>
         </div>
+        @endauth
     </div>
     <x-notifications.notification />
     <div class="overflow-x-auto w-full">
@@ -27,6 +29,7 @@
         </div>
     </div>
 
+    @auth
     <!-- Modal de suppression -->
     <div id="deleteSourceModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-md">
@@ -45,6 +48,7 @@
             </div>
         </div>
     </div>
+    @endauth
 </div>
 <script>
 window.addEventListener('open-delete-source-modal', function(e) {
@@ -61,8 +65,11 @@ function toggleAllSources(source) {
     const checkboxes = document.querySelectorAll('.source-checkbox');
     checkboxes.forEach(cb => cb.checked = source.checked);
 }
-document.getElementById('exportForm').addEventListener('submit', function(e) {
-    const selected = Array.from(document.querySelectorAll('.source-checkbox:checked')).map(cb => cb.value);
-    document.getElementById('exportIds').value = selected.join(',');
-});
+const exportForm = document.getElementById('exportForm');
+if (exportForm) {
+    exportForm.addEventListener('submit', function(e) {
+        const selected = Array.from(document.querySelectorAll('.source-checkbox:checked')).map(cb => cb.value);
+        document.getElementById('exportIds').value = selected.join(',');
+    });
+}
 </script>

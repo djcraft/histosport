@@ -53,8 +53,10 @@
                 @endforeach
             </div>
         </div>
-        <div class="flex justify-end">
-            <x-buttons.button as="a" href="{{ route('sources.edit', $source) }}" variant="link-orange">Modifier</x-buttons.button>
-        </div>
+        @auth
+            <div class="flex justify-end">
+                <x-buttons.button as="a" href="{{ route('sources.edit', $source) }}" variant="link-orange">Modifier</x-buttons.button>
+            </div>
+        @endauth
     </div>
 </div>

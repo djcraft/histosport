@@ -20,11 +20,12 @@
             <flux:spacer />
 
             <!-- Desktop User Menu -->
-            <flux:dropdown position="top" align="end">
-                <flux:profile
-                    class="cursor-pointer"
-                    :initials="auth()->user()->initials()"
-                />
+            @auth
+                <flux:dropdown position="top" align="end">
+                    <flux:profile
+                        class="cursor-pointer"
+                        :initials="auth()->user()->initials()"
+                    />
 
                 <flux:menu>
                     <flux:menu.radio.group>
@@ -60,8 +61,11 @@
                             {{ __('Log Out') }}
                         </flux:menu.item>
                     </form>
-                </flux:menu>
-            </flux:dropdown>
+                    </flux:menu>
+                </flux:dropdown>
+            @else
+                <a href="{{ route('login') }}" class="inline-block px-3 py-2 rounded-md border border-zinc-300 dark:border-zinc-600">Se connecter</a>
+            @endauth
         </flux:header>
 
         <!-- Mobile Menu -->
@@ -75,7 +79,7 @@
             <flux:navlist variant="outline">
                 <flux:navlist.group :heading="__('Platform')">
                     <flux:navlist.item icon="layout-grid" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
-                      {{ __('Dashboard') }}
+                        {{ __('Dashboard') }}
                     </flux:navlist.item>
                 </flux:navlist.group>
             </flux:navlist>
