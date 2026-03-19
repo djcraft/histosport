@@ -1,4 +1,4 @@
-FROM php:8.3-fpm
+FROM php:8.4-fpm
 
 # Install system dependencies and PHP extensions
 RUN apt-get update && apt-get install -y \
@@ -16,8 +16,9 @@ RUN apt-get update && apt-get install -y \
     zlib1g-dev \
     libzip-dev \
     nginx \
-    supervisor \
-    && pecl install memcached \
+    supervisor
+
+RUN pecl install memcached \
     && docker-php-ext-enable memcached \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring zip xml gd
@@ -47,7 +48,7 @@ COPY docker/supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Ajout du script d'entrée et permission exécutable
 COPY entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+#RUN chmod +x /entrypoint.sh
 
 # Expose port 9000 (PHP-FPM) et 80 (Nginx)
 EXPOSE 9000 80
